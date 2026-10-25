@@ -8,7 +8,6 @@ platform without a rewrite.
 |---|---|
 | `pitch.md` | The short pitch for the apps platform |
 | `building-blocks.md` | The pieces every agentic app needs |
-| `stack.md` | What we build on top of the platform |
 | `contract.md` | The only platform interface an app may rely on |
 | `multimodal-agent-apps.pptx` | Portfolio deck |
 | `ideas/` | Concepts, not yet built |

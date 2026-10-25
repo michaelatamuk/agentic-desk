@@ -9,15 +9,16 @@ apps and middleware we are building on top of it.
 |---|---|
 | `industry/` | Monthly briefing on the industry, and studies of what others built |
 | `projects/` | The things we work on — see below |
+| `strategy/` | Direction across the projects: what we build and why |
 
 ## Projects
 
 | Folder | Contents |
 |---|---|
-| `projects/openjiuwen/` | Issue write-ups and release notes for the platform |
+| `projects/openjiuwen/` | Issue write-ups, release notes, code studies and design proposals |
+| `projects/middleware/laix/` | LAIX, a decision layer between apps and the platform |
+| `projects/middleware/cortex/` | Cortex, plugins that extend the platform |
 | `projects/apps/` | Apps built on top of the platform, and the interface they may use |
-| `projects/laix/` | LAIX, middleware between apps and agentic platforms |
-| `projects/cortex/` | Cortex, middleware ideas |
 | `projects/channels/` | Channels, the shipped surfaces, as portfolio material |
 
 ## Conventions

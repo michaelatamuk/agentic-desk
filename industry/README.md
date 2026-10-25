@@ -12,5 +12,6 @@ projects have built.
 
 - `studies/2026-10-06-competitor-mechanisms.md` — competitor agent mechanisms and demos
 - `studies/2026-08-harness-comparison.md` — DeepSeek harness compared with jiuwenswarm
+- `studies/deepseek-harness.md` — DeepSeek's plugin kernel, the model for the plugin proposal
 - `studies/icode.md` — iCode architecture
 - `studies/laya.md` — Laya, an on-device decision engine

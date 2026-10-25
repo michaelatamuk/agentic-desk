@@ -10,6 +10,21 @@ Jiuwen is the **brain**. We build **three parts** on top of it.
 | **2 · Bodies** | **hardware** — a brain in a body | hardware / product teams |
 | **3 · Enabling stack** | **neither** — it enables both | **us (R&D)** |
 
+## Where the current projects sit
+
+| Project | Part of the map | Shape |
+|---|---|---|
+| `projects/openjiuwen/` | the brain we build on | platform |
+| `projects/middleware/laix/` | 3 · Enabling stack | a layer between the app and the platform |
+| `projects/middleware/cortex/` | 3 · Enabling stack | plugins that extend the platform |
+| `projects/apps/` | 1 · Products | software products |
+| `projects/channels/` | 1 · Products | shipped surfaces |
+
+Two projects sit in the same part and are still different things: LAIX is a **layer** with a contract
+above and below it, so it can be swapped or sold on its own. Cortex is a **set of plugins** that
+attaches to the platform from the inside; parts of it could become a layer, but today they extend one
+platform.
+
 ## 1 · Software products — a brain in software
 
 **By job:**
