@@ -1,6 +1,6 @@
 # App contract
 
-**Draft, version 0.** This is the only platform interface an app in `apps/` may rely on. When an app
+**Draft, version 0.** This is the only platform interface an app in this folder may rely on. When an app
 needs something that is not listed here, the contract is extended first and the app second.
 Otherwise the app is no longer portable, and the move to another platform becomes a rewrite.
 
@@ -37,7 +37,7 @@ Run this before calling an app portable:
 2. Replace that note with a different platform's name. Nothing else in the document should need to
    change.
 3. If step 2 breaks a statement about behaviour, the statement described an internal. Move it to
-   `openjiuwen/`.
+   `projects/openjiuwen/`.
 
 ## Open questions
 

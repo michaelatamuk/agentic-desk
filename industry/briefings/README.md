@@ -1,8 +1,7 @@
-# Agentic AI Monthly Briefing
+# Briefings
 
-One short briefing per month on the most important agentic AI news around the world, ranked by
-impact and written in plain English. It is for someone who follows the industry but does not read
-every launch.
+One briefing per month on the most important agentic AI news around the world, ranked by impact and
+written in plain English. It is for someone who follows the industry but does not read every launch.
 
 ## How to run a month
 

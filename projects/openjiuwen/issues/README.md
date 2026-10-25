@@ -26,7 +26,7 @@ to them.
 | `summaries/` | Roll-ups that cover many issues at once |
 
 `channels/` here means channel *code*. The shipped Channels product is documented in
-`channels/overview.md` at the repository root.
+`projects/channels/overview.md`.
 
 ## What one file contains
 

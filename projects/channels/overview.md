@@ -2,6 +2,8 @@
 
 OpenJiuwen Channels is the product suite that puts JiuwenSwarm where its users work. Where Cortex is a collection of algorithms, systems, and tools that make the agent itself faster, cheaper, smarter, and more robust, Channels is a collection of thin clients and integrations that meet the user on the surface they already inhabit — the developer's editor, the data scientist's notebook, the researcher's browser, and the developer's own application. There is no single channel: each one fits a different working context, and each can be used on its own.
 
+![Channels architecture](architecture.jpeg)
+
 JiuwenSwarm already ships with two built-in surfaces that cover its core user base: the **GUI** (the web UI accessible at `localhost:5173` after launch) and the **TUI** (`jiuwenswarm-tui`, a full-featured terminal interface for power users). These two are integral parts of JiuwenSwarm itself — not separate development efforts. The messaging platforms (Feishu, DingTalk, WeCom, WeChat, Xiaoyi, Telegram, Discord, Slack, WhatsApp) are also already integral to JiuwenSwarm.
 
 OpenJiuwen Channels adds new surfaces on top of that foundation, organized around two user families.

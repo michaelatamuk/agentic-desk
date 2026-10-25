@@ -18,7 +18,7 @@ platform without a rewrite.
 ## The black-box rule
 
 No document in this folder may depend on an internal of the platform underneath. If a sentence only
-makes sense because of how openjiuwen works inside, it belongs in `openjiuwen/`, not here.
+makes sense because of how openjiuwen works inside, it belongs in `projects/openjiuwen/`, not here.
 
 Naming the current implementation is allowed in one place: a short *Current implementation* note at
 the end of a build specification, saying which platform the app runs on today. Anything beyond that

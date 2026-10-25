@@ -2,6 +2,8 @@
 
 OpenJiuwen Cortex is a collection of independent projects — algorithms, systems, and tools — each addressing a different weakness or opportunity in JiuwenSwarm. There is no single line of improvement: some tackle routing and cost, some tackle memory, some tackle how skills are written and maintained, some tackle multi-agent safety, and some tackle developer experience. Each project can be useful on its own; together they form a coherent effort to make JiuwenSwarm faster, cheaper, smarter, and more robust.
 
+![Cortex architecture](architecture.jpeg)
+
 ---
 
 ## Skills

@@ -30,7 +30,7 @@ The last row is the important one. If LAIX names models, it is tied to one platf
 ## Boundary with Cortex
 
 Cortex and LAIX overlap on model routing, context selection and execution. See
-`cortex/scope.md` for the three decisions that have to be made before this contract can be final.
+`projects/cortex/scope.md` for the three decisions that have to be made before this contract can be final.
 
 ## Open questions
 
