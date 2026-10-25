@@ -19,6 +19,7 @@ apps and middleware we are building on top of it.
 | `projects/middleware/laix/` | LAIX, a decision layer between apps and the platform |
 | `projects/middleware/cortex/` | Cortex, plugins that extend the platform |
 | `projects/apps/` | Apps built on top of the platform, and the interface they may use |
+| `projects/apps/max/` | Max, the smart home app: product, algorithms and demo |
 | `projects/channels/` | Channels, the shipped surfaces, as portfolio material |
 
 ## Conventions

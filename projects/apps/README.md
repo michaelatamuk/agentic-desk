@@ -13,6 +13,7 @@ platform without a rewrite.
 | `ideas/` | Concepts, not yet built |
 | `builds/` | One build specification per app |
 | `publishing/` | How an app gets published and distributed |
+| `max/` | Max, the smart home app: product, algorithms, demo |
 
 ## The black-box rule
 
