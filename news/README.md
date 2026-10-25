@@ -43,7 +43,19 @@ retries and logs.
 
 ### Briefs
 
-- `2026-09.md` — September 2026
-- `2026-10.md` — October 2026 *(original format; post-publication review added six items)*
-- `2026-10-alt.md` — October 2026 *(reference implementation of the current format)*
+One canonical file per month.
+
+- `2026-09.md` — September 2026 *(news-brief format)*
+- `2026-10.md` — October 2026 *(engineering edition; the default since this month)*
 - `2026-11.md` — November 2026 *(next)*
+
+### Drafts
+
+Never published. Kept because they show how a month was cut.
+
+- `drafts/2026-10-news.md` — October 2026, long news version, superseded by the engineering edition
+- `drafts/2026-10-cut.md` — October 2026, five-story comparison cut
+
+### Archive
+
+- `archive/2026-10-alt.md` — October 2026, reference implementation of the news-brief format

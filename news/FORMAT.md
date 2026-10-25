@@ -1,15 +1,42 @@
 # Brief Format
 
-## Reference example
+## Two formats
 
-`2026-10-alt.md` is the reference implementation of this format. When in doubt, look at how
-something is handled there.
+### Engineering edition — the default since October 2026
+
+`2026-10.md` is the reference implementation. It is written for engineers and CTOs who have to make
+decisions this quarter, and it replaces the news-brief structure below rather than supplementing it.
+
+Its structure:
+
+1. **The six things that mattered** — numbered, one or two sentences each, ordered by dependency:
+   what blocked us, then what retreated, then what shipped, then what it costs.
+2. **Numbered sections, one per decision area** — always-on architecture, models, protocols, runtime
+   and sandboxes, access, liability and insurance, compute and China, money. Each section uses the
+   same three blocks: *What shipped*, *What broke* or *What changed*, *What to do*.
+3. **A table when the information is tabular** — the layers of an architecture, a price comparison,
+   a set of insurance forms. Prose for cause and effect, tables for facts that repeat.
+4. **Decisions for the next 90 days** — numbered actions, one sentence each, doable by one team.
+5. **Sources** — a bullet list, one link per line. Unlike the news-brief format, links are listed
+   rather than flowed as inline hyperlinks.
+
+Style is unchanged: plain English, no labelled "Why it matters", every acronym expanded at first
+use, no metaphor in a heading. The difference is depth. An engineering edition says how something is
+built, not only that it happened.
+
+A month may still be published in the news-brief format below when the audience is general. Only one
+format is canonical for a given month.
+
+### News-brief format
+
+`archive/2026-10-alt.md` is the reference implementation. When in doubt, look at how something is
+handled there.
 
 ---
 
 ## Structure
 
-Every brief has these sections, in this order:
+Every news brief has these sections, in this order:
 
 1. **Opening paragraph** — two to four sentences. Describes the state of the field at the end of
    the month, not a list of events. The reader should understand what changed and why it matters
