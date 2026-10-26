@@ -2,7 +2,7 @@
 
 ## Workflow — run in this order
 
-1. [Run five lenses in parallel](#1-research-lenses)
+1. [Run nine lenses in parallel](#1-research-lenses)
 2. [Merge memos by theme](#2-merge)
 3. [Run importance review on merged pool](#3-importance-review)
 4. [Check coverage against recall table](#4-coverage-check) ← do not give this to discovery agents
@@ -20,35 +20,67 @@ Run each lens as a separate sub-agent with fresh context. No lens gets a list of
 frame is the only guidance. Each returns a broad memo of everything that might matter: date, what
 happened, why it matters, status, and sources. There is no fixed number of items at this stage.
 
-### Global technology
+Nine lenses. If you must run fewer, merge **Models and methods** with **Agent engineering**, and
+**Enterprise deployment** with **Products and platforms** — but give the merged lens both sets of
+queries, or the second set will be skipped.
 
-Models, architectures, APIs and SDKs, protocols, benchmarks, open weights, developer tools and
-papers. Include **non-generative and structured-output models** — decision/scoring/classification
-models, embeddings and rerankers, speech models, world models — not only chat LLMs.
+### Models and methods
 
-Treat "new model" as **new kind of model**, not only a new LLM. LLM release trackers are one
-source, not the definition of the market. Search model cards, API changelogs, GitHub, arXiv,
-benchmark leaderboards and engineering blogs, plus startup and product coverage, because a new
-kind of model often appears there before it enters LLM trackers. If a source names a new category,
-search that term.
+LLMs; multimodal models for image, video, audio and 3D; decision, scoring and classification models;
+embeddings and rerankers; speech models; world models; open weights; papers; benchmarks.
+
+Treat "new model" as **new kind of model**, not only a new LLM. Search model cards, API changelogs,
+GitHub, arXiv, benchmark leaderboards and engineering blogs, plus startup and product coverage,
+because a new kind of model often appears there before it enters LLM trackers. If a source names a new
+category, search that term.
 
 **Hard requirement:** check the changelogs of non-AI-primary vendors explicitly — Snowflake,
 Databricks, Salesforce Einstein, Oracle OCI AI, AWS Bedrock, Azure AI Studio, SAP AI Core. These
 vendors ship models and agent tools inside data-platform products, not in AI-specific outlets.
 Missing them is a systematic failure mode.
 
-### Global products and platforms
+### Agent engineering
 
-Consumer and enterprise agents, devices, operating systems, commerce, distribution and adoption.
+Runtimes and harnesses; orchestration; sandboxes and isolation; memory and retrieval; context
+management; evaluation frameworks; observability and tracing; SDKs and APIs; protocols including MCP,
+A2A and agent identity; developer tooling, IDEs and coding agents; open-source ecosystem health —
+licences, forks, maintainers and supply-chain risk.
 
-### Global safety and policy
+This lens covers how agents are built and run, not what they can do. A new runtime, a sandbox
+escape, a memory framework or a change to MCP belongs here.
 
-Incidents, containment, liability, regulation and standards. Also record what labs and platforms
-**stopped** doing — paused training, withdrawn internet access, delayed launches, blocked
-integrations — because a retreat is a decision, not an incident, and the other lenses do not see
-it.
+### Compute and inference
 
-### Global money
+Silicon: GPUs, NPUs, ASICs, memory and interconnects, fabs and packaging. Export controls. Datacentres,
+power and cooling. Serving and inference: inference engines, quantisation, batching, KV-cache work,
+cost per token, on-device inference, cloud capacity and pricing.
+
+This lens exists because compute sets cost and access, and because inference efficiency is where the
+price of an agent step is decided. It is not a subdivision of money.
+
+### Products and platforms
+
+Consumer and enterprise agents, devices, operating systems, commerce, distribution, pricing and
+availability. Platform access decisions: what was opened, gated or blocked. Adoption numbers.
+
+### Enterprise deployment
+
+Named deployments and customers; procurement and contract values; pilots that ended; failures,
+rollbacks and churn; internal build versus buy; ROI claims; systems integrators and partners.
+
+**Hard requirement:** no named deployment, no item. A vendor claiming "100+ customers" is a product
+claim, not an enterprise deployment, and belongs in the products lens instead.
+
+### Safety and policy
+
+Incidents, containment, liability, regulation, standards and lawsuits. Also record what labs and
+platforms **stopped** doing — paused training, withdrawn internet access, delayed launches, blocked
+integrations — because a retreat is a decision, not an incident, and the other lenses do not see it.
+
+Cover the rest of the world, not only the US: EU, UK, India, Japan, Korea, the Gulf and Latin America,
+including sovereign AI programmes, enforcement actions and local rules.
+
+### Money
 
 Funding, M&A, IPOs, market structure and major enterprise deals.
 
@@ -56,21 +88,27 @@ Funding, M&A, IPOs, market structure and major enterprise deals.
 trackers. An M&A deal where an AI company acquires a non-AI-primary company will not appear in
 AI-specific funding roundups; the AI connection is in the strategic rationale, not the headline.
 
+### Embodied, science and health
+
+Robotics and humanoids; drones and vehicles; lab automation and science agents; health and clinical
+agents; biotech; standards and safety for physical systems; evaluation of physical tasks.
+
+This lens covers agents that act outside a screen. It is where the physical-world half of the industry
+appears, and the other lenses systematically miss it.
+
 ### China
 
 The Chinese market and its technology, in Chinese and English. Cover Chinese model releases —
-including non-generative and structured-output models — APIs, benchmarks, open weights, papers
-and developer tools as well as platforms, office agents, agent hardware, policy, adoption and
-funding. Do not let Chinese model coverage collapse into LLM release trackers. Do not treat China
-as only a market or policy story.
+including non-generative and structured-output models — APIs, benchmarks, open weights, papers and
+developer tools, as well as platforms, office agents, agent hardware, policy, adoption and funding. Do
+not let Chinese model coverage collapse into LLM release trackers. Do not treat China as only a market
+or policy story.
 
 **Naming note:** Chinese product launches often have three simultaneous names — internal codename,
-official Chinese name, English name in international coverage — and none of them match. When a
-product is found under one name, search the others. Xiaodou = Spell = 小豆. Qwen Go = Personal
-Agent = 通义去. Search by company name (Alibaba, ByteDance, Tencent, Moonshot, Zhipu, MiniMax,
-StepX, OPPO AI) not only by product name.
-
----
+official Chinese name, English name in international coverage — and none of them match. When a product
+is found under one name, search the others. Xiaodou = Spell = 小豆. Qwen Go = Personal Agent = 通义去.
+Search by company name (Alibaba, ByteDance, Tencent, Moonshot, Zhipu, MiniMax, StepX, OPPO AI) not
+only by product name.
 
 ## 2. Merge
 
@@ -158,6 +196,10 @@ A missing known thread is a research failure, not an editorial choice.
 | **Money** | Rounds ≥$100M; M&A where the acquirer or strategic rationale is agent-related; IPOs; large compute deals |
 | **Non-AI-primary vendors** | Snowflake, Databricks, Salesforce, Oracle, SAP, ServiceNow, Workday — each may have shipped agent models or tools inside a platform update |
 | **Enterprise harnesses** | Microsoft Foundry/Agent Framework, AWS Bedrock AgentCore, Google Agent Development Kit; major version releases |
+| **Agent engineering** | Runtime and sandbox releases, MCP/A2A versions, memory and retrieval frameworks, evaluation harnesses, observability, open-source ecosystem health |
+| **Compute and inference** | Nvidia, AMD, Intel, TSMC, SK Hynix, Samsung, Huawei Ascend, Cambricon, Cerebras, Groq; vLLM, SGLang, TensorRT-LLM; export controls; datacentre power and pricing |
+| **Enterprise deployment** | Named rollouts and contract values, failed pilots, rollbacks and churn; Accenture, Deloitte, Infosys, TCS; internal build versus buy |
+| **Embodied, science and health** | Figure, Tesla Optimus, 1X, Agility, Unitree, Waymo; lab automation; AI-for-science; clinical agents; embodied standards |
 
 ---
 
@@ -193,8 +235,8 @@ topic.
 
 September's sweep found nothing the lenses had missed. October's found the month's lead story
 (Anthropic and OpenAI both cutting their agents off the live internet), OpenAI's Decisions API,
-the US order to remove DeepSeek, Tesla Optimus production, and the Orchestra Bio acquisition. All
-five lenses had missed them.
+the US order to remove DeepSeek, Tesla Optimus production, and the Orchestra Bio acquisition. Every
+lens had missed them.
 
 ---
 

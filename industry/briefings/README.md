@@ -7,7 +7,7 @@ written in plain English. It is for someone who follows the industry but does no
 
 When asked for a month:
 
-1. Read `PROCESS.md` — it gives the numbered workflow, the five research lenses, the recall table,
+1. Read `PROCESS.md` - it gives the numbered workflow, the nine research lenses, the recall table,
    and the named outlets for the final sweep.
 2. Read `FORMAT.md` — it gives the brief structure, geographic formatting, style rules and status
    vocabulary.
@@ -45,7 +45,10 @@ retries and logs.
 One canonical file per month.
 
 - `2026-09.md` — September 2026 *(news-brief format)*
+- `2026-09-actors.md` — September 2026 *(actor-by-actor edition: every line is who did what)*
 - `2026-10.md` — October 2026 *(engineering edition; the default since this month)*
+- `2026-10-actors.md` — October 2026 *(actor-by-actor edition: every line is who did what)*
+- `2026-10-china.md` — October 2026 *(China-only edition: every line is who did what)*
 - `2026-11.md` — November 2026 *(next)*
 
 ### Drafts
