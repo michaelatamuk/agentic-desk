@@ -11,6 +11,7 @@ projects have built.
 ## Studies
 
 - `studies/2026-10-06-competitor-mechanisms.md` — competitor agent mechanisms and demos
+- `studies/2026-10-27-digitalmate-and-orbit.md` — DigitalMate, the HarmonyOS task app, and Orbit, its cloud engine
 - `studies/2026-08-harness-comparison.md` — DeepSeek harness compared with jiuwenswarm
 - `studies/deepseek-harness.md` — DeepSeek's plugin kernel, the model for the plugin proposal
 - `studies/icode.md` — iCode architecture
