@@ -20,6 +20,7 @@ apps and middleware we are building on top of it.
 | `projects/middleware/cortex/` | Cortex, plugins that extend the platform |
 | `projects/apps/` | Apps built on top of the platform, and the interface they may use |
 | `projects/apps/max/` | Max, the smart home app: product, algorithms and demo |
+| `projects/ppma/` | PPMA, a memory-first agent that manages ongoing projects: the four directions, the loop and everyday scenarios |
 | `projects/channels/` | Channels, the shipped surfaces, as portfolio material |
 
 ## Conventions

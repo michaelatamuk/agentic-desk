@@ -1,8 +1,8 @@
 # LAIX — brief overview
 
-LAIX is a middleware layer between an AI app and the agentic platform underneath it. It decides
-whether, when and how the app acts, and reuses the platform, the serving engine and the models below
-it instead of replacing them.
+LAIX is the decision layer for the right moment. It sits between an AI app and the agentic platform
+underneath it, deciding whether, when and how the app acts, and reusing the platform, the serving
+engine and the models below it instead of replacing them.
 
 > Converted from `assets/LAIX_Brief_Overview_v1.0.pptx` (11 slides). Slides that contain only
 > diagrams are noted but not reproduced. **Every number in this document is a 2027 target, not a
@@ -12,8 +12,10 @@ it instead of replacing them.
 
 Models, agents and multimodal input and output work. What is missing is the application intelligence
 that runs an experience over time. Most AI apps are still request and response: the user carries the
-context and the timing, the app forgets, interrupts at the wrong moment, or stays silent when help
-is needed.
+context and the timing. They interrupt at the wrong moment, stay silent when help is needed, and
+never check whether the help worked.
+
+The enemy is **mistiming**.
 
 The deck lists five challenges that every live AI app hits:
 
@@ -55,6 +57,30 @@ Delivered as a runtime plus a Python and TypeScript SDK, evaluation and observab
 three reference apps. An edge library handles decisions under one second; a cloud service handles
 state, learning and evaluation.
 
+## The product
+
+LAIX is a runtime and SDK for product teams building live AI apps. The end user never opens LAIX;
+they feel the result in the app.
+
+The first product is the decision layer behind a real reference app — the coach — not a new app
+studio, and not another agent framework.
+
+| Question | Answer |
+|---|---|
+| Who buys? | The product team building a live AI app |
+| What do they get? | A decision layer: state, timing, action, verification and outcome learning |
+| What do they stop building? | Their own timers, thresholds, confidence scoring and outcome loop |
+| First reference app | The coach: one real app, one clear outcome |
+| Proof | Intervention precision, +15% outcome, −30% model calls, ≥60% reuse |
+| Price | A paid pilot, then an SDK/runtime licence or usage-based fee |
+| Why not build in-house? | Time, evaluation data, reuse across apps, safety |
+| What it is not | A model, an agent framework, or an app studio |
+
+## Six-month proof
+
+One engine, one reference app and three proofs — timing, outcome and reuse — in six months. The ten
+decision classes are the test suite; the coach is the first story.
+
 ## How it differs
 
 | Existing | What it does well | The gap LAIX fills |
@@ -63,7 +89,7 @@ state, learning and evaluation.
 | Agent frameworks (LangGraph, openJiuwen) | Plans, tools, memory | Not timing-aware or perception-aware |
 | Serving (vLLM-Omni) | Fast, cheap model calls | Does not decide which calls to make |
 | Vertical apps (Be My AI, form coaches) | Good single-domain experience | Hand-coded, not reusable |
-| **LAIX** | Reuses all of the above | A reusable decision and outcome layer |
+| **LAIX** | Reuses all of the above | The decision layer for the right moment: timing, outcome and reuse |
 
 The deck is explicit about what LAIX is not: not another model, agent framework, assistant or app
 studio.
@@ -137,3 +163,8 @@ vLLM-Omni, Huawei Cloud, an accessibility partner.
 
 Slides 1, 2, 5, 7, 8 and 9 in the deck contain diagrams and images only. They are not represented
 above. If any of them carries a decision, it needs to be written down here.
+
+## See also
+
+- [The LAIX case](laix-case.md) — the decision layer for the right moment, and its symbiosis with
+  PPMA.
