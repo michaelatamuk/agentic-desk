@@ -38,18 +38,24 @@ flowchart TD
   NL["Native loop<br/>no JiuwenSwarm"]
   GW["ScienceDiscovery<br/>model gateway"]
   MP["Model provider<br/>your key"]
+  NPU["Ascend NPU<br/>Protenix · MindSpore jobs"]
 
-  R -->|"task / results"| SD
-  SD --> M
+  R -->|"starts a task"| SD
+  SD -->|"every task"| M
   M -->|"default"| JS
   M -->|"no JiuwenSwarm"| NL
-  JS --> GW
-  NL --> GW
-  GW --> MP
+  JS -->|"model calls"| GW
+  NL -->|"model calls"| GW
+  GW -->|"forwards with your key"| MP
+  SD -.->|"only for NPU jobs"| NPU
 ```
 
+**When each is used:** the engine runs **every task**. The model gateway and provider are used for
+**model calls during reasoning**. The NPU is used **only** when the task calls the `run_npu_job`
+tool for heavy scientific compute. It is not a second engine and not part of the model path.
+
 **The diamond is the only either/or:** pick one engine. Both engines use the same ScienceDiscovery
-model gateway to reach the provider. There is no second model path and no third option.
+model gateway to reach the provider.
 
 | Mode | Agent engine | Model provider |
 |---|---|---|
