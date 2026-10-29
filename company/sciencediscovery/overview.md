@@ -136,9 +136,11 @@ With no Ascend host, leave the broker off: `run_npu_job` is absent from the tool
 Python, R and shell work continues in the sandbox on CPU, and only NPU-specific workloads are
 unavailable. Model calls are unaffected.
 
-**Remote Runner hosts.** An admin registers a machine in System settings as an SSH tunnel or a direct
-endpoint. A Project can set it as the default; a Session inherits that or picks another machine from
-the global catalog. When the agent runs code, the request carries the selected `runner_id` and
+**Remote Runner hosts.** A remote Runner is not an alternative to the engine; it replaces the local
+Runner for tool execution. JiuwenSwarm or the native loop still plans the work and calls the tools;
+only the place where code runs changes. An admin registers a machine in System settings as an SSH
+tunnel or a direct endpoint. A Project can set it as the default; a Session inherits that or picks
+another machine from the global catalog. When the agent runs code, the request carries the selected `runner_id` and
 `environment_id`, and the API sends it to that machine's Runner, which executes it in its own sandbox
 with the selected managed environment. Files do not sync implicitly: `workspace_transfer` copies
 them between workspaces, and only files in the local owned workspace can be declared Artifacts, so
