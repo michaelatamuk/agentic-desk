@@ -53,6 +53,11 @@ LAIX itself is six components:
 
 The loop is: observe, understand, maintain state, decide, act, verify, adapt.
 
+[`laix-architecture-overview.png`](laix-architecture-overview.png) is the one-page picture: inputs from
+users, devices and apps on the left; the five stages — perceive, decide, orchestrate, share and
+collaborate, adapt and learn — in the middle; Digital Mate, PPMA and JiuwenSwarm/Orbit on the right;
+and the key capabilities, technologies, component boundaries and value underneath.
+
 Delivered as a runtime plus a Python and TypeScript SDK, evaluation and observability tools, and
 three reference apps. An edge library handles decisions under one second; a cloud service handles
 state, learning and evaluation.
