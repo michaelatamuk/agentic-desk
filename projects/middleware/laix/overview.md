@@ -170,6 +170,9 @@ Two decks sit in this folder.
 
 If an image-only slide carries a decision, write it down in this file.
 
+Every slide is also exported as a PNG under [`slides/`](slides/), named by slide number and the title
+at the top of the slide.
+
 ## See also
 
 - [The LAIX case](laix-case.md) — the decision layer for the right moment, and its symbiosis with
