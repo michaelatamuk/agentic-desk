@@ -1,6 +1,8 @@
 # GeoResponse: an AI analyst for imagery
 
-*Status: idea. Not built.*
+*Status: playable proof built. Product not built.*
+
+**Play it:** [play/georesponse.html](../../play/georesponse.html) · **Stage plan:** [roadmap](../roadmaps/georesponse.md)
 
 **One line.** When an area changes — flood, fire, damage or new construction — GeoResponse finds it,
 ranks what matters and writes the assessment with a map.
@@ -161,10 +163,16 @@ For one region and one asset type:
 5. Write a short report.
 6. Let an analyst review.
 
-## The 60-second demo
+## The 90-second stage piece
 
-Show a before/after flood image. GeoResponse highlights damaged buildings, ranks the worst areas, and
-produces a map and a one-page assessment. The analyst corrects one false positive and approves.
+One flood event, 40 km², 18 sites, three teams. The presenter scrubs time from 12:00 to 18:00 and the
+flood edge moves east. The room sees why the top-ranked site matters — road, power, people — then
+watches the analyst reject a confident false positive. Team 3 goes where the room votes. Zoom out:
+18 sites, 42 minutes, a one-page field order. *"We knew where to send the teams before the second
+coffee."*
+
+The full beat sheet, trust beat, props and acceptance tests are in the
+[roadmap](../roadmaps/georesponse.md).
 
 ## Open questions
 

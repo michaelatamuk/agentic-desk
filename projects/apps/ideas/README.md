@@ -16,8 +16,9 @@ ideas/
 ├── studio/             9 productive studio demos, one per app
 ├── docs/
 │   ├── concepts/       one-page concept note per app
-│   ├── roadmaps/       phase-by-phase roadmaps
-│   └── ideation/       wider idea lists
+│   ├── roadmaps/       stage-first plans for RootCause and GeoResponse
+│   ├── ideation/       wider idea lists
+│   └── stage-playbook.md  the 2026 conference bar
 ├── assets/             images and portfolio overview renders
 ├── tools/              render scripts
 └── archive/            older prototypes, pitches and the app suite
@@ -65,4 +66,6 @@ GitHub Pages is built by `.github/workflows/pages.yml`, which publishes this fol
 - **Play** demos are self-contained HTML/CSS/JS with no external assets or network calls.
 - **Studio** demos are the productive workbench versions. Most share a shell; Lab Loop is the deepest.
 - **Docs** cover the buyer, problem, product loop, NPU role, business case and risks.
+- **RootCause and GeoResponse** now have stage-first roadmaps built around a 90-second piece with a
+  human-correction beat, audience agency, data rights and acceptance tests.
 - **Archive** keeps earlier pitches, prototypes and the 9-app suite for reference only.

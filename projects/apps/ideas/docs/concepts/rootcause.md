@@ -1,6 +1,8 @@
 # RootCause: an AI quality engineer for factories
 
-*Status: idea. Not built.*
+*Status: playable proof built. Product not built.*
+
+**Play it:** [play/rootcause.html](../../play/rootcause.html) · **Stage plan:** [roadmap](../roadmaps/rootcause.md)
 
 **One line.** When a factory finds a bad part, RootCause finds the likely cause and writes the
 quality report with evidence.
@@ -172,11 +174,15 @@ For one line and one defect type:
 
 No line control. No automatic changes. Just find the cause and write the report.
 
-## The 60-second demo
+## The 90-second stage piece
 
-A sample line shows a defect. RootCause pulls the process data and similar past cases, shows three
-likely causes with charts, and produces a draft quality report. The engineer approves one cause. The
-case is saved.
+A real failed bracket is on the bench. The presenter drags a lens across it, pushes into x-ray depth
+and finds three pieces of evidence. The AI's first answer — operator error / tool mark — is wrong.
+The engineer rejects it; the system re-ranks to gas porosity; the causal chain assembles and the
+verdict is stamped: *it wasn't fatigue, it started in the casting.*
+
+The room chooses whether to open the surface evidence or the x-ray evidence. The full beat sheet,
+trust beat, props and acceptance tests are in the [roadmap](../roadmaps/rootcause.md).
 
 ## Open questions
 
