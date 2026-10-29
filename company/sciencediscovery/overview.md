@@ -81,9 +81,8 @@ mode.
 flowchart TD
   SD["ScienceDiscovery"]
 
-  subgraph DATA["Data and tools"]
+  subgraph DATA["Research data"]
     L["Built-in literature and data sources<br/>PubMed · arXiv · Europe PMC · bioRxiv · medRxiv<br/>UniProt · PDB · Ensembl · Reactome · ClinVar · ChEMBL · GEO"]
-    M["Custom MCP servers<br/>STDIO · HTTP · SSE"]
   end
 
   subgraph EXEC["Execution"]
@@ -97,7 +96,6 @@ flowchart TD
   end
 
   SD -.->|"search papers, query databases"| L
-  SD -.->|"call external tools"| M
   SD -.->|"run code on another machine"| R
   SD -.->|"run heavy scientific jobs"| NPU
   SD -.->|"store large or shared graphs"| NEO
@@ -150,7 +148,6 @@ to local execution.
 | Optional component | Use case |
 |---|---|
 | Built-in literature and data sources | Search papers (PubMed, arXiv, Europe PMC, bioRxiv, medRxiv) and query biological databases (UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL, GEO) for evidence |
-| Custom MCP servers | Give the agent extra tools or data from another service over STDIO, Streamable HTTP or SSE |
 | Remote Runner hosts | Run code and move files on another machine over SSH or a direct endpoint |
 | Neo4j 5.x | Store larger or shared ScienceMemory graphs; the default is local files |
 | External memory-graph service | Use a separately managed memory graph instead of the bundled sidecar |
