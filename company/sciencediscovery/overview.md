@@ -34,7 +34,7 @@ flowchart TD
   R["Researcher"]
   SD["ScienceDiscovery — the workbench"]
 
-  subgraph DEC["Decides with — engine and model path"]
+  subgraph DEC["Decides with"]
     direction TB
     ENG["Engine — decides<br/>one per task"]
     JS["JiuwenSwarm<br/>default"]
@@ -49,7 +49,7 @@ flowchart TD
     GW -->|"requests"| MP
   end
 
-  subgraph EXE["Executes on — runner and compute"]
+  subgraph EXE["Executes on"]
     direction TB
     RUN["Runner — executes tools<br/>one per run"]
     LR["Local Runner<br/>your machine"]
