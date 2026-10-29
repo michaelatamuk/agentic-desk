@@ -33,34 +33,38 @@ researcher's sessions, files and workspace stay in the workbench.
 flowchart TD
   R["Researcher"]
   SD["ScienceDiscovery — the workbench<br/>sessions · files · workspace<br/>tools · sandbox · artifacts · provenance"]
-  ENG["Engine — decides<br/>one per task"]
-  JS["JiuwenSwarm<br/>default"]
-  NL["Native loop<br/>no JiuwenSwarm"]
+
+  subgraph DEC["Decider — engine (one per task)"]
+    JS["JiuwenSwarm<br/>default"]
+    NL["Native loop<br/>no JiuwenSwarm"]
+  end
+
+  subgraph EXE["Executor — runner (one per run)"]
+    subgraph LOCAL["Local Runner — your machine"]
+      LC["Run on CPU"]
+      LN["Run on NPU<br/>if Ascend present"]
+    end
+    subgraph REMOTE["Remote Runner — another host"]
+      RC["Run on CPU"]
+      RN["Run on NPU<br/>if Ascend present"]
+    end
+  end
+
   GW["ScienceDiscovery<br/>model gateway"]
   MP["Model provider<br/>your key"]
-  RUN["Runner — executes tools<br/>one per run"]
-  LR["Local Runner<br/>your machine"]
-  RR["Remote Runner<br/>another host"]
-  NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
 
   R -->|"starts a task"| SD
-  SD -->|"decides with"| ENG
-  ENG --> JS
-  ENG --> NL
+  SD -->|"decides with"| DEC
   JS -->|"model calls"| GW
   NL -->|"model calls"| GW
   GW -->|"requests"| MP
-
-  SD -->|"executes on"| RUN
-  RUN --> LR
-  RUN --> RR
-  RUN -.->|"optional, on the host"| NPU
+  SD -->|"executes on"| EXE
 ```
 
-**Engine = who decides. Runner = where code runs.** The engine runs every task, and its model calls
-go through the gateway to the provider. The Runner executes the tools, locally or on another host.
-The Ascend NPU is an optional device on that host, used only for `run_npu_job` workloads. If the
-host has no Ascend card, the dashed branch is absent and normal sandbox execution is unchanged.
+**Decider = the engine. Executor = the runner.** The engine runs every task, and its model calls go
+through the gateway to the provider. The runner always offers a CPU path; if its host has an Ascend
+card and the broker is enabled, the same runner also offers the NPU path. With no Ascend card, only
+the CPU box applies.
 
 **Three independent layers:**
 
