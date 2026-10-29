@@ -54,12 +54,21 @@ flowchart TD
     RUN["Runner — executes tools<br/>one per run"]
     LR["Local Runner<br/>your machine"]
     RR["Remote Runner<br/>another host"]
-    NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
+    LD{"CPU or NPU?"}
+    RD{"CPU or NPU?"}
+    LCPU["CPU"]
+    LNPU["NPU<br/>if Ascend"]
+    RCPU["CPU"]
+    RNPU["NPU<br/>if Ascend"]
 
     RUN --> LR
     RUN --> RR
-    LR -.->|"if Ascend present"| NPU
-    RR -.->|"if Ascend present"| NPU
+    LR --> LD
+    LD -->|"CPU"| LCPU
+    LD -.->|"NPU"| LNPU
+    RR --> RD
+    RD -->|"CPU"| RCPU
+    RD -.->|"NPU"| RNPU
   end
 
   R -->|"starts a task"| SD
@@ -68,8 +77,11 @@ flowchart TD
 ```
 
 **Engine = who decides. Runner = where code runs.** The engine runs every task, and its model calls
-go through the gateway to the provider. The Runner executes the tools, locally or on another host.
-The NPU is an optional device on the Runner host, used only for `run_npu_job` workloads.
+go through the gateway to the provider. Each Runner chooses CPU or NPU independently; the NPU option
+exists only if its host has Ascend, and local and remote never share one.
+
+GPU is detected and shown as host information (name and CUDA version), but it is not an execution
+option: there is no GPU broker or device-passthrough path. The only accelerator branch is Ascend NPU.
 
 **Three independent layers:**
 
@@ -101,10 +113,36 @@ ScienceDiscovery starts it as a separate process; the built-in `native` loop can
 gateway; JiuwenSwarm reaches the model only through ScienceDiscovery. The internal seam is the
 **run controller** (the adapter and the control plane).
 
+### Execution
+
+**Remote Runner hosts.** A remote Runner is not an alternative to the engine; it replaces the local
+Runner for tool execution. JiuwenSwarm or the native loop still plans the work and calls the tools;
+only the place where code runs changes. An admin registers a machine in System settings as an SSH
+tunnel or a direct endpoint. A Project can set it as the default; a Session inherits that or picks
+another machine from the global catalog. When the agent runs code, the request carries the selected
+`runner_id` and `environment_id`, and the API sends it to that machine's Runner, which executes it in
+its own sandbox with the selected managed environment. Files do not sync implicitly:
+`workspace_transfer` copies them between workspaces, and only files in the local owned workspace can
+be declared Artifacts, so remote results must be copied back first. If the machine is unavailable,
+the run does not fall back to local execution.
+
+**Ascend NPU.** Off by default. When `SCIENCE_AGENT_NPU_BROKER=1`, the Agent gets a `run_npu_job`
+tool. The Agent calls that tool; ScienceDiscovery's Runner NPU broker then runs an allowlisted
+workload on the host's Ascend NPU. It is compute for code and experiments, not a model provider.
+This path is separate from the model gateway: model calls never reach the NPU broker, and an
+Ascend-backed inference server would sit behind the model provider endpoint. The default allowlist
+has an NPU smoke test and the Protenix antibody pipeline; admins can add other fixed scientific
+workloads. It is for running a domain model or pipeline as part of an experiment, not for chat-model
+inference.
+
+With no Ascend host, leave the broker off: `run_npu_job` is absent from the tool list, ordinary
+Python, R and shell work continues in the sandbox on CPU, and only NPU-specific workloads are
+unavailable. Model calls are unaffected.
+
 ### Optional extras
 
-They attach to ScienceDiscovery like this. Every dashed edge is optional, and none changes the engine
-mode.
+Only two optional extras remain: research data and ScienceMemory storage. Neither changes the engine
+or execution choice.
 
 ```mermaid
 flowchart TD
@@ -114,19 +152,12 @@ flowchart TD
     L["Built-in literature and data sources<br/>PubMed · arXiv · Europe PMC · bioRxiv · medRxiv<br/>UniProt · PDB · Ensembl · Reactome · ClinVar · ChEMBL · GEO"]
   end
 
-  subgraph EXEC["Execution"]
-    R["Remote Runner hosts<br/>SSH · direct endpoint"]
-    NPU["Ascend NPU hardware<br/>via Runner's NPU broker<br/>Protenix · MindSpore jobs"]
-  end
-
   subgraph MEM["Memory storage"]
     NEO["Neo4j 5.x<br/>optional backend"]
     EXT["External memory-graph service<br/>optional alternative"]
   end
 
   SD -.->|"search papers, query databases"| L
-  SD -.->|"run code on another machine"| R
-  SD -.->|"run heavy scientific jobs"| NPU
   SD -.->|"store large or shared graphs"| NEO
   SD -.->|"use an external graph service"| EXT
 ```
@@ -152,37 +183,11 @@ flowchart LR
   SM -.->|"instead of the sidecar"| EXT
 ```
 
-**Ascend NPU.** Off by default. When `SCIENCE_AGENT_NPU_BROKER=1`, the Agent gets a `run_npu_job`
-tool. The Agent calls that tool; ScienceDiscovery's Runner NPU broker then runs an allowlisted
-workload on the host's Ascend NPU. It is compute for code and experiments, not a model provider.
-This path is separate from the model gateway: model calls never reach the NPU broker, and an
-Ascend-backed inference server would sit behind the model provider endpoint. The default allowlist
-has an NPU smoke test and the Protenix antibody pipeline; admins can add other fixed scientific
-workloads. It is for running a domain model or pipeline as part of an experiment, not for chat-model
-inference.
-
-With no Ascend host, leave the broker off: `run_npu_job` is absent from the tool list, ordinary
-Python, R and shell work continues in the sandbox on CPU, and only NPU-specific workloads are
-unavailable. Model calls are unaffected.
-
-**Remote Runner hosts.** A remote Runner is not an alternative to the engine; it replaces the local
-Runner for tool execution. JiuwenSwarm or the native loop still plans the work and calls the tools;
-only the place where code runs changes. An admin registers a machine in System settings as an SSH
-tunnel or a direct endpoint. A Project can set it as the default; a Session inherits that or picks
-another machine from the global catalog. When the agent runs code, the request carries the selected `runner_id` and
-`environment_id`, and the API sends it to that machine's Runner, which executes it in its own sandbox
-with the selected managed environment. Files do not sync implicitly: `workspace_transfer` copies
-them between workspaces, and only files in the local owned workspace can be declared Artifacts, so
-remote results must be copied back first. If the machine is unavailable, the run does not fall back
-to local execution.
-
 | Optional component | Use case |
 |---|---|
 | Built-in literature and data sources | Search papers (PubMed, arXiv, Europe PMC, bioRxiv, medRxiv) and query biological databases (UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL, GEO) for evidence |
-| Remote Runner hosts | Run code and move files on another machine over SSH or a direct endpoint |
 | Neo4j 5.x | Store larger or shared ScienceMemory graphs; the default is local files |
 | External memory-graph service | Use a separately managed memory graph instead of the bundled sidecar |
-| Ascend NPU | Run Protenix antibody prediction, MindSpore experiments or an NPU smoke test through the Runner NPU broker |
 
 ## What it is
 
