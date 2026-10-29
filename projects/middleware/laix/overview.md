@@ -159,10 +159,16 @@ open-source release candidate.
 Out of scope: models, serving engine, agent framework, new demos. Dependencies: openJiuwen,
 vLLM-Omni, Huawei Cloud, an accessibility partner.
 
-## Slides without text
+## Decks
 
-Slides 1, 2, 5, 7, 8 and 9 in the deck contain diagrams and images only. They are not represented
-above. If any of them carries a decision, it needs to be written down here.
+Two decks sit in this folder.
+
+| File | What it is |
+|---|---|
+| [`laix-brief-overview-v1.0.pptx`](laix-brief-overview-v1.0.pptx) | The original LAIX proposal: the problem, the layer, the product, the six-month proof, technical approach, targets, demos and the 2027 plan. Slides 1, 2, 5, 7, 8 and 9 are diagrams and images only, so those points are not in the text above. |
+| [`laix-system-1-decision-v1.1.pptx`](laix-system-1-decision-v1.1.pptx) | A later deck, made after v1.0, with suggestions for our development work, LAIX included. All eight slides are images; there is no text layer to search or quote. |
+
+If an image-only slide carries a decision, write it down in this file.
 
 ## See also
 
