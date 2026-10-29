@@ -32,45 +32,35 @@ researcher's sessions, files and workspace stay in the workbench.
 ```mermaid
 flowchart TD
   R["Researcher"]
-  SD["ScienceDiscovery<br/>the workbench"]
-
-  subgraph DEC["Decider — engine (one per task)"]
-    direction LR
-    JS["JiuwenSwarm<br/>default"]
-    NL["Native loop<br/>no JiuwenSwarm"]
-  end
-
-  subgraph EXE["Executor — runner (one per run)"]
-    direction LR
-    LC["Local · CPU"]
-    LN["Local · NPU<br/>if Ascend"]
-    RC["Remote · CPU"]
-    RN["Remote · NPU<br/>if Ascend"]
-  end
-
+  SD["ScienceDiscovery — the workbench<br/>sessions · files · workspace<br/>tools · sandbox · artifacts · provenance"]
+  ENG["Engine — decides<br/>one per task"]
+  JS["JiuwenSwarm<br/>default"]
+  NL["Native loop<br/>no JiuwenSwarm"]
   GW["ScienceDiscovery<br/>model gateway"]
   MP["Model provider<br/>your key"]
+  RUN["Runner — executes tools<br/>one per run"]
+  LR["Local Runner<br/>your machine"]
+  RR["Remote Runner<br/>another host"]
+  NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
 
   R -->|"starts a task"| SD
-  SD -->|"decides with"| DEC
+  SD -->|"decides with"| ENG
+  ENG --> JS
+  ENG --> NL
   JS -->|"model calls"| GW
   NL -->|"model calls"| GW
   GW -->|"requests"| MP
-  SD -->|"executes on"| EXE
 
-  classDef core fill:#f8fafc,stroke:#334155,stroke-width:2px,color:#0f172a;
-  classDef dec fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e;
-  classDef exe fill:#dcfce7,stroke:#15803d,color:#14532d;
-  classDef ext fill:#f1f5f9,stroke:#64748b,color:#334155;
-  class SD core;
-  class JS,NL dec;
-  class LC,LN,RC,RN exe;
-  class GW,MP ext;
+  SD -->|"executes on"| RUN
+  RUN --> LR
+  RUN --> RR
+  RUN -.->|"optional, on the host"| NPU
 ```
 
-**Decider = the engine. Executor = the runner.** The engine runs every task, and its model calls go
-through the gateway to the provider. The executor offers four choices: local or remote, each on CPU
-or NPU. The NPU option exists only when that host has an Ascend card and the broker is enabled.
+**Engine = who decides. Runner = where code runs.** The engine runs every task, and its model calls
+go through the gateway to the provider. The Runner executes the tools, locally or on another host.
+The Ascend NPU is an optional device on that host, used only for `run_npu_job` workloads. If the
+host has no Ascend card, the dashed branch is absent and normal sandbox execution is unchanged.
 
 **Three independent layers:**
 
