@@ -97,7 +97,7 @@ flowchart TD
   end
 
   subgraph NET["Network"]
-    P["Network proxy"]
+    P["Network proxy<br/>HTTP · HTTPS · SOCKS5"]
   end
 
   SD -.->|"search papers, query databases"| L
@@ -106,7 +106,7 @@ flowchart TD
   SD -.->|"run heavy scientific jobs"| NPU
   SD -.->|"store large or shared graphs"| NEO
   SD -.->|"use an external graph service"| EXT
-  SD -.->|"route outbound traffic"| P
+  SD -.->|"reach external services through a proxy"| P
 ```
 
 **ScienceMemory storage.** ScienceMemory is a ScienceDiscovery feature, not an external service. By
@@ -150,7 +150,7 @@ unavailable. Model calls are unaffected.
 | Remote Runner hosts | Run code and move files on another machine over SSH or a direct endpoint |
 | Neo4j 5.x | Store larger or shared ScienceMemory graphs; the default is local files |
 | External memory-graph service | Use a separately managed memory graph instead of the bundled sidecar |
-| Network proxy | Route outbound traffic through a configured proxy |
+| Network proxy | Reach model providers, web tools and MCP/paper sources through an HTTP, HTTPS or SOCKS5 proxy when direct egress is blocked or must be audited; the sandbox has its own separate network policy |
 | Ascend NPU | Run Protenix antibody prediction, MindSpore experiments or an NPU smoke test through the Runner NPU broker |
 
 ## What it is
