@@ -82,7 +82,7 @@ flowchart TD
 
   subgraph EXEC["Execution"]
     R["Remote Runner hosts<br/>SSH · direct endpoint"]
-    NPU["Ascend NPU hardware<br/>via Runner's NPU broker"]
+    NPU["Ascend NPU hardware<br/>via Runner's NPU broker<br/>Protenix · MindSpore jobs"]
   end
 
   subgraph MEM["Memory storage"]
@@ -94,13 +94,13 @@ flowchart TD
     P["Network proxy"]
   end
 
-  SD -.-> L
-  SD -.-> M
-  SD -.-> R
-  SD -.-> NPU
-  SD -.-> NEO
-  SD -.-> EXT
-  SD -.-> P
+  SD -.->|"search papers, query databases"| L
+  SD -.->|"call external tools"| M
+  SD -.->|"run code on another machine"| R
+  SD -.->|"run heavy scientific jobs"| NPU
+  SD -.->|"store large or shared graphs"| NEO
+  SD -.->|"use an external graph service"| EXT
+  SD -.->|"route outbound traffic"| P
 ```
 
 **ScienceMemory storage.** ScienceMemory is a ScienceDiscovery feature, not an external service. By
@@ -133,15 +133,15 @@ has an NPU smoke test and the Protenix antibody pipeline; admins can add other f
 workloads. It is for running a domain model or pipeline as part of an experiment, not for chat-model
 inference.
 
-| Optional component | Used for |
+| Optional component | Use case |
 |---|---|
-| Built-in literature and data sources | PubMed, arXiv, Europe PMC, bioRxiv and medRxiv; UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL and GEO |
-| Custom MCP servers | Extra tools over STDIO, Streamable HTTP or SSE, with optional OAuth |
-| Remote Runner hosts | SSH or direct-endpoint machines for execution and workspace transfer |
-| Neo4j 5.x | Optional ScienceMemory backend for larger or shared graphs; the default is local files |
-| External memory-graph service | An independently managed replacement for the bundled sidecar |
-| Network proxy | Outbound access through a configured proxy |
-| Ascend NPU | Compute for allowlisted `run_npu_job` workloads through the Runner NPU broker |
+| Built-in literature and data sources | Search papers (PubMed, arXiv, Europe PMC, bioRxiv, medRxiv) and query biological databases (UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL, GEO) for evidence |
+| Custom MCP servers | Give the agent extra tools or data from another service over STDIO, Streamable HTTP or SSE |
+| Remote Runner hosts | Run code and move files on another machine over SSH or a direct endpoint |
+| Neo4j 5.x | Store larger or shared ScienceMemory graphs; the default is local files |
+| External memory-graph service | Use a separately managed memory graph instead of the bundled sidecar |
+| Network proxy | Route outbound traffic through a configured proxy |
+| Ascend NPU | Run Protenix antibody prediction, MindSpore experiments or an NPU smoke test through the Runner NPU broker |
 
 ## What it is
 
