@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Loop - the search</title>
+<style>
+  :root { --bg:#050809; --ink:#e9f2ee; --muted:#7f938b; --soft:#45554f; --teal:#5eead4; --amber:#ffb454; --lime:#a3e635; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; }
+  body { background:var(--bg); color:var(--ink); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; overflow:hidden; }
+  button { font:inherit; cursor:pointer; }
+  .stage { position:fixed; inset:0; display:flex; flex-direction:column; padding:16px clamp(14px,3vw,34px) 18px; gap:10px; }
+  body::before { content:""; position:fixed; inset:-20%; pointer-events:none;
+    background:radial-gradient(42% 36% at 72% 18%, rgba(255,180,84,.09), transparent 70%), radial-gradient(40% 36% at 24% 82%, rgba(94,234,212,.07), transparent 72%);
+    filter:blur(55px); }
+
+  header { position:relative; z-index:3; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; }
+  .brand { display:flex; align-items:center; gap:10px; }
+  .mark { width:28px; height:28px; border-radius:50%; border:1px solid rgba(94,234,212,.5); position:relative; flex:none; }
+  .mark::before { content:""; position:absolute; inset:7px; border-radius:50%; border:1px solid rgba(94,234,212,.3); }
+  .mark::after { content:""; position:absolute; inset:11px; border-radius:50%; background:var(--teal); box-shadow:0 0 14px rgba(94,234,212,.8); }
+  h1 { margin:0; font-size:clamp(17px,2.1vw,25px); letter-spacing:.2em; font-weight:800; }
+  h1 small { display:block; font-size:8px; letter-spacing:.32em; color:var(--soft); font-weight:600; margin-top:3px; }
+  .meta { text-align:right; font-family:ui-monospace,monospace; font-size:9px; color:var(--soft); line-height:1.7; letter-spacing:.08em; }
+  .meta b { color:var(--teal); font-weight:600; }
+
+  .brief { position:relative; z-index:3; display:flex; justify-content:space-between; align-items:baseline; gap:14px; }
+  .brief p { margin:0; font-size:clamp(10px,1.05vw,12px); color:var(--muted); line-height:1.5; max-width:620px; }
+  .brief p b { color:#d8e6e1; font-weight:600; }
+  .round { font-family:ui-monospace,monospace; font-size:9px; letter-spacing:.14em; color:var(--soft); white-space:nowrap; }
+  .round b { color:var(--amber); }
+
+  .plot { position:relative; z-index:1; flex:1; min-height:260px; border:1px solid rgba(255,255,255,.08); border-radius:10px; overflow:hidden;
+    background:#060b0c; cursor:crosshair; touch-action:none; box-shadow:inset 0 0 90px rgba(0,0,0,.6), 0 30px 90px rgba(0,0,0,.5); }
+  .plot::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(72% 62% at 50% 48%, transparent 50%, rgba(0,0,0,.55) 100%); }
+  .field { position:absolute; inset:0; width:100%; height:100%; }
+  .grid { position:absolute; inset:0; opacity:.55;
+    background-image:repeating-linear-gradient(0deg, rgba(94,234,212,.055) 0 1px, transparent 1px 11.111%),
+                     repeating-linear-gradient(90deg, rgba(94,234,212,.055) 0 1px, transparent 1px 10%); }
+  .glow { position:absolute; border-radius:50%; pointer-events:none; }
+  .glow.peak { left:78%; top:22%; width:54%; aspect-ratio:1; transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(255,200,130,.5) 0%, rgba(255,150,60,.22) 30%, rgba(255,140,50,.07) 50%, transparent 68%); animation:breathe 5s ease-in-out infinite; }
+  .glow.second { left:52%; top:63%; width:40%; aspect-ratio:1; transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(94,234,212,.32) 0%, rgba(94,234,212,.1) 38%, transparent 66%); }
+  .trail { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .trail polyline { fill:none; stroke:rgba(255,180,84,.5); stroke-width:.45; stroke-dasharray:1.4 1.4; }
+  .trail circle { fill:none; stroke:rgba(255,180,84,.6); stroke-width:.4; }
+
+  .dot { position:absolute; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%; background:#4f7d86;
+    box-shadow:0 0 4px rgba(94,234,212,.16);
+    transition:left .9s cubic-bezier(.2,.7,.3,1), top .9s cubic-bezier(.2,.7,.3,1), opacity .4s, width .3s, height .3s; }
+  .dot.hot { background:var(--amber); box-shadow:0 0 12px rgba(255,180,84,.9); }
+  .dot.warm { background:#8fd6b8; box-shadow:0 0 8px rgba(94,234,212,.55); }
+  .dot.new { box-shadow:0 0 8px rgba(255,255,255,.35); }
+
+  .ring { position:absolute; left:35%; top:70%; width:150px; height:150px; margin:-75px 0 0 -75px; border-radius:50%;
+    border:1px solid rgba(255,180,84,.75); box-shadow:0 0 0 1px rgba(0,0,0,.35), 0 0 40px rgba(255,180,84,.12) inset;
+    pointer-events:none; z-index:5; transition:box-shadow .25s; }
+  .ring::before { content:""; position:absolute; inset:-9px; border-radius:50%; border:1px dashed rgba(255,180,84,.28); }
+  .ring::after { content:""; position:absolute; left:50%; top:50%; width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%; background:var(--amber); box-shadow:0 0 12px var(--amber); }
+  .ring span { position:absolute; left:50%; bottom:-24px; transform:translateX(-50%); white-space:nowrap; font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.2em; color:var(--amber); }
+  .ring.pulse { animation:ring 1s ease-out 2; }
+
+  .axis { position:absolute; z-index:4; font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.18em; color:rgba(127,147,139,.7); pointer-events:none; }
+  .axis.x { left:0; right:0; bottom:10px; text-align:center; }
+  .axis.y { left:8px; top:50%; transform:rotate(-90deg) translateX(-50%); transform-origin:left top; }
+  .axis .ends { position:absolute; left:16px; right:16px; bottom:26px; display:flex; justify-content:space-between; color:var(--soft); }
+  .plot .read { position:absolute; z-index:4; pointer-events:none; font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.16em; color:var(--soft); }
+  .plot .read.tl { left:12px; top:10px; }
+  .plot .read.tl b { color:var(--teal); font-weight:600; }
+  .plot .read.br { right:12px; bottom:10px; text-align:right; line-height:1.8; }
+  .plot .read.br b { color:var(--amber); }
+
+  .bar { position:relative; z-index:3; display:grid; grid-template-columns:auto 1fr auto; gap:18px; align-items:center; padding:9px 13px;
+    border:1px solid rgba(255,255,255,.09); border-radius:10px; background:rgba(255,255,255,.03); backdrop-filter:blur(12px); }
+  .best { display:flex; flex-direction:column; gap:1px; }
+  .best span { font-size:7px; letter-spacing:.22em; text-transform:uppercase; color:var(--soft); }
+  .best b { font-family:ui-monospace,monospace; font-size:clamp(22px,3.4vw,34px); letter-spacing:-.02em; color:var(--amber); font-weight:600; line-height:1; }
+  .best b small { font-size:9px; color:var(--soft); letter-spacing:.1em; margin-left:6px; }
+  .tip { font-size:9px; color:var(--muted); line-height:1.5; }
+  .tip b { color:#d8e6e1; font-weight:600; }
+  .run { border:0; border-radius:7px; background:var(--amber); color:#1c1204; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; padding:12px 18px; transition:.2s; white-space:nowrap; }
+  .run:hover:not(:disabled) { background:#ffcb85; }
+  .run:disabled { opacity:.5; cursor:default; }
+
+  .over { position:fixed; inset:0; z-index:40; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(3,6,7,.84); backdrop-filter:blur(9px); }
+  .over.open { display:flex; }
+  .over .inner { max-width:560px; text-align:left; }
+  .over .kicker { font-family:ui-monospace,monospace; font-size:9px; letter-spacing:.24em; text-transform:uppercase; color:var(--teal); }
+  .over h2 { margin:10px 0 0; font-size:clamp(34px,6vw,64px); letter-spacing:-.05em; line-height:.95; }
+  .over h2 span { color:var(--amber); }
+  .over p { color:var(--muted); font-size:12px; line-height:1.65; margin:14px 0 0; max-width:440px; }
+  .over .stats { display:flex; gap:22px; margin-top:20px; }
+  .over .stats div { border-top:1px solid #22302b; padding-top:7px; min-width:92px; }
+  .over .stats b { display:block; font-family:ui-monospace,monospace; font-size:17px; }
+  .over .stats span { display:block; font-size:7px; letter-spacing:.18em; text-transform:uppercase; color:var(--soft); margin-top:3px; }
+  .over button { margin-top:24px; border:1px solid var(--teal); background:transparent; color:var(--teal); border-radius:4px; padding:10px 16px; font-size:9px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; }
+  .over button:hover { background:rgba(94,234,212,.1); }
+
+  @keyframes ring { 0% { box-shadow:0 0 0 0 rgba(255,180,84,.3); } 100% { box-shadow:0 0 0 26px rgba(255,180,84,0); } }
+  @keyframes breathe { 0%,100% { opacity:.8; } 50% { opacity:1; } }
+
+  @media (max-width:760px) {
+    .stage { padding:10px 10px 14px; gap:8px; }
+    .brief p { font-size:9px; }
+    .bar { grid-template-columns:auto 1fr; gap:8px 12px; padding:8px 10px; }
+    .run { grid-column:1 / -1; width:100%; padding:10px; }
+    .tip { font-size:8px; }
+    .best b { font-size:24px; }
+    .ring { width:110px; height:110px; margin:-55px 0 0 -55px; }
+    .axis.y, .plot .read.br { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <header>
+    <div class="brand">
+      <div class="mark"></div>
+      <div>
+        <h1>LAB LOOP <small>AUTONOMOUS EXPERIMENTATION</small></h1>
+      </div>
+    </div>
+    <div class="meta">LOOP <b>04</b> &middot; REACTION A-17<br>OBJECTIVE <b>MAXIMISE YIELD</b></div>
+  </header>
+
+  <div class="brief">
+    <p>Every dot is an experiment. The bright region is where the yield lives. <b>Drag the ring</b> to choose where the next batch should look, then let the loop run.</p>
+    <div class="round">BATCH <b id="batchNo">01</b> / 04</div>
+  </div>
+
+  <div class="plot" id="plot">
+    <div class="grid"></div>
+    <div class="glow peak"></div>
+    <div class="glow second"></div>
+
+    <svg class="trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="none" stroke="rgba(255,190,110,.16)" stroke-width=".3">
+        <ellipse cx="78" cy="22" rx="6" ry="3.4"/>
+        <ellipse cx="78" cy="22" rx="12" ry="6.8"/>
+        <ellipse cx="78" cy="22" rx="19" ry="10.6"/>
+        <ellipse cx="78" cy="22" rx="27" ry="15"/>
+      </g>
+      <g fill="none" stroke="rgba(94,234,212,.12)" stroke-width=".25">
+        <ellipse cx="52" cy="63" rx="7" ry="4"/>
+        <ellipse cx="52" cy="63" rx="14" ry="8"/>
+      </g>
+      <polyline id="trailLine" points=""></polyline>
+      <g id="trailDots"></g>
+    </svg>
+
+    <div id="dots"></div>
+    <div class="ring" id="ring"><span>EXPLORE HERE</span></div>
+
+    <div class="read tl">SEARCH SPACE <b>2 PARAMETERS</b></div>
+    <div class="read br">TEMP &times; SOLVENT<br>YIELD SURFACE <b>UNKNOWN</b></div>
+    <div class="axis x">SOLVENT RATIO <span class="ends"><span>0.0</span><span>1.0</span></span></div>
+    <div class="axis y">TEMPERATURE</div>
+  </div>
+
+  <div class="bar">
+    <div class="best"><span>Best yield</span><b id="best">41.2<small>%</small></b></div>
+    <div class="tip" id="tip"><b>Drag the ring</b> toward the glow. The loop will sample around it. Four batches is all you get.</div>
+    <button class="run" id="run">Run batch 01</button>
+  </div>
+</div>
+
+<div class="over" id="over">
+  <div class="inner">
+    <div class="kicker" id="overKicker">LOOP 04 &middot; CONVERGED</div>
+    <h2 id="overTitle">You found it in <span>four batches.</span></h2>
+    <p id="overText">The cloud walked from 41% to 94% while you steered. What used to take six weeks of synthesis now takes one afternoon.</p>
+    <div class="stats">
+      <div><b id="stYield">94.2%</b><span>best yield</span></div>
+      <div><b id="stBatches">4</b><span>batches</span></div>
+      <div><b id="stExperiments">128</b><span>experiments</span></div>
+    </div>
+    <button id="again">Run the loop again</button>
+  </div>
+</div>
+
+<script>
+  const $ = s => document.querySelector(s);
+  const plot = $("#plot");
+  const dotsEl = $("#dots");
+  const ring = $("#ring");
+  const state = { rx: 35, ry: 70, batch: 0, best: 0, bestPoint: { x: .5, y: .7 }, running: false, centers: [] };
+  const START = { x: .27, y: .74 };
+
+  function gauss() {
+    let u = 0, v = 0;
+    while (!u) u = Math.random();
+    while (!v) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  function yieldAt(x, y) {
+    const g1 = Math.exp(-(((x - .78) ** 2 + (y - .22) ** 2) / .021));
+    const g2 = .45 * Math.exp(-(((x - .52) ** 2 + (y - .63) ** 2) / .014));
+    return Math.max(18, Math.min(97, 31 + 61 * g1 + 7 * g2 + gauss() * 1.6));
+  }
+
+  function colorFor(y) {
+    return y > 82 ? "hot" : y > 55 ? "warm" : "";
+  }
+
+  function addDot(x, y, val, isNew) {
+    const d = document.createElement("div");
+    d.className = "dot " + colorFor(val) + (isNew ? " new" : "");
+    d.style.left = (x * 100) + "%";
+    d.style.top = (y * 100) + "%";
+    const s = 4 + Math.max(0, (val - 35) / 90) * 6;
+    d.style.width = s + "px"; d.style.height = s + "px";
+    d.title = val.toFixed(1) + "% yield";
+    dotsEl.appendChild(d);
+    return d;
+  }
+
+  function updateBest(val, x, y) {
+    if (val > state.best) {
+      state.best = val;
+      state.bestPoint = { x, y };
+      const el = $("#best");
+      el.innerHTML = val.toFixed(1) + "<small>%</small>";
+      el.animate([{ opacity:.4, transform:"translateY(4px)" }, { opacity:1, transform:"none" }], { duration:420, easing:"ease-out" });
+    }
+  }
+
+  function drawTrail() {
+    const pts = state.centers.map(c => (c.x * 100).toFixed(2) + "," + (c.y * 100).toFixed(2)).join(" ");
+    $("#trailLine").setAttribute("points", pts);
+    const g = $("#trailDots");
+    g.innerHTML = "";
+    state.centers.forEach((c, i) => {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      el.setAttribute("cx", c.x * 100); el.setAttribute("cy", c.y * 100); el.setAttribute("r", ".85");
+      g.appendChild(el);
+    });
+  }
+
+  function setRing(x, y) {
+    state.rx = Math.max(6, Math.min(94, x));
+    state.ry = Math.max(8, Math.min(92, y));
+    ring.style.left = state.rx + "%";
+    ring.style.top = state.ry + "%";
+  }
+
+  let dragging = false;
+  function pointToPct(e) {
+    const r = plot.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width * 100, y: (e.clientY - r.top) / r.height * 100 };
+  }
+  plot.addEventListener("pointerdown", e => {
+    if (e.target.closest(".run")) return;
+    dragging = true;
+    const p = pointToPct(e);
+    setRing(p.x, p.y);
+    plot.setPointerCapture?.(e.pointerId);
+    e.preventDefault();
+  });
+  plot.addEventListener("pointermove", e => {
+    if (!dragging) return;
+    const p = pointToPct(e);
+    setRing(p.x, p.y);
+    e.preventDefault();
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => plot.addEventListener(ev, () => { dragging = false; }));
+
+  function seed() {
+    for (let i = 0; i < 130; i++) {
+      const near = Math.random() < .8;
+      let x = near ? .27 + gauss() * .14 : .5 + gauss() * .3;
+      let y = near ? .74 + gauss() * .14 : .5 + gauss() * .3;
+      x = Math.max(.03, Math.min(.97, x)); y = Math.max(.04, Math.min(.96, y));
+      const val = Math.min(44, Math.max(20, yieldAt(x, y) - 12));
+      addDot(x, y, val, false);
+    }
+    state.best = 41.2;
+    state.bestPoint = { x: START.x, y: START.y };
+  }
+
+  function runBatch() {
+    if (state.running || state.batch >= 4) return;
+    state.running = true;
+    state.batch++;
+    const runBtn = $("#run");
+    runBtn.disabled = true;
+    runBtn.textContent = "Sampling...";
+    ring.classList.remove("pulse");
+    void ring.offsetWidth;
+    ring.classList.add("pulse");
+
+    const cx = state.rx / 100, cy = state.ry / 100;
+    const bias = .1;
+    const bx = cx * (1 - bias) + state.bestPoint.x * bias;
+    const by = cy * (1 - bias) + state.bestPoint.y * bias;
+    const created = [];
+    for (let i = 0; i < 12; i++) {
+      let x = bx + gauss() * .075;
+      let y = by + gauss() * .075;
+      x = Math.max(.03, Math.min(.97, x)); y = Math.max(.04, Math.min(.96, y));
+      const val = yieldAt(x, y);
+      const d = addDot(cx, cy, val, true);
+      d.style.left = (cx * 100) + "%";
+      d.style.top = (cy * 100) + "%";
+      d.style.opacity = "0";
+      created.push({ d, x, y, val });
+    }
+    setTimeout(() => {
+      created.forEach((c, i) => {
+        setTimeout(() => {
+          c.d.style.left = (c.x * 100) + "%";
+          c.d.style.top = (c.y * 100) + "%";
+          c.d.style.opacity = "1";
+          updateBest(c.val, c.x, c.y);
+        }, i * 45);
+      });
+    }, 30);
+
+    state.centers.push({ x: cx, y: cy });
+    drawTrail();
+    $("#batchNo").textContent = String(state.batch + (state.batch < 4 ? 1 : 0)).padStart(2, "0");
+    $("#tip").innerHTML = state.batch >= 4
+      ? "That was the last batch. <b>The loop is done.</b>"
+      : "Batch running. <b>Move the ring</b> before the next one.";
+
+    setTimeout(() => {
+      state.running = false;
+      if (state.batch >= 4) {
+        finish();
+        return;
+      }
+      runBtn.disabled = false;
+      runBtn.textContent = "Run batch 0" + (state.batch + 1);
+      $("#tip").innerHTML = "Batch done. <b>Move the ring</b> closer to the glow, then run again.";
+    }, 1250);
+  }
+
+  function finish() {
+    const y = state.best;
+    const found = y > 82;
+    $("#overTitle").innerHTML = found
+      ? "You found it in <span>four batches.</span>"
+      : "The loop stopped <span>short.</span>";
+    $("#overText").textContent = found
+      ? "The best experiment hit " + y.toFixed(1) + "% yield. The cloud walked there because you kept moving the ring toward the light."
+      : "The best you found was " + y.toFixed(1) + "%. The bright region was elsewhere. In the real loop you would have spent a week of synthesis learning that.";
+    $("#stYield").textContent = y.toFixed(1) + "%";
+    $("#stBatches").textContent = "4";
+    $("#stExperiments").textContent = String(130 + state.batch * 12);
+    $("#overKicker").textContent = found ? "LOOP 04 \u00b7 CONVERGED" : "LOOP 04 \u00b7 STALLED";
+    $("#over").classList.add("open");
+  }
+
+  $("#run").addEventListener("click", runBatch);
+  $("#again").addEventListener("click", () => {
+    dotsEl.innerHTML = "";
+    state.batch = 0; state.best = 0; state.bestPoint = { x: .5, y: .7 }; state.centers = []; state.running = false;
+    $("#best").innerHTML = "41.2<small>%</small>";
+    $("#batchNo").textContent = "01";
+    $("#run").disabled = false;
+    $("#run").textContent = "Run batch 01";
+    $("#tip").innerHTML = "<b>Drag the ring</b> toward the glow. The loop will sample around it. Four batches is all you get.";
+    $("#over").classList.remove("open");
+    $("#trailLine").setAttribute("points", "");
+    $("#trailDots").innerHTML = "";
+    setRing(35, 70);
+    seed();
+  });
+
+  setRing(35, 70);
+  seed();
+  // start from a believable first best
+  updateBest(41.2, START.x, START.y);
+</script>
+</body>
+</html>

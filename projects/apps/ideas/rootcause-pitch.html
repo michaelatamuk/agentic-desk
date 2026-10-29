@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RootCause — Pitch</title>
+<style>
+  :root {
+    --bg: #05070d;
+    --panel: #0b1220;
+    --ink: #e5e7eb;
+    --muted: #94a3b8;
+    --soft: #64748b;
+    --line: #1e293b;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --green: #22c55e;
+    --blue: #38bdf8;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 700px at 18% -10%, rgba(56, 189, 248, .13), transparent 60%),
+      radial-gradient(1000px 700px at 100% 110%, rgba(239, 68, 68, .10), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  button, a { font: inherit; }
+
+  .stage {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* subtle grid */
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(148, 163, 184, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, .05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(circle at 50% 40%, black, transparent 78%);
+    pointer-events: none;
+  }
+
+  .pitch-top {
+    height: 62px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 26px;
+    position: relative;
+    z-index: 5;
+  }
+
+  .pitch-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: -.01em;
+  }
+
+  .brand-mark {
+    width: 27px; height: 27px; border-radius: 8px;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    display: grid; place-items: center;
+    font-size: 9px; font-weight: 800; color: #fff;
+  }
+
+  .progress {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .progress button {
+    width: 32px; height: 3px; border: 0; padding: 0;
+    background: #1e293b; border-radius: 999px; cursor: pointer;
+    transition: background .2s, width .2s;
+  }
+
+  .progress button.active { background: var(--blue); width: 48px; }
+  .progress button.done { background: #334155; }
+
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mini-btn {
+    border: 1px solid #1e293b;
+    background: rgba(15, 23, 42, .5);
+    color: var(--muted);
+    border-radius: 7px;
+    padding: 6px 9px;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .mini-btn:hover { color: var(--ink); border-color: #334155; }
+  .mini-btn.on { color: #fff; background: #1d4ed8; border-color: #2563eb; }
+
+  .skip {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 700;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 2px;
+  }
+  .skip:hover { color: #fff; border-color: #64748b; }
+
+  .scenes {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 34px 48px 74px;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .5s ease, transform .5s ease;
+    pointer-events: none;
+  }
+
+  .scene.active {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .scene-inner {
+    width: min(1080px, 100%);
+    position: relative;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--soft);
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, .12);
+  }
+
+  h1, h2 {
+    margin: 0;
+    letter-spacing: -.045em;
+    line-height: .95;
+    font-weight: 800;
+    text-wrap: balance;
+  }
+
+  h1 { font-size: clamp(44px, 7.4vw, 94px); }
+  h2 { font-size: clamp(34px, 5.4vw, 68px); }
+
+  .lede {
+    color: var(--muted);
+    font-size: clamp(15px, 1.35vw, 18px);
+    max-width: 640px;
+    margin: 18px 0 0;
+    line-height: 1.5;
+  }
+
+  .accent-red { color: var(--red); }
+  .accent-amber { color: var(--amber); }
+  .accent-green { color: var(--green); }
+  .accent-blue { color: var(--blue); }
+
+  /* Scene 1 */
+  .crisis-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 38px;
+    align-items: end;
+    margin-top: 34px;
+  }
+
+  .big-number {
+    font-size: clamp(46px, 6.2vw, 78px);
+    font-weight: 800;
+    letter-spacing: -.05em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .big-number small {
+    display: block;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    letter-spacing: .1em;
+    margin-top: 10px;
+  }
+
+  .line-viz {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 7px;
+    align-self: end;
+  }
+
+  .station {
+    border: 1px solid #1e293b;
+    background: rgba(15, 23, 42, .55);
+    border-radius: 9px;
+    padding: 10px 8px;
+    min-height: 76px;
+    position: relative;
+  }
+
+  .station .st-name { font-size: 9px; font-weight: 800; color: #cbd5e1; }
+  .station .st-state { font-size: 8px; color: #64748b; margin-top: 3px; }
+  .station .st-light { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; position: absolute; top: 9px; right: 8px; }
+  .station.bad { border-color: rgba(239, 68, 68, .7); background: rgba(239, 68, 68, .08); animation: alarm 1.8s ease-in-out infinite; }
+  .station.bad .st-light { background: var(--red); box-shadow: 0 0 0 4px rgba(239, 68, 68, .18); }
+  .station.bad .st-name { color: #fecaca; }
+
+  .scene-note {
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .scene-note .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red);
+    animation: blink 1.4s infinite;
+  }
+
+  /* Scene 2 */
+  .scan-layout {
+    display: grid;
+    grid-template-columns: 1.3fr .7fr;
+    gap: 32px;
+    align-items: center;
+    margin-top: 26px;
+  }
+
+  .scan-frame {
+    position: relative;
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #0b1220;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .35);
+  }
+
+  .scan-frame svg { width: 100%; display: block; }
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, .9), transparent);
+    box-shadow: 0 0 18px rgba(56, 189, 248, .6);
+    animation: scan 3s linear infinite;
+  }
+
+  .scan-tag {
+    position: absolute;
+    left: 12px; top: 12px;
+    font-family: ui-monospace, monospace;
+    font-size: 9px;
+    color: #7dd3fc;
+    background: rgba(8, 47, 73, .65);
+    border: 1px solid rgba(56, 189, 248, .25);
+    border-radius: 5px;
+    padding: 3px 6px;
+  }
+
+  .scan-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .stat-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 9px;
+  }
+
+  .stat-line b { font-size: 24px; font-weight: 800; letter-spacing: -.03em; }
+  .stat-line span { font-size: 10px; color: var(--muted); text-align: right; }
+
+  /* Scene 3 */
+  .evidence-layout {
+    display: grid;
+    grid-template-columns: .95fr 1.05fr;
+    gap: 34px;
+    align-items: center;
+    margin-top: 24px;
+  }
+
+  .evidence-stack { display: flex; flex-direction: column; gap: 9px; }
+
+  .evidence-card {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 11px;
+    align-items: center;
+    border: 1px solid #1e293b;
+    background: rgba(15, 23, 42, .55);
+    border-radius: 11px;
+    padding: 12px 13px;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .scene.active .evidence-card { animation: rise .55s ease forwards; }
+  .scene.active .evidence-card:nth-child(1) { animation-delay: .15s; }
+  .scene.active .evidence-card:nth-child(2) { animation-delay: .45s; }
+  .scene.active .evidence-card:nth-child(3) { animation-delay: .75s; }
+
+  .ev-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    display: grid; place-items: center;
+    background: rgba(245, 158, 11, .12);
+    color: var(--amber);
+    font-size: 10px; font-weight: 800;
+  }
+
+  .ev-title { font-size: 11px; font-weight: 700; color: #e2e8f0; }
+  .ev-sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+  .ev-value { font-size: 16px; font-weight: 800; letter-spacing: -.02em; text-align: right; }
+  .ev-value small { display: block; font-size: 9px; color: var(--muted); font-weight: 600; letter-spacing: 0; margin-top: 2px; }
+
+  .agent-quote {
+    border-left: 2px solid var(--amber);
+    padding-left: 14px;
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 440px;
+  }
+  .agent-quote b { color: #fff; }
+
+  /* Scene 4 */
+  .cause-layout {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 40px;
+    align-items: center;
+    margin-top: 22px;
+  }
+
+  .ring {
+    width: 210px; height: 210px;
+    border-radius: 50%;
+    background: conic-gradient(var(--amber) 0 86%, #1e293b 86% 100%);
+    display: grid;
+    place-items: center;
+    position: relative;
+    margin-left: auto;
+  }
+
+  .ring::after {
+    content: "";
+    position: absolute;
+    inset: 15px;
+    border-radius: 50%;
+    background: #070b14;
+  }
+
+  .ring-value { position: relative; z-index: 1; text-align: center; }
+  .ring-value b { display: block; font-size: 48px; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+  .ring-value span { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 800; margin-top: 5px; }
+
+  .cause-name {
+    font-size: clamp(34px, 4.7vw, 58px);
+    font-weight: 800;
+    letter-spacing: -.045em;
+    line-height: .98;
+    margin-top: 6px;
+  }
+
+  .cause-chips { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 18px; }
+  .cause-chip { border: 1px solid #1e293b; background: rgba(15,23,42,.55); border-radius: 999px; padding: 5px 9px; font-size: 9px; color: var(--muted); font-weight: 700; }
+  .cause-chip b { color: #e2e8f0; }
+
+  /* Scene 5 */
+  .outcome-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    align-items: end;
+    margin-top: 30px;
+  }
+
+  .outcome-numbers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; }
+  .outcome-num { border-top: 1px solid #1e293b; padding-top: 10px; }
+  .outcome-num b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -.04em; }
+  .outcome-num span { display: block; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-weight: 700; margin-top: 3px; }
+
+  .green-line { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; margin-top: 10px; }
+  .green-line .station { border-color: rgba(34, 197, 94, .25); background: rgba(34, 197, 94, .05); animation: none; }
+  .green-line .station .st-name { color: #bbf7d0; }
+  .green-line .station .st-light { background: var(--green); box-shadow: none; }
+
+  .cta-row { display: flex; align-items: center; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+
+  .cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 0; border-radius: 9px;
+    background: var(--green);
+    color: #04130a;
+    font-size: 12px; font-weight: 800;
+    padding: 11px 15px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .cta:hover { background: #16a34a; }
+
+  .cta.secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid #1e293b;
+  }
+  .cta.secondary:hover { color: #fff; border-color: #334155; }
+
+  .signature {
+    margin-top: 24px;
+    border-left: 2px solid #22c55e;
+    padding-left: 12px;
+    color: #bbf7d0;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .signature small { display: block; color: #64748b; font-size: 10px; font-weight: 500; margin-top: 3px; }
+
+  /* nav */
+  .pitch-nav {
+    height: 58px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 26px;
+    border-top: 1px solid rgba(30, 41, 59, .7);
+    background: rgba(5, 7, 13, .55);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 5;
+  }
+
+  .nav-btn {
+    border: 1px solid #1e293b;
+    background: rgba(15, 23, 42, .6);
+    color: #cbd5e1;
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .nav-btn:hover { border-color: #334155; color: #fff; }
+  .nav-btn[disabled] { opacity: .3; cursor: default; }
+
+  .nav-hint { margin-left: auto; color: #475569; font-size: 10px; }
+  .counter { color: #64748b; font-size: 10px; font-variant-numeric: tabular-nums; }
+
+  @keyframes alarm {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, .08); }
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+  @keyframes scan { 0% { top: 8%; } 50% { top: 92%; } 100% { top: 8%; } }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  @media (max-width: 900px) {
+    .crisis-grid, .scan-layout, .evidence-layout, .cause-layout, .outcome-layout { grid-template-columns: 1fr; }
+    .crisis-grid { gap: 24px; }
+    .line-viz { max-width: 520px; }
+    .ring { margin: 0 auto; }
+    .evidence-layout { gap: 20px; }
+    .agent-quote { max-width: none; }
+    .scene { padding: 26px 22px 80px; }
+    .progress { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <header class="pitch-top">
+    <div class="pitch-brand"><div class="brand-mark">RC</div> RootCause</div>
+    <div class="progress" id="progress"></div>
+    <div class="top-actions">
+      <button class="mini-btn" id="autoBtn">Auto play</button>
+      <a class="skip" href="rootcause-prototype.html">Open product →</a>
+    </div>
+  </header>
+
+  <main class="scenes" id="scenes">
+    <!-- 1 -->
+    <section class="scene active" data-scene="0">
+      <div class="scene-inner">
+        <div class="eyebrow"><span class="dot"></span> Line 3 · 14:32 · Shift A</div>
+        <h1>Line 3<br>stopped.</h1>
+        <p class="lede">A short shot on the lower edge. The shift ends in two hours. Every minute counts.</p>
+        <div class="crisis-grid">
+          <div class="big-number accent-red">
+            <span data-counter data-target="4200" data-prefix="€">€0</span>
+            <small>lost per hour</small>
+          </div>
+          <div class="line-viz">
+            <div class="station"><span class="st-light"></span><div class="st-name">Dryer</div><div class="st-state">72 °C</div></div>
+            <div class="station"><span class="st-light"></span><div class="st-name">Injection</div><div class="st-state">84 MPa</div></div>
+            <div class="station bad"><span class="st-light"></span><div class="st-name">Mold</div><div class="st-state">168 °C</div></div>
+            <div class="station"><span class="st-light"></span><div class="st-name">Cooling</div><div class="st-state">11.2 s</div></div>
+            <div class="station"><span class="st-light"></span><div class="st-name">Robot</div><div class="st-state">27.4 s</div></div>
+          </div>
+        </div>
+        <div class="scene-note"><span class="pulse"></span> Camera 2 has 3 defective parts. The cause is unknown.</div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="scene" data-scene="1">
+      <div class="scene-inner">
+        <div class="eyebrow"><span class="dot" style="background:var(--blue);box-shadow:0 0 0 4px rgba(56,189,248,.12)"></span> The evidence</div>
+        <h2>48 images.<br>One defect.</h2>
+        <div class="scan-layout">
+          <div class="scan-frame">
+            <div class="scan-tag">NPU · CAM 02 · 12 ms</div>
+            <svg viewBox="0 0 900 520" width="100%" role="img" aria-label="Inspection image with a defect">
+              <defs>
+                <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+                  <path d="M44 0H0V44" fill="none" stroke="#1e293b" stroke-width="1"/>
+                </pattern>
+              </defs>
+              <rect width="900" height="520" fill="#0b1220"/>
+              <rect width="900" height="520" fill="url(#grid)" opacity=".7"/>
+              <g transform="translate(120 80)">
+                <rect x="0" y="0" width="660" height="350" rx="36" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+                <rect x="36" y="34" width="230" height="92" rx="18" fill="#e2e8f0"/>
+                <circle cx="535" cy="84" r="44" fill="#e2e8f0"/>
+                <rect x="54" y="196" width="552" height="102" rx="22" fill="#e2e8f0"/>
+                <circle cx="410" cy="247" r="34" fill="#ef4444" opacity=".92"/>
+                <circle cx="410" cy="247" r="48" fill="none" stroke="#fca5a5" stroke-width="2" opacity=".75"/>
+                <rect x="344" y="181" width="132" height="132" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8 6"/>
+                <text x="344" y="166" fill="#fca5a5" font-family="monospace" font-size="16">DEFECT</text>
+              </g>
+              <text x="30" y="36" fill="#94a3b8" font-family="monospace" font-size="15">CAM 02 · 14:32:08 · LINE 3</text>
+              <text x="30" y="490" fill="#64748b" font-family="monospace" font-size="13">48 FRAMES · 3 SHAPES · NPU 12 ms</text>
+            </svg>
+            <div class="scan-line"></div>
+          </div>
+          <div class="scan-stats">
+            <div class="stat-line"><b>48</b><span>images re-checked<br>in one pass</span></div>
+            <div class="stat-line"><b>3</b><span>defect shapes<br>clustered</span></div>
+            <div class="stat-line"><b>12 ms</b><span>NPU inference<br>per frame</span></div>
+            <div class="stat-line"><b>1</b><span>new cluster<br>on the lower edge</span></div>
+          </div>
+        </div>
+        <p class="lede">The NPU checks every frame before the agent starts. No image is skipped.</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="scene" data-scene="2">
+      <div class="scene-inner">
+        <div class="eyebrow"><span class="dot" style="background:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.12)"></span> The investigation</div>
+        <h2>The agent connects<br>the dots.</h2>
+        <div class="evidence-layout">
+          <div class="evidence-stack">
+            <div class="evidence-card">
+              <div class="ev-icon">01</div>
+              <div><div class="ev-title">Mold temperature</div><div class="ev-sub">Last 30 minutes · sensor 4</div></div>
+              <div class="ev-value accent-red">168°C<small>−12°C vs baseline</small></div>
+            </div>
+            <div class="evidence-card">
+              <div class="ev-icon">02</div>
+              <div><div class="ev-title">Maintenance log</div><div class="ev-sub">Today · line 3</div></div>
+              <div class="ev-value">13:05<small>heater replaced</small></div>
+            </div>
+            <div class="evidence-card">
+              <div class="ev-icon">03</div>
+              <div><div class="ev-title">Similar cases</div><div class="ev-sub">Last 90 days · same product</div></div>
+              <div class="ev-value accent-amber">9 / 12<small>same pattern</small></div>
+            </div>
+          </div>
+          <div class="agent-quote">
+            <b>“The heater was replaced at 13:05.</b> The mold never returned to baseline. The defect starts 27 minutes later — the same pattern as nine previous cases.”
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="scene" data-scene="3">
+      <div class="scene-inner">
+        <div class="eyebrow"><span class="dot" style="background:var(--amber);box-shadow:0 0 0 4px rgba(245,158,11,.12)"></span> The cause</div>
+        <div class="cause-layout">
+          <div>
+            <h2>Mold temperature<br>drift.</h2>
+            <p class="lede">The heater was replaced at 13:05. The mold never returned to baseline. The agent found the pattern across 12 similar cases.</p>
+            <div class="cause-chips">
+              <span class="cause-chip"><b>86%</b> confidence</span>
+              <span class="cause-chip"><b>9/12</b> similar cases</span>
+              <span class="cause-chip"><b>27 min</b> after maintenance</span>
+            </div>
+          </div>
+          <div class="ring">
+            <div class="ring-value"><b>86%</b><span>confidence</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="scene" data-scene="4">
+      <div class="scene-inner">
+        <div class="eyebrow"><span class="dot" style="background:var(--green);box-shadow:0 0 0 4px rgba(34,197,94,.14)"></span> The outcome</div>
+        <h1>18 minutes.</h1>
+        <p class="lede">The line is running. The report is signed. The same loop used to take two days.</p>
+        <div class="outcome-layout">
+          <div>
+            <div class="outcome-numbers">
+              <div class="outcome-num"><b class="accent-green"><span data-counter data-target="38000" data-prefix="€">€0</span></b><span>saved this shift</span></div>
+              <div class="outcome-num"><b>12%</b><span>less scrap</span></div>
+              <div class="outcome-num"><b>1</b><span>case closed</span></div>
+              <div class="outcome-num"><b>2 days</b><span>was the old cycle</span></div>
+            </div>
+            <div class="cta-row">
+              <a class="cta" href="rootcause-prototype.html">Open the product prototype →</a>
+              <button class="cta secondary" id="replayBtn">Replay story</button>
+            </div>
+          </div>
+          <div>
+            <div class="green-line">
+              <div class="station"><span class="st-light"></span><div class="st-name">Dryer</div><div class="st-state">72 °C</div></div>
+              <div class="station"><span class="st-light"></span><div class="st-name">Injection</div><div class="st-state">84 MPa</div></div>
+              <div class="station"><span class="st-light"></span><div class="st-name">Mold</div><div class="st-state">180 °C</div></div>
+              <div class="station"><span class="st-light"></span><div class="st-name">Cooling</div><div class="st-state">11.2 s</div></div>
+              <div class="station"><span class="st-light"></span><div class="st-name">Robot</div><div class="st-state">27.4 s</div></div>
+            </div>
+            <div class="signature">“We found the cause before the shift ended.”<small>Plant Director · Line 3</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pitch-nav">
+    <button class="nav-btn" id="backBtn">← Back</button>
+    <span class="counter" id="counter">01 / 05</span>
+    <button class="nav-btn" id="nextBtn">Next →</button>
+    <span class="nav-hint">Use ← → to move · Auto play for hands-free</span>
+  </footer>
+</div>
+
+<script>
+  const scenes = Array.from(document.querySelectorAll(".scene"));
+  const progress = document.getElementById("progress");
+  const counter = document.getElementById("counter");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const autoBtn = document.getElementById("autoBtn");
+  const replayBtn = document.getElementById("replayBtn");
+
+  let current = 0;
+  let autoTimer = null;
+
+  progress.innerHTML = scenes.map((_, i) => `<button data-go="${i}" aria-label="Go to scene ${i + 1}"></button>`).join("");
+  const dots = Array.from(progress.querySelectorAll("button"));
+
+  function animateCounters() {
+    document.querySelectorAll(".scene.active [data-counter]").forEach(el => {
+      if (el.dataset.done === "1") return;
+      el.dataset.done = "1";
+      const target = Number(el.dataset.target || 0);
+      const prefix = el.dataset.prefix || "";
+      const start = performance.now();
+      const duration = 900;
+      function frame(now) {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = prefix + Math.round(target * eased).toLocaleString("en-US");
+        if (t < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+      // If the tab is in the background, animation frames pause. Never leave the number at zero.
+      setTimeout(() => {
+        el.textContent = prefix + target.toLocaleString("en-US");
+      }, duration + 120);
+    });
+  }
+
+  function go(index) {
+    current = Math.max(0, Math.min(scenes.length - 1, index));
+    scenes.forEach((s, i) => s.classList.toggle("active", i === current));
+    dots.forEach((d, i) => {
+      d.classList.toggle("active", i === current);
+      d.classList.toggle("done", i < current);
+    });
+    counter.textContent = String(current + 1).padStart(2, "0") + " / " + String(scenes.length).padStart(2, "0");
+    backBtn.disabled = current === 0;
+    nextBtn.textContent = current === scenes.length - 1 ? "Replay ↺" : "Next →";
+    animateCounters();
+  }
+
+  function next() {
+    if (current === scenes.length - 1) {
+      replay();
+      return;
+    }
+    go(current + 1);
+  }
+
+  function replay() {
+    scenes.forEach(s => {
+      s.querySelectorAll("[data-counter]").forEach(el => {
+        el.dataset.done = "";
+        el.textContent = (el.dataset.prefix || "") + "0";
+      });
+    });
+    go(0);
+    stopAuto();
+  }
+
+  function startAuto() {
+    stopAuto();
+    autoTimer = setInterval(() => {
+      if (current < scenes.length - 1) go(current + 1);
+      else stopAuto();
+    }, 6500);
+    autoBtn.classList.add("on");
+    autoBtn.textContent = "Pause";
+  }
+
+  function stopAuto() {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+    autoBtn.classList.remove("on");
+    autoBtn.textContent = "Auto play";
+  }
+
+  backBtn.addEventListener("click", () => { stopAuto(); go(current - 1); });
+  nextBtn.addEventListener("click", () => { stopAuto(); next(); });
+  replayBtn.addEventListener("click", replay);
+  autoBtn.addEventListener("click", () => { autoTimer ? stopAuto() : startAuto(); });
+
+  progress.addEventListener("click", e => {
+    const btn = e.target.closest("[data-go]");
+    if (!btn) return;
+    stopAuto();
+    go(Number(btn.dataset.go));
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); stopAuto(); next(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); stopAuto(); go(current - 1); }
+    if (e.key === "Escape") stopAuto();
+  });
+
+  go(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic App Lab - demos</title>
+<style>
+  :root {
+    --bg: #07070c;
+    --panel: #101016;
+    --ink: #f8fafc;
+    --muted: #a1a1aa;
+    --soft: #64748b;
+    --line: #23232d;
+    --accent: #fb923c;
+    --green: #4ade80;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: -20%;
+    background:
+      radial-gradient(42% 36% at 15% 8%, rgba(251,146,60,.18), transparent 70%),
+      radial-gradient(38% 34% at 82% 12%, rgba(236,72,153,.16), transparent 70%),
+      radial-gradient(44% 38% at 60% 100%, rgba(34,211,238,.10), transparent 72%),
+      radial-gradient(36% 34% at 12% 90%, rgba(139,92,246,.12), transparent 72%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: -1;
+  }
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(148,163,184,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(circle at 50% 20%, black, transparent 80%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .wrap { width: min(1180px, 100%); margin: 0 auto; padding: 28px 22px 60px; }
+
+  .top { display: flex; align-items: center; gap: 10px; }
+  .mark { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(from 210deg,#fb923c,#ec4899,#8b5cf6,#22d3ee,#fb923c); box-shadow: 0 0 20px rgba(236,72,153,.35); }
+  .brand { font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+  .brand span { color: var(--soft); font-weight: 500; }
+  .top-links { margin-left: auto; display: flex; gap: 7px; flex-wrap: wrap; }
+  .top-links a { color: var(--muted); text-decoration: none; font-size: 10px; font-weight: 700; border: 1px solid var(--line); border-radius: 999px; padding: 5px 9px; }
+  .top-links a:hover { color: var(--ink); border-color: #3a3a4a; }
+
+  .hero { padding: 48px 0 34px; max-width: 860px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); font-weight: 800; margin-bottom: 14px; }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+  h1 { margin: 0; font-size: clamp(42px, 7vw, 82px); line-height: .92; letter-spacing: -.05em; font-weight: 800; text-wrap: balance; }
+  .grad { background: linear-gradient(100deg,#fde68a,#fb923c 30%,#ec4899 62%,#8b5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { color: var(--muted); font-size: 15px; max-width: 640px; margin: 18px 0 0; }
+  .hero-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    border: 1px solid var(--line); background: #14141b; color: var(--ink);
+    border-radius: 8px; padding: 8px 11px; font-size: 10px; font-weight: 800;
+    text-decoration: none; white-space: nowrap;
+  }
+  .btn:hover { border-color: #3a3a4a; }
+  .btn.primary { background: var(--accent); border-color: transparent; color: #160b05; }
+
+  .hint { margin-top: 16px; color: #fcd34d; font-size: 10px; border-left: 2px solid #f59e0b; padding-left: 9px; max-width: 620px; }
+  .stats { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 26px; color: var(--soft); font-size: 10px; }
+  .stats b { color: var(--ink); font-size: 14px; margin-right: 3px; }
+
+  .section-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 20px 0 12px; }
+  .section-head h2 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
+  .section-head span { color: var(--soft); font-size: 9px; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    padding: 15px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .15s, border-color .15s, box-shadow .15s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: #3a3a4a; box-shadow: 0 18px 45px rgba(0,0,0,.3); }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); opacity: .8; }
+  .card-top { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; }
+  .dot { width: 8px; height: 8px; border-radius: 3px; background: var(--accent); box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent); }
+  .tag { font-size: 8px; color: var(--soft); text-transform: uppercase; letter-spacing: .1em; font-weight: 800; }
+  .card h3 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
+  .card p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; min-height: 30px; }
+  .card-actions { display: flex; gap: 6px; margin-top: 13px; }
+  .card-actions .btn { flex: 1; }
+
+  .more { margin-top: 26px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 10px; }
+  .more .card { padding: 15px; }
+  .more h3 { font-size: 12px; margin: 0 0 7px; }
+  .more p { font-size: 10px; min-height: 0; }
+  .more-links { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+  .more-links a { color: var(--muted); text-decoration: none; font-size: 10px; display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid #1a1a23; padding-bottom: 5px; }
+  .more-links a:hover { color: var(--ink); }
+  .more-links span { color: var(--soft); font-size: 8px; }
+
+  .foot { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--soft); font-size: 9px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 1000px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .more { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .wrap { padding: 20px 14px 40px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="mark"></div>
+    <div class="brand">Agentic App Lab <span>| demo home</span></div>
+    <div class="top-links">
+      <a href="pairs/README.md">Pair index</a>
+      <a href="app-suite.html">9-app suite</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow"><span class="dot"></span> 9 apps | 9 playable demos | 9 studios</div>
+    <h1>Nine apps.<br>All nine you can <span class="grad">touch.</span></h1>
+    <p>Each Play is a different verb: inspect, shoot, command, scrub, steer, balance, paint, defend, move the sun. Studio still opens the productive product.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="app-suite.html">Open the 9-app suite -></a>
+      <a class="btn" href="pairs/README.md">See all pairs</a>
+      <a class="btn" href="demo.html">Original 9-app demo</a>
+    </div>
+    <div class="hint">If clicks do nothing, you are viewing this in a preview pane. Open it in Chrome or Edge, or run start-demos.cmd in this folder.</div>
+    <div class="stats">
+      <span><b>9</b> playable</span>
+      <span><b>9</b> studios</span>
+      <span><b>1</b> suite</span>
+      <span><b>9</b> concept notes</span>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>The apps</h2>
+    <span>Play = touch the demo | Studio = the product</span>
+  </div>
+
+  <div class="grid">
+    <article class="card" style="--accent:#fb923c">
+      <div class="card-top"><span class="dot"></span><span class="tag">Quality</span></div>
+      <h3>RootCause</h3>
+      <p>Finds the cause of a factory defect and writes the report with evidence.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/rootcause-pitch.html">Play</a>
+        <a class="btn" href="pairs/rootcause-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#ec4899">
+      <div class="card-top"><span class="dot"></span><span class="tag">Media</span></div>
+      <h3>AI Film Studio</h3>
+      <p>Turns a brand brief into a storyboard, shots, a critique and a final cut.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/aifilm-pitch.html">Play</a>
+        <a class="btn" href="pairs/aifilm-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#22d3ee">
+      <div class="card-top"><span class="dot"></span><span class="tag">Geospatial</span></div>
+      <h3>GeoResponse</h3>
+      <p>Assesses satellite or drone imagery, ranks damage and writes the map.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/geo-pitch.html">Play</a>
+        <a class="btn" href="pairs/geo-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#a78bfa">
+      <div class="card-top"><span class="dot"></span><span class="tag">Medical</span></div>
+      <h3>Imaging Assistant</h3>
+      <p>Flags urgent findings and drafts a radiology report for the doctor to sign.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/imaging-pitch.html">Play</a>
+        <a class="btn" href="pairs/imaging-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#4ade80">
+      <div class="card-top"><span class="dot"></span><span class="tag">Autonomous lab</span></div>
+      <h3>Lab Loop</h3>
+      <p>Designs an experiment, scores it on the NPU and proposes the next batch.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/lab-pitch.html">Play</a>
+        <a class="btn" href="pairs/lab-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#38bdf8">
+      <div class="card-top"><span class="dot"></span><span class="tag">Optimization</span></div>
+      <h3>Digital Twin</h3>
+      <p>Runs thousands of simulations and recommends a better process setting.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/twin-pitch.html">Play</a>
+        <a class="btn" href="pairs/twin-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#facc15">
+      <div class="card-top"><span class="dot"></span><span class="tag">Training data</span></div>
+      <h3>Synthetic World</h3>
+      <p>Finds rare cases, generates them on the NPU and proves coverage.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/synthetic-pitch.html">Play</a>
+        <a class="btn" href="pairs/synthetic-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#f87171">
+      <div class="card-top"><span class="dot"></span><span class="tag">Security</span></div>
+      <h3>Cyber Range</h3>
+      <p>Runs an adaptive attack-and-defence exercise and measures readiness.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/cyber-pitch.html">Play</a>
+        <a class="btn" href="pairs/cyber-studio.html">Studio</a>
+      </div>
+    </article>
+
+    <article class="card" style="--accent:#fb7185">
+      <div class="card-top"><span class="dot"></span><span class="tag">Design</span></div>
+      <h3>Architecture Studio</h3>
+      <p>Turns a building brief into costed, energy-scored options.</p>
+      <div class="card-actions">
+        <a class="btn primary" href="pairs/arch-pitch.html">Play</a>
+        <a class="btn" href="pairs/arch-studio.html">Studio</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="more">
+    <div class="card">
+      <h3>Portfolio views</h3>
+      <p>See all apps in one workspace, or use the older scripted demo.</p>
+      <div class="more-links">
+        <a href="app-suite.html">9-app real-app suite <span>studio shell</span></a>
+        <a href="demo.html">Original 9-app demo <span>scripted</span></a>
+        <a href="rootcause-prototype.html">RootCause workbench <span>older prototype</span></a>
+        <a href="pairs/README.md">Pair index <span>all 18 files</span></a>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Concept notes</h3>
+      <p>One-page MD for each app: buyer, problem, loop, NPU role, business and risks.</p>
+      <div class="more-links">
+        <a href="root-cause.md">RootCause <span>MD</span></a>
+        <a href="ai-film-studio.md">AI Film Studio <span>MD</span></a>
+        <a href="geospatial-response.md">GeoResponse <span>MD</span></a>
+        <a href="medical-imaging.md">Imaging Assistant <span>MD</span></a>
+        <a href="autonomous-lab.md">Lab Loop <span>MD</span></a>
+        <a href="digital-twin.md">Digital Twin <span>MD</span></a>
+        <a href="synthetic-world.md">Synthetic World <span>MD</span></a>
+        <a href="cyber-range.md">Cyber Range <span>MD</span></a>
+        <a href="generative-architecture.md">Architecture Studio <span>MD</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>All data, results and agents are simulated. Photos are placeholders.</span>
+    <span>Use a real browser. If links fail, run start-demos.cmd in this folder.</span>
+  </div>
+</div>
+</body>
+</html>

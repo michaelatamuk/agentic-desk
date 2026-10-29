@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RootCause — Quality intelligence</title>
+<style>
+  :root {
+    --bg: #f4f6fa;
+    --panel: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --soft: #94a3b8;
+    --line: #e2e8f0;
+    --navy: #0b1220;
+    --navy-2: #111b2e;
+    --blue: #2563eb;
+    --blue-soft: #eff6ff;
+    --green: #15803d;
+    --green-soft: #f0fdf4;
+    --amber: #b45309;
+    --amber-soft: #fffbeb;
+    --red: #b91c1c;
+    --red-soft: #fef2f2;
+    --violet: #6d28d9;
+    --violet-soft: #f5f3ff;
+    --radius: 14px;
+    --shadow: 0 8px 24px rgba(15, 23, 42, .06);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  button, input, select, textarea { font: inherit; }
+  button { cursor: pointer; }
+  a { color: inherit; }
+
+  .app { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 228px;
+    flex: none;
+    background: var(--navy);
+    color: #94a3b8;
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 2px 6px 8px; }
+  .logo {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: 12px; letter-spacing: -.02em;
+    flex: none;
+  }
+  .brand b { display: block; color: #f8fafc; font-size: 14px; line-height: 1.2; }
+  .brand span { display: block; color: #64748b; font-size: 10px; margin-top: 2px; letter-spacing: .04em; text-transform: uppercase; }
+
+  .nav-label { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #475569; padding: 0 8px 7px; }
+  .nav { display: flex; flex-direction: column; gap: 3px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px;
+    width: 100%; padding: 8px 9px;
+    border: 1px solid transparent; border-radius: 9px;
+    background: transparent; color: #94a3b8; text-align: left;
+    font-size: 12px; font-weight: 600;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.05); color: #e2e8f0; }
+  .nav-item.active { background: #172554; border-color: #1e40af; color: #fff; }
+  .nav-item svg { width: 15px; height: 15px; flex: none; opacity: .9; }
+  .nav-item .count {
+    margin-left: auto; font-size: 10px; font-weight: 700;
+    background: #1e293b; color: #cbd5e1; border-radius: 999px; padding: 1px 6px;
+  }
+  .nav-item.active .count { background: #1d4ed8; color: #fff; }
+
+  .line-card {
+    background: #0f1a2e; border: 1px solid #1e293b; border-radius: 11px; padding: 10px;
+  }
+  .line-card .lc-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .line-card b { color: #e2e8f0; font-size: 11px; }
+  .line-card small { display: block; color: #64748b; font-size: 10px; margin-top: 2px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
+  .line-mini { display: flex; gap: 4px; margin-top: 9px; }
+  .line-mini span { height: 4px; border-radius: 999px; background: #1e293b; flex: 1; }
+  .line-mini span.on { background: #3b82f6; }
+  .line-mini span.warn { background: #f59e0b; }
+
+  .sidebar-foot { margin-top: auto; border-top: 1px solid #1e293b; padding-top: 12px; }
+  .user { display: flex; align-items: center; gap: 9px; padding: 4px 6px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: #1e3a8a; color: #bfdbfe; display: grid; place-items: center; font-size: 10px; font-weight: 800; }
+  .user b { display: block; color: #e2e8f0; font-size: 11px; }
+  .user small { display: block; color: #64748b; font-size: 10px; }
+
+  /* Main */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    height: 58px; flex: none;
+    background: rgba(255,255,255,.9); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 0 24px;
+    position: sticky; top: 0; z-index: 20;
+  }
+  .crumb { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; min-width: 0; }
+  .crumb b { color: var(--ink); font-weight: 700; }
+  .crumb .sep { color: #cbd5e1; }
+  .top-actions { display: flex; align-items: center; gap: 12px; }
+  .npu-state { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 5px 9px; border-radius: 999px; }
+  .npu-state .dot { background: #10b981; box-shadow: none; width: 6px; height: 6px; }
+  .icon-btn { width: 30px; height: 30px; border: 1px solid var(--line); background: #fff; border-radius: 8px; display: grid; place-items: center; color: var(--muted); }
+  .icon-btn:hover { color: var(--ink); border-color: #cbd5e1; }
+
+  .content { padding: 24px 26px 60px; width: 100%; max-width: 1480px; margin: 0 auto; }
+
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+  .page-title { font-size: 21px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+  .page-sub { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+  .page-actions { display: flex; align-items: center; gap: 8px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+    border-radius: 8px; padding: 7px 11px; font-size: 12px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: #cbd5e1; background: #fbfdff; }
+  .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .btn.primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+  .btn.green { background: var(--green); border-color: var(--green); color: #fff; }
+  .btn.green:hover { background: #166534; }
+  .btn.danger { color: var(--red); border-color: #fecaca; background: #fff; }
+  .btn.danger:hover { background: var(--red-soft); }
+  .btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .btn.ghost:hover { background: #f8fafc; color: var(--ink); }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .btn.sm { padding: 5px 9px; font-size: 11px; }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .card-pad { padding: 15px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 15px; border-bottom: 1px solid var(--line); }
+  .card-title { font-size: 12px; font-weight: 800; letter-spacing: .01em; }
+  .card-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; box-shadow: var(--shadow); }
+  .kpi .k-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+  .kpi .k-value { font-size: 25px; font-weight: 800; letter-spacing: -.03em; margin: 5px 0 1px; }
+  .kpi .k-note { font-size: 10px; color: var(--muted); }
+  .kpi .k-note b { color: var(--green); }
+  .kpi.warn .k-value { color: var(--amber); }
+  .kpi.good .k-value { color: var(--green); }
+
+  .overview-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(290px, .75fr); gap: 12px; align-items: start; }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+
+  .line-map { display: flex; gap: 8px; align-items: stretch; padding: 16px; }
+  .station { flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 9px 8px; background: #fbfdff; position: relative; }
+  .station .s-name { font-size: 10px; font-weight: 800; color: var(--ink); }
+  .station .s-state { font-size: 9px; color: var(--muted); margin-top: 3px; }
+  .station .s-light { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; position: absolute; top: 10px; right: 9px; }
+  .station.warn { background: #fffdf5; border-color: #fde68a; }
+  .station.warn .s-light { background: #f59e0b; }
+  .station.bad { background: #fff7f7; border-color: #fecaca; }
+  .station.bad .s-light { background: #ef4444; }
+  .station .cam { font-size: 9px; color: #64748b; margin-top: 8px; }
+
+  .table { width: 100%; border-collapse: collapse; }
+  .table th { text-align: left; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 800; padding: 9px 12px; border-bottom: 1px solid var(--line); background: #fbfdff; }
+  .table td { padding: 10px 12px; border-bottom: 1px solid #eef2f7; font-size: 11px; vertical-align: middle; }
+  .table tr:last-child td { border-bottom: 0; }
+  .table tbody tr:hover { background: #f8fbff; }
+  .table tbody tr.clickable { cursor: pointer; }
+  .table .id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; color: var(--muted); }
+  .table .strong { font-weight: 700; color: var(--ink); }
+  .table .right { text-align: right; }
+
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 7px; border-radius: 999px; font-size: 9px; font-weight: 800; letter-spacing: .03em; }
+  .pill.open { background: var(--blue-soft); color: #1d4ed8; }
+  .pill.review { background: var(--amber-soft); color: #92400e; }
+  .pill.closed { background: #f1f5f9; color: #475569; }
+  .pill.high { background: var(--red-soft); color: var(--red); }
+  .pill.medium { background: var(--amber-soft); color: var(--amber); }
+  .pill.low { background: #f1f5f9; color: var(--gray); }
+  .pill.npu { background: var(--amber-soft); color: var(--amber); border: 1px solid #fde68a; }
+  .pill.agent { background: var(--blue-soft); color: var(--blue); border: 1px solid #dbeafe; }
+  .pill.human { background: var(--green-soft); color: var(--green); border: 1px solid #bbf7d0; }
+
+  .activity { display: flex; flex-direction: column; gap: 10px; padding: 14px 15px; }
+  .activity-item { display: flex; gap: 9px; align-items: flex-start; }
+  .activity-dot { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-size: 9px; font-weight: 800; flex: none; background: var(--blue-soft); color: var(--blue); }
+  .activity-dot.npu { background: var(--amber-soft); color: var(--amber); }
+  .activity-dot.human { background: var(--green-soft); color: var(--green); }
+  .activity-text { font-size: 11px; color: var(--ink); }
+  .activity-text small { display: block; color: var(--muted); font-size: 10px; margin-top: 1px; }
+
+  .bars { padding: 14px 15px; display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 130px 1fr 34px; gap: 8px; align-items: center; font-size: 10px; color: var(--muted); }
+  .bar { height: 6px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; border-radius: 999px; background: #93c5fd; }
+  .bar-row b { color: var(--ink); font-size: 10px; text-align: right; }
+
+  /* Cases */
+  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .search { flex: 1; min-width: 200px; position: relative; }
+  .search input { width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 7px 10px 7px 30px; font-size: 12px; outline: none; }
+  .search input:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+  .search svg { position: absolute; left: 9px; top: 8px; width: 14px; height: 14px; color: var(--soft); }
+  .filter { display: flex; gap: 3px; background: #fff; border: 1px solid var(--line); padding: 3px; border-radius: 8px; }
+  .filter button { border: 0; background: transparent; color: var(--muted); font-size: 11px; font-weight: 700; padding: 5px 8px; border-radius: 6px; }
+  .filter button.active { background: #f1f5f9; color: var(--ink); }
+
+  /* Case workspace */
+  .case-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+  .back { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; font-weight: 700; background: none; border: 0; padding: 0; margin-bottom: 7px; }
+  .back:hover { color: var(--ink); }
+  .case-title { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+  .case-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .meta-chip { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 7px; padding: 4px 7px; font-size: 10px; }
+  .meta-chip b { color: var(--ink); }
+
+  .workspace { display: grid; grid-template-columns: 290px minmax(0, 1fr) 330px; gap: 12px; align-items: start; }
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+  .panel + .panel { margin-top: 12px; }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .panel-title { font-size: 11px; font-weight: 800; }
+  .panel-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  .photo-wrap { background: #0b1220; padding: 8px; }
+  .photo { width: 100%; display: block; border-radius: 6px; background: #0b1220; aspect-ratio: 640 / 420; object-fit: cover; }
+  .photo-caption { display: flex; justify-content: space-between; padding: 6px 3px 1px; font-size: 9px; color: #94a3b8; font-family: ui-monospace, monospace; }
+  .thumbs { display: flex; gap: 6px; padding: 8px; background: #fff; border-top: 1px solid var(--line); }
+  .thumb { width: 52px; height: 38px; border-radius: 5px; border: 2px solid transparent; padding: 0; overflow: hidden; background: #0b1220; }
+  .thumb.active { border-color: var(--blue); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .tabs { display: flex; gap: 2px; padding: 7px 8px 0; border-bottom: 1px solid var(--line); }
+  .tab { border: 0; background: transparent; color: var(--muted); font-size: 10px; font-weight: 700; padding: 6px 7px 8px; border-bottom: 2px solid transparent; }
+  .tab.active { color: var(--ink); border-bottom-color: var(--blue); }
+  .tab-body { padding: 10px; }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table td { padding: 6px 4px; font-size: 10px; border-bottom: 1px solid #eef2f7; }
+  .data-table tr:last-child td { border-bottom: 0; }
+  .data-table td:first-child { color: var(--muted); }
+  .data-table td:last-child { text-align: right; font-weight: 700; }
+  .data-table .bad { color: var(--red); }
+  .data-table .warn { color: var(--amber); }
+  .data-table .ok { color: var(--green); }
+
+  .similar { display: flex; flex-direction: column; gap: 7px; }
+  .similar-row { border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px; display: flex; justify-content: space-between; gap: 8px; }
+  .similar-row b { display: block; font-size: 10px; }
+  .similar-row small { display: block; color: var(--muted); font-size: 9px; margin-top: 1px; }
+  .similar-row span { font-size: 10px; font-weight: 800; color: var(--blue); }
+
+  /* Timeline */
+  .timeline { padding: 12px; display: flex; flex-direction: column; gap: 9px; max-height: 520px; overflow: auto; }
+  .event { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 8px; align-items: flex-start; }
+  .event-dot { width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; font-size: 9px; font-weight: 800; flex: none; }
+  .event-dot.agent { background: var(--blue-soft); color: var(--blue); }
+  .event-dot.npu { background: var(--amber-soft); color: var(--amber); }
+  .event-dot.tool { background: #f1f5f9; color: #475569; }
+  .event-dot.human { background: var(--green-soft); color: var(--green); }
+  .event-body { border: 1px solid var(--line); border-radius: 8px; padding: 8px 9px; background: #fff; }
+  .event-body .e-title { font-size: 11px; font-weight: 700; }
+  .event-body .e-detail { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .event-meta { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+  .event-meta .time { font-size: 9px; color: #94a3b8; margin-left: auto; }
+
+  .chat { border-top: 1px solid var(--line); padding: 10px 12px; background: #fbfdff; }
+  .chat-log { display: flex; flex-direction: column; gap: 7px; margin-bottom: 8px; max-height: 150px; overflow: auto; }
+  .bubble { max-width: 88%; border-radius: 8px; padding: 6px 8px; font-size: 10px; }
+  .bubble.agent { background: #fff; border: 1px solid var(--line); align-self: flex-start; }
+  .bubble.user { background: #1e3a8a; color: #fff; align-self: flex-end; }
+  .quick { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+  .quick button { border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; font-size: 9px; padding: 4px 7px; }
+  .quick button:hover { border-color: #93c5fd; color: var(--blue); }
+  .chat-input { display: flex; gap: 6px; }
+  .chat-input input { flex: 1; border: 1px solid var(--line); border-radius: 7px; padding: 7px 8px; font-size: 11px; outline: none; background: #fff; }
+  .chat-input input:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+  .chat-input button { border: 0; background: var(--blue); color: #fff; border-radius: 7px; padding: 0 10px; font-size: 11px; font-weight: 700; }
+
+  /* Right column */
+  .cause-card { padding: 13px; }
+  .cause-label { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 800; }
+  .cause-name { font-size: 15px; font-weight: 800; margin-top: 5px; letter-spacing: -.01em; }
+  .confidence { display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+  .confidence .track { flex: 1; height: 6px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
+  .confidence .track span { display: block; height: 100%; background: linear-gradient(90deg, #f59e0b, #f97316); border-radius: 999px; }
+  .confidence b { font-size: 11px; }
+  .evidence-list { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .evidence-list li { display: flex; gap: 6px; font-size: 10px; color: var(--muted); }
+  .evidence-list li::before { content: "•"; color: #f59e0b; font-weight: 800; }
+  .cause-actions { display: flex; gap: 6px; margin-top: 12px; }
+  .cause-actions .btn { flex: 1; }
+
+  .banner { border-radius: 8px; padding: 8px 10px; font-size: 10px; margin-bottom: 10px; }
+  .banner.ok { background: var(--green-soft); border: 1px solid #bbf7d0; color: #14532d; }
+  .banner.warn { background: var(--amber-soft); border: 1px solid #fde68a; color: #78350f; }
+  .banner.closed { background: #f1f5f9; border: 1px solid var(--line); color: #475569; }
+
+  .report textarea {
+    width: 100%; min-height: 150px; resize: vertical;
+    border: 0; outline: none; padding: 11px 12px;
+    font-size: 10px; line-height: 1.55; color: #334155; background: #fff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .report textarea:focus { background: #fbfdff; }
+  .report-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 11px; border-top: 1px solid var(--line); background: #fbfdff; }
+  .report-foot small { color: var(--muted); font-size: 9px; }
+
+  .settings-list { display: flex; flex-direction: column; }
+  .setting { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 15px; border-bottom: 1px solid #eef2f7; }
+  .setting:last-child { border-bottom: 0; }
+  .setting b { display: block; font-size: 12px; }
+  .setting small { display: block; color: var(--muted); font-size: 10px; margin-top: 2px; max-width: 560px; }
+  .switch { position: relative; width: 34px; height: 20px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: #cbd5e1; border-radius: 999px; transition: .2s; }
+  .slider::before { content: ""; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; }
+  .switch input:checked + .slider { background: var(--blue); }
+  .switch input:checked + .slider::before { transform: translateX(14px); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px);
+    background: #0f172a; color: #f8fafc; font-size: 12px; font-weight: 600;
+    border-radius: 9px; padding: 10px 14px; box-shadow: 0 12px 30px rgba(15,23,42,.2);
+    opacity: 0; pointer-events: none; transition: .25s; z-index: 100;
+    max-width: 80vw;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.ok { background: #14532d; }
+  .toast.warn { background: #78350f; }
+
+  .empty { padding: 26px 16px; text-align: center; color: var(--muted); font-size: 11px; }
+
+  @media (max-width: 1180px) {
+    .workspace { grid-template-columns: 1fr 1fr; }
+    .side { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+    .side .panel + .panel { margin-top: 0; }
+  }
+  @media (max-width: 980px) {
+    .overview-grid { grid-template-columns: 1fr; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .sidebar { width: 200px; }
+  }
+  @media (max-width: 820px) {
+    .app { display: block; }
+    .sidebar { width: 100%; height: auto; position: static; flex-direction: row; align-items: center; overflow-x: auto; }
+    .brand, .line-card, .sidebar-foot, .nav-label { display: none; }
+    .nav { flex-direction: row; }
+    .workspace { grid-template-columns: 1fr; }
+    .side { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">RC</div>
+      <div><b>RootCause</b><span>Quality intelligence</span></div>
+    </div>
+
+    <div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav" id="nav"></nav>
+    </div>
+
+    <div class="line-card">
+      <div class="lc-top">
+        <div><b>Line 3 · Injection</b><small>Shift A · 08:00–16:00</small></div>
+        <span class="dot"></span>
+      </div>
+      <div class="line-mini"><span class="on"></span><span class="on"></span><span class="warn"></span><span class="on"></span><span class="on"></span></div>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="user">
+        <div class="avatar">MC</div>
+        <div><b>M. Chen</b><small>Quality engineer</small></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb"></div>
+      <div class="top-actions">
+        <span class="npu-state"><span class="dot"></span> NPU online · 4 cameras</span>
+        <button class="icon-btn" title="Alerts" data-action="toast" data-message="No unread alerts.">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        </button>
+        <button class="icon-btn" title="Search" data-action="go-cases">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <div class="avatar" style="width:28px;height:28px;background:#e0e7ff;color:#3730a3;">MC</div>
+      </div>
+    </header>
+
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const ICONS = {
+    overview: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+    cases: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18"/><path d="M5 7v13h14V7"/><path d="M9 7V4h6v3"/></svg>',
+    history: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></svg>',
+    settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 3.1a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.4 3.1h5l.4-3.1a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5c.1-.3.1-.7.1-1Z"/></svg>'
+  };
+
+  const CASES = [
+    {
+      id: "C-1042",
+      title: "Short shot on line 3",
+      defect: "Short shot",
+      line: "Line 3",
+      severity: "High",
+      status: "open",
+      time: "14:32",
+      date: "Today",
+      owner: "M. Chen",
+      confidence: 86,
+      cause: "Mold temperature drift",
+      accepted: false,
+      rejected: false,
+      alternatives: [
+        { name: "Material moisture", confidence: 9 },
+        { name: "Injection speed too low", confidence: 5 }
+      ],
+      camera: "Camera 2",
+      report: "CASE C-1042 — SHORT SHOT ON LINE 3\n\nObservation\nA short shot was detected on line 3, camera 2, at 14:32. Three of 48 images show an incomplete fill at the lower edge.\n\nLikely cause\nMold temperature drift after maintenance. Mold temperature is 12°C below the last stable run; 9 of 12 similar cases had the same pattern.\n\nEvidence\n- 48 images re-checked by the NPU; 3 defect shapes.\n- Mold temperature: 168°C vs 180°C baseline.\n- Maintenance log: heater replaced at 13:05.\n- 9/12 similar cases: temperature drift.\n\nSuggested action\nCheck the mold heater and thermocouple; run 5 verification shots.\n\nStatus\nDraft — awaiting engineer approval.",
+      timeline: [
+        { type: "agent", title: "Reading the defect event", detail: "Short shot on line 3; shift ends in two hours.", time: "14:32" },
+        { type: "tool", title: "Pulling machine settings", detail: "Melt temp, injection pressure, mold temp, cycle time, material lot.", time: "14:33" },
+        { type: "npu", title: "Re-checking the images", detail: "48 images clustered; 3 defect shapes; 1 new cluster.", time: "14:34" },
+        { type: "agent", title: "Comparing similar cases", detail: "12 similar cases; 9 were mold temperature drift.", time: "14:35" },
+        { type: "agent", title: "Ranking causes", detail: "Mold temperature drift 86%; material moisture 9%; injection speed 5%.", time: "14:36" }
+      ],
+      machine: [
+        { label: "Melt temperature", value: "228 °C", state: "ok" },
+        { label: "Mold temperature", value: "168 °C", state: "bad" },
+        { label: "Mold temperature baseline", value: "180 °C", state: "ok" },
+        { label: "Injection pressure", value: "84 MPa", state: "ok" },
+        { label: "Cycle time", value: "27.4 s", state: "ok" },
+        { label: "Material lot", value: "PA66-2418", state: "ok" },
+        { label: "Last maintenance", value: "13:05 today", state: "warn" }
+      ],
+      similar: [
+        { id: "C-998", sim: "94%", cause: "Mold temperature drift" },
+        { id: "C-974", sim: "91%", cause: "Mold temperature drift" },
+        { id: "C-961", sim: "87%", cause: "Mold temperature drift" }
+      ],
+      chat: [
+        { role: "agent", text: "I have a working hypothesis: mold temperature drift after the 13:05 maintenance. Ask me to check another angle." }
+      ]
+    },
+    {
+      id: "C-1041",
+      title: "Flash on the part edge",
+      defect: "Flash",
+      line: "Line 2",
+      severity: "Medium",
+      status: "open",
+      time: "13:58",
+      date: "Today",
+      owner: "J. Park",
+      confidence: 74,
+      cause: "Injection pressure too high",
+      accepted: false,
+      rejected: false,
+      alternatives: [
+        { name: "Mold clamp force low", confidence: 14 },
+        { name: "Material temperature high", confidence: 8 }
+      ],
+      camera: "Camera 1",
+      report: "CASE C-1041 — FLASH ON THE PART EDGE\n\nObservation\nFlash was detected on the part edge at 13:58. Two of 36 images show excess material along the right edge.\n\nLikely cause\nInjection pressure is 6% above the last stable window. A pressure spike appears 2 seconds before the defect.\n\nEvidence\n- 36 images re-checked; 2 defect shapes.\n- Injection pressure: 92 MPa vs 86 MPa baseline.\n- Clamp force within spec.\n- 6/8 similar cases: pressure spike.\n\nSuggested action\nReduce peak injection pressure and verify 5 parts.\n\nStatus\nDraft — awaiting engineer approval.",
+      timeline: [
+        { type: "agent", title: "Reading the defect event", detail: "Flash on the right edge; line 2.", time: "13:58" },
+        { type: "tool", title: "Pulling process data", detail: "Pressure, clamp force, melt temp, downtime events.", time: "13:59" },
+        { type: "npu", title: "Checking the images", detail: "36 images; 2 edges flagged.", time: "14:00" },
+        { type: "agent", title: "Ranking causes", detail: "Pressure 74%; clamp force 14%; melt temp 8%.", time: "14:01" }
+      ],
+      machine: [
+        { label: "Injection pressure", value: "92 MPa", state: "bad" },
+        { label: "Pressure baseline", value: "86 MPa", state: "ok" },
+        { label: "Clamp force", value: "412 kN", state: "ok" },
+        { label: "Melt temperature", value: "232 °C", state: "ok" },
+        { label: "Cycle time", value: "31.2 s", state: "ok" },
+        { label: "Material lot", value: "ABS-8821", state: "ok" }
+      ],
+      similar: [
+        { id: "C-987", sim: "92%", cause: "Injection pressure too high" },
+        { id: "C-955", sim: "86%", cause: "Mold clamp force low" }
+      ],
+      chat: [
+        { role: "agent", text: "The pressure spike lines up with the defect. I can check the clamp force too." }
+      ]
+    },
+    {
+      id: "C-1039",
+      title: "Warpage after cooling",
+      defect: "Warpage",
+      line: "Line 1",
+      severity: "Medium",
+      status: "open",
+      time: "11:20",
+      date: "Today",
+      owner: "A. Silva",
+      confidence: 68,
+      cause: "Cooling time too short",
+      accepted: false,
+      rejected: false,
+      alternatives: [
+        { name: "Uneven mold cooling", confidence: 20 },
+        { name: "Packing pressure low", confidence: 12 }
+      ],
+      camera: "Camera 3",
+      report: "CASE C-1039 — WARPAGE AFTER COOLING\n\nObservation\nWarpage was measured on 4 of 20 sampled parts after cooling.\n\nLikely cause\nCooling time is 18% below the validated window; the last two cycles were shortened to recover output.\n\nEvidence\n- 20 parts measured; 4 out of tolerance.\n- Cooling time: 9.2 s vs 11.2 s baseline.\n- No material change.\n\nSuggested action\nRestore the cooling time and re-measure 10 parts.\n\nStatus\nDraft — awaiting engineer approval.",
+      timeline: [
+        { type: "agent", title: "Reading the defect event", detail: "Warpage measured after cooling.", time: "11:20" },
+        { type: "tool", title: "Pulling cycle data", detail: "Cooling time, packing pressure, mold temperature.", time: "11:21" },
+        { type: "npu", title: "Checking the 3D scans", detail: "4 of 20 parts out of tolerance.", time: "11:23" },
+        { type: "agent", title: "Ranking causes", detail: "Cooling time 68%; uneven cooling 20%; packing 12%.", time: "11:24" }
+      ],
+      machine: [
+        { label: "Cooling time", value: "9.2 s", state: "bad" },
+        { label: "Cooling baseline", value: "11.2 s", state: "ok" },
+        { label: "Packing pressure", value: "52 MPa", state: "ok" },
+        { label: "Mold temperature", value: "74 °C", state: "ok" },
+        { label: "Cycle time", value: "24.1 s", state: "ok" },
+        { label: "Material lot", value: "PP-7710", state: "ok" }
+      ],
+      similar: [
+        { id: "C-930", sim: "90%", cause: "Cooling time too short" },
+        { id: "C-902", sim: "83%", cause: "Uneven mold cooling" }
+      ],
+      chat: [
+        { role: "agent", text: "The cycle was shortened twice this morning. That is the strongest signal." }
+      ]
+    },
+    {
+      id: "C-1035",
+      title: "Sink marks on the top face",
+      defect: "Sink marks",
+      line: "Line 1",
+      severity: "Low",
+      status: "closed",
+      time: "09:14",
+      date: "Yesterday",
+      owner: "M. Chen",
+      confidence: 91,
+      cause: "Material moisture",
+      accepted: true,
+      rejected: false,
+      alternatives: [],
+      camera: "Camera 2",
+      report: "CASE C-1035 — SINK MARKS ON THE TOP FACE\n\nObservation\nSink marks appeared on the top face after a material change.\n\nCause\nMaterial moisture. The dryer was offline for 40 minutes. Drying was restored and the defect disappeared.\n\nAction\nDryer schedule corrected. Case closed.",
+      timeline: [
+        { type: "agent", title: "Reading the defect event", detail: "Sink marks after a material change.", time: "09:14" },
+        { type: "npu", title: "Checking the images", detail: "5 defects on the top face.", time: "09:16" },
+        { type: "agent", title: "Found the cause", detail: "Dryer offline for 40 minutes; material moisture.", time: "09:22" },
+        { type: "human", title: "Engineer approved", detail: "Drying restored; case closed.", time: "09:40" }
+      ],
+      machine: [
+        { label: "Dryer status", value: "Offline 40 min", state: "bad" },
+        { label: "Material moisture", value: "0.18%", state: "bad" },
+        { label: "Melt temperature", value: "230 °C", state: "ok" },
+        { label: "Cycle time", value: "29.8 s", state: "ok" }
+      ],
+      similar: [],
+      chat: []
+    },
+    {
+      id: "C-1033",
+      title: "Silver streaks on the housing",
+      defect: "Silver streaks",
+      line: "Line 2",
+      severity: "Low",
+      status: "closed",
+      time: "16:40",
+      date: "Yesterday",
+      owner: "J. Park",
+      confidence: 88,
+      cause: "Material moisture",
+      accepted: true,
+      rejected: false,
+      alternatives: [],
+      camera: "Camera 1",
+      report: "CASE C-1033 — SILVER STREAKS ON THE HOUSING\n\nObservation\nSilver streaks appeared on the housing after a lot change.\n\nCause\nMaterial moisture.\n\nAction\nMaterial re-dried; 20 verification parts passed. Case closed.",
+      timeline: [
+        { type: "agent", title: "Reading the defect event", detail: "Silver streaks after a lot change.", time: "16:40" },
+        { type: "npu", title: "Checking the images", detail: "7 streaks on the housing.", time: "16:42" },
+        { type: "agent", title: "Found the cause", detail: "Material moisture in the new lot.", time: "16:48" },
+        { type: "human", title: "Engineer approved", detail: "Material re-dried; case closed.", time: "17:05" }
+      ],
+      machine: [
+        { label: "Material moisture", value: "0.21%", state: "bad" },
+        { label: "Drying time", value: "2.0 h", state: "warn" },
+        { label: "Melt temperature", value: "229 °C", state: "ok" }
+      ],
+      similar: [],
+      chat: []
+    }
+  ];
+
+  const state = {
+    view: "overview",
+    selected: null,
+    tab: "Images",
+    filter: "All",
+    search: "",
+    settings: {
+      autoReview: true,
+      notifyHigh: true,
+      npuRecheck: true,
+      requireApproval: true
+    }
+  };
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function esc(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  }
+
+  function photo(c, index) {
+    const spots = [[300, 210, 26], [410, 250, 20], [235, 265, 22]];
+    const [x, y, r] = spots[index % spots.length];
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420">
+        <defs>
+          <pattern id="g" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M32 0H0V32" fill="none" stroke="#1e293b" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="640" height="420" fill="#0b1220"/>
+        <rect width="640" height="420" fill="url(#g)" opacity=".55"/>
+        <g transform="translate(80 68)">
+          <rect x="0" y="0" width="480" height="286" rx="28" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+          <rect x="26" y="26" width="170" height="74" rx="14" fill="#e2e8f0"/>
+          <circle cx="385" cy="68" r="32" fill="#e2e8f0"/>
+          <rect x="40" y="160" width="400" height="76" rx="18" fill="#e2e8f0"/>
+          <circle cx="${x - 80}" cy="${y - 68}" r="${r}" fill="#ef4444" opacity=".92"/>
+          <circle cx="${x - 80}" cy="${y - 68}" r="${r + 10}" fill="none" stroke="#fca5a5" stroke-width="2" opacity=".7"/>
+          <rect x="${x - 80 - r - 18}" y="${y - 68 - r - 18}" width="${2 * r + 36}" height="${2 * r + 36}" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="7 5"/>
+          <text x="${x - 80 - r - 18}" y="${y - 68 - r - 28}" fill="#fca5a5" font-family="monospace" font-size="14">DEFECT ${index + 1}</text>
+        </g>
+        <text x="24" y="30" fill="#94a3b8" font-family="monospace" font-size="14">CAM 0${index + 1} · ${c.time} · ${c.line.toUpperCase()}</text>
+        <text x="24" y="400" fill="#64748b" font-family="monospace" font-size="12">NPU CONF ${c.confidence}% · ${c.defect.toUpperCase()}</text>
+      </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  }
+
+  function openCases() { return CASES.filter(c => c.status !== "closed"); }
+  function closedCases() { return CASES.filter(c => c.status === "closed"); }
+  function findCase(id) { return CASES.find(c => c.id === id); }
+
+  function statusPill(c) {
+    if (c.status === "closed") return `<span class="pill closed">Closed</span>`;
+    if (c.status === "review") return `<span class="pill review">In review</span>`;
+    return `<span class="pill open">Open</span>`;
+  }
+
+  function severityPill(c) {
+    return `<span class="pill ${c.severity.toLowerCase()}">${c.severity}</span>`;
+  }
+
+  function toast(message, kind = "") {
+    const el = $("#toast");
+    el.textContent = message;
+    el.className = "toast show " + kind;
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => { el.className = "toast"; }, 2600);
+  }
+
+  function renderSidebar() {
+    const items = [
+      { view: "overview", label: "Overview", icon: ICONS.overview },
+      { view: "cases", label: "Cases", icon: ICONS.cases, count: openCases().length },
+      { view: "history", label: "History", icon: ICONS.history },
+      { view: "settings", label: "Settings", icon: ICONS.settings }
+    ];
+    $("#nav").innerHTML = items.map(item => `
+      <button class="nav-item ${state.view === item.view || (state.view === "case" && item.view === "cases") ? "active" : ""}" data-view="${item.view}">
+        ${item.icon}
+        <span>${item.label}</span>
+        ${item.count ? `<span class="count">${item.count}</span>` : ""}
+      </button>
+    `).join("");
+  }
+
+  function renderCrumb() {
+    if (state.view === "overview") {
+      $("#crumb").innerHTML = `<b>Line 3</b><span class="sep">/</span><span>Overview</span>`;
+    } else if (state.view === "cases") {
+      $("#crumb").innerHTML = `<b>Line 3</b><span class="sep">/</span><span>Cases</span>`;
+    } else if (state.view === "case") {
+      const c = findCase(state.selected);
+      $("#crumb").innerHTML = `<b>Cases</b><span class="sep">/</span><span>${c ? c.id : ""}</span>`;
+    } else if (state.view === "history") {
+      $("#crumb").innerHTML = `<b>Line 3</b><span class="sep">/</span><span>History</span>`;
+    } else {
+      $("#crumb").innerHTML = `<b>Settings</b><span class="sep">/</span><span>Workspace</span>`;
+    }
+  }
+
+  function render() {
+    renderSidebar();
+    renderCrumb();
+    const content = $("#content");
+    if (state.view === "overview") content.innerHTML = overviewHTML();
+    else if (state.view === "cases") content.innerHTML = casesHTML();
+    else if (state.view === "case") content.innerHTML = caseHTML();
+    else if (state.view === "history") content.innerHTML = historyHTML();
+    else content.innerHTML = settingsHTML();
+    bindInputs();
+  }
+
+  function overviewHTML() {
+    const open = openCases();
+    const high = open.filter(c => c.severity === "High").length;
+    const recent = CASES.slice(0, 4);
+    return `
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Line 3 overview</h1>
+          <p class="page-sub">Injection molding · Shift A · Camera health and open cases</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn" data-action="toast" data-message="Report exported as PDF (demo).">Export shift report</button>
+          <button class="btn primary" data-action="new-inspection">New inspection</button>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="k-label">Open cases</div><div class="k-value">${open.length}</div><div class="k-note"><b>${high} high severity</b> · needs review</div></div>
+        <div class="kpi"><div class="k-label">Scrap risk</div><div class="k-value">4.8%</div><div class="k-note"><b>−0.6%</b> vs last shift</div></div>
+        <div class="kpi good"><div class="k-label">Median time to cause</div><div class="k-value">41 min</div><div class="k-note">target &lt; 2 h</div></div>
+        <div class="kpi"><div class="k-label">NPU</div><div class="k-value">4/4</div><div class="k-note">cameras online · 12 ms</div></div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="stack">
+          <div class="card">
+            <div class="card-head">
+              <div><div class="card-title">Line status</div><div class="card-sub">Live cameras and process stations</div></div>
+              <span class="pill open">Running</span>
+            </div>
+            <div class="line-map">
+              <div class="station"><span class="s-light"></span><div class="s-name">Dryer</div><div class="s-state">72 °C · stable</div><div class="cam">Cam 1</div></div>
+              <div class="station"><span class="s-light"></span><div class="s-name">Injection</div><div class="s-state">84 MPa · stable</div><div class="cam">Cam 2</div></div>
+              <div class="station warn"><span class="s-light"></span><div class="s-name">Mold</div><div class="s-state">168 °C · low</div><div class="cam">Cam 2</div></div>
+              <div class="station"><span class="s-light"></span><div class="s-name">Cooling</div><div class="s-state">11.2 s · stable</div><div class="cam">Cam 3</div></div>
+              <div class="station"><span class="s-light"></span><div class="s-name">Robot</div><div class="s-state">Cycle 27.4 s</div><div class="cam">Cam 3</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div><div class="card-title">Recent cases</div><div class="card-sub">Latest defects across the line</div></div>
+              <button class="btn sm ghost" data-view="cases">Open inbox</button>
+            </div>
+            ${caseTable(recent, false)}
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="card">
+            <div class="card-head"><div><div class="card-title">Agent activity</div><div class="card-sub">Latest investigation steps</div></div><span class="pill npu">NPU</span></div>
+            <div class="activity">
+              <div class="activity-item"><div class="activity-dot npu">N</div><div class="activity-text">Re-checked 48 images on line 3<small>3 defect shapes · 2 min ago</small></div></div>
+              <div class="activity-item"><div class="activity-dot">A</div><div class="activity-text">Ranked causes for C-1042<small>Mold temperature drift · 86%</small></div></div>
+              <div class="activity-item"><div class="activity-dot human">H</div><div class="activity-text">Engineer confirmed C-1035<small>Material moisture · 18 min ago</small></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><div><div class="card-title">Top causes</div><div class="card-sub">Last 30 days</div></div></div>
+            <div class="bars">
+              <div class="bar-row"><span>Mold temperature</span><div class="bar"><span style="width:78%"></span></div><b>38%</b></div>
+              <div class="bar-row"><span>Material moisture</span><div class="bar"><span style="width:52%"></span></div><b>24%</b></div>
+              <div class="bar-row"><span>Injection pressure</span><div class="bar"><span style="width:34%"></span></div><b>16%</b></div>
+              <div class="bar-row"><span>Cooling time</span><div class="bar"><span style="width:22%"></span></div><b>10%</b></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function caseTable(rows, showActions = true) {
+    if (!rows.length) return `<div class="empty">No cases in this view.</div>`;
+    return `
+      <table class="table">
+        <thead><tr><th>Case</th><th>Defect</th><th>Severity</th><th>Status</th><th>Owner</th><th>Time</th>${showActions ? "<th></th>" : ""}</tr></thead>
+        <tbody>
+          ${rows.map(c => `
+            <tr class="clickable" data-action="open-case" data-id="${c.id}">
+              <td class="id">${c.id}</td>
+              <td><div class="strong">${esc(c.defect)}</div><div class="id">${esc(c.line)} · ${esc(c.camera)}</div></td>
+              <td>${severityPill(c)}</td>
+              <td>${statusPill(c)}</td>
+              <td>${esc(c.owner)}</td>
+              <td>${esc(c.time)}<div class="id">${esc(c.date)}</div></td>
+              ${showActions ? `<td class="right"><button class="btn sm" data-action="open-case" data-id="${c.id}">Open</button></td>` : ""}
+            </tr>`).join("")}
+        </tbody>
+      </table>`;
+  }
+
+  function casesHTML() {
+    const q = state.search.trim().toLowerCase();
+    let rows = CASES.filter(c => {
+      const matchQ = !q || [c.id, c.defect, c.cause, c.owner, c.line].join(" ").toLowerCase().includes(q);
+      const matchF = state.filter === "All" || (state.filter === "Open" && c.status === "open") || (state.filter === "Review" && c.status === "review") || (state.filter === "Closed" && c.status === "closed");
+      return matchQ && matchF;
+    });
+    return `
+      <div class="page-head">
+        <div><h1 class="page-title">Cases</h1><p class="page-sub">Every defect that needs a cause, a report or a decision</p></div>
+        <div class="page-actions"><button class="btn primary" data-action="new-inspection">New inspection</button></div>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="caseSearch" placeholder="Search case, defect, owner…" value="${esc(state.search)}">
+        </div>
+        <div class="filter">
+          ${["All", "Open", "Review", "Closed"].map(f => `<button class="${state.filter === f ? "active" : ""}" data-action="filter" data-filter="${f}">${f}</button>`).join("")}
+        </div>
+      </div>
+      <div class="card">${caseTable(rows, true)}</div>`;
+  }
+
+  function evidenceHTML(c) {
+    if (state.tab === "Machine data") {
+      return `<div class="tab-body"><table class="data-table">${c.machine.map(m => `<tr><td>${esc(m.label)}</td><td class="${m.state}">${esc(m.value)}</td></tr>`).join("")}</table></div>`;
+    }
+    if (state.tab === "Similar cases") {
+      return `<div class="tab-body"><div class="similar">${c.similar.length ? c.similar.map(s => `<div class="similar-row"><div><b>${s.id}</b><small>${esc(s.cause)}</small></div><span>${s.sim}</span></div>`).join("") : `<div class="empty">No similar cases yet.</div>`}</div></div>`;
+    }
+    const idx = c.__photo || 0;
+    return `
+      <div class="photo-wrap">
+        <img class="photo" id="mainPhoto" src="${photo(c, idx)}" alt="Inspection image for ${esc(c.id)}">
+        <div class="photo-caption"><span>${esc(c.camera)} · ${esc(c.time)}</span><span>NPU CONF ${c.confidence}%</span></div>
+      </div>
+      <div class="thumbs">
+        ${[0, 1, 2].map(i => `<button class="thumb ${i === idx ? "active" : ""}" data-action="thumb" data-index="${i}"><img src="${photo(c, i)}" alt=""></button>`).join("")}
+      </div>`;
+  }
+
+  function timelineHTML(c) {
+    return `<div class="timeline">${c.timeline.map(e => `
+      <div class="event">
+        <div class="event-dot ${e.type}">${e.type === "agent" ? "A" : e.type === "npu" ? "N" : e.type === "tool" ? "T" : "H"}</div>
+        <div class="event-body">
+          <div class="e-title">${esc(e.title)}</div>
+          <div class="e-detail">${esc(e.detail)}</div>
+          <div class="event-meta"><span class="pill ${e.type}">${e.type.toUpperCase()}</span><span class="time">${esc(e.time)}</span></div>
+        </div>
+      </div>`).join("")}</div>`;
+  }
+
+  function causeHTML(c) {
+    if (c.status === "closed") {
+      return `<div class="card"><div class="panel-head"><div class="panel-title">Cause</div><span class="pill closed">Closed</span></div><div class="cause-card">
+        <div class="cause-label">Confirmed cause</div>
+        <div class="cause-name">${esc(c.cause)}</div>
+        <div class="confidence"><div class="track"><span style="width:${c.confidence}%"></span></div><b>${c.confidence}%</b></div>
+      </div></div>`;
+    }
+
+    if (c.rejected) {
+      return `<div class="card"><div class="panel-head"><div class="panel-title">Choose another cause</div><span class="pill review">Review</span></div><div class="cause-card">
+        <div class="banner warn">The first suggestion was rejected. Pick the cause you want to record.</div>
+        <div class="cause-label">Alternatives</div>
+        <div class="similar" style="margin-top:8px">
+          ${c.alternatives.map((a, i) => `<label class="similar-row" style="cursor:pointer"><div><b>${esc(a.name)}</b><small>${a.confidence}% confidence</small></div><input type="radio" name="alt-${c.id}" value="${i}"></label>`).join("")}
+        </div>
+        <div class="cause-actions"><button class="btn primary" data-action="confirm-alt" data-id="${c.id}">Confirm alternative</button><button class="btn ghost" data-action="cancel-reject" data-id="${c.id}">Cancel</button></div>
+      </div></div>`;
+    }
+
+    return `<div class="card"><div class="panel-head"><div class="panel-title">Suggested cause</div><span class="pill ${c.accepted ? "closed" : "review"}">${c.accepted ? "Accepted" : "Needs review"}</span></div><div class="cause-card">
+      ${c.accepted ? `<div class="banner ok">Cause accepted. The report is ready for final approval.</div>` : ""}
+      <div class="cause-label">${c.accepted ? "Accepted cause" : "Ranked cause"}</div>
+      <div class="cause-name">${esc(c.cause)}</div>
+      <div class="confidence"><div class="track"><span style="width:${c.confidence}%"></span></div><b>${c.confidence}%</b></div>
+      <ul class="evidence-list">
+        <li>Mold temperature is 12°C below the last stable run.</li>
+        <li>9 of 12 similar cases had the same pattern.</li>
+        <li>Heater replaced at 13:05, 27 min before the defect.</li>
+      </ul>
+      <div class="cause-actions">
+        ${c.accepted
+          ? `<button class="btn green" data-action="approve" data-id="${c.id}">Approve &amp; close</button><button class="btn" data-action="undo-accept" data-id="${c.id}">Change</button>`
+          : `<button class="btn primary" data-action="accept" data-id="${c.id}">Accept cause</button><button class="btn danger" data-action="reject" data-id="${c.id}">Reject</button>`}
+      </div>
+    </div></div>`;
+  }
+
+  function reportHTML(c) {
+    if (c.status === "closed") {
+      return `<div class="card report"><div class="panel-head"><div class="panel-title">Quality report</div><span class="pill closed">Closed</span></div><textarea readonly>${esc(c.report)}</textarea><div class="report-foot"><small>Closed report · audit trail saved</small></div></div>`;
+    }
+    return `<div class="card report"><div class="panel-head"><div class="panel-title">Draft report</div><span class="pill ${c.accepted ? "closed" : "review"}">${c.accepted ? "Ready" : "Draft"}</span></div><textarea id="reportText">${esc(c.report)}</textarea><div class="report-foot"><small>${c.accepted ? "Accepted cause · final approval available" : "Accept a cause to unlock final approval"}</small><button class="btn sm" data-action="save-draft" data-id="${c.id}">Save draft</button></div></div>`;
+  }
+
+  function caseHTML() {
+    const c = findCase(state.selected);
+    if (!c) return `<div class="empty">Case not found.</div>`;
+    c.__photo = c.__photo || 0;
+    const closed = c.status === "closed";
+    return `
+      <div class="case-head">
+        <div>
+          <button class="back" data-view="cases">← Back to cases</button>
+          <h1 class="case-title">${esc(c.title)}</h1>
+          <div class="case-meta">
+            <span class="meta-chip"><b>${c.id}</b></span>
+            <span class="meta-chip"><b>${esc(c.line)}</b> · ${esc(c.camera)}</span>
+            <span class="meta-chip">${esc(c.date)} · ${esc(c.time)}</span>
+            <span class="meta-chip"><b>Owner</b> ${esc(c.owner)}</span>
+            ${severityPill(c)} ${statusPill(c)}
+          </div>
+        </div>
+        <div class="page-actions">
+          <button class="btn" data-action="toast" data-message="Case link copied (demo).">Share</button>
+          ${closed ? "" : `<button class="btn danger" data-action="false-positive" data-id="${c.id}">False positive</button>`}
+          <button class="btn primary" data-action="toast" data-message="Assigned to M. Chen.">Assign to me</button>
+        </div>
+      </div>
+
+      ${closed ? `<div class="banner closed">This case is closed. The report and audit trail are read-only.</div>` : c.accepted ? `<div class="banner ok">Cause accepted. Review the report and approve to close the case.</div>` : ""}
+
+      <div class="workspace">
+        <div class="side-left">
+          <div class="panel">
+            <div class="panel-head"><div><div class="panel-title">Evidence</div><div class="panel-sub">${c.defect} · ${c.camera}</div></div></div>
+            <div class="tabs">
+              ${["Images", "Machine data", "Similar cases"].map(t => `<button class="tab ${state.tab === t ? "active" : ""}" data-action="tab" data-tab="${t}">${t}</button>`).join("")}
+            </div>
+            ${evidenceHTML(c)}
+          </div>
+        </div>
+
+        <div class="side-center">
+          <div class="panel">
+            <div class="panel-head"><div><div class="panel-title">Agent investigation</div><div class="panel-sub">Plan → tool → NPU → evaluate</div></div><span class="pill npu">NPU</span></div>
+            ${timelineHTML(c)}
+            <div class="chat">
+              <div class="chat-log" id="chatLog">
+                ${c.chat.map(m => `<div class="bubble ${m.role}">${esc(m.text)}</div>`).join("")}
+              </div>
+              ${closed ? "" : `
+              <div class="quick">
+                <button data-action="quick" data-text="Why not material moisture?">Why not material?</button>
+                <button data-action="quick" data-text="Show similar cases.">Similar cases</button>
+                <button data-action="quick" data-text="What should we check first?">What to check</button>
+              </div>
+              <div class="chat-input">
+                <input id="chatInput" placeholder="Ask the agent about this case…">
+                <button data-action="send-chat" data-id="${c.id}">Ask</button>
+              </div>`}
+            </div>
+          </div>
+        </div>
+
+        <div class="side">
+          ${causeHTML(c)}
+          ${reportHTML(c)}
+        </div>
+      </div>`;
+  }
+
+  function historyHTML() {
+    const rows = closedCases();
+    return `
+      <div class="page-head">
+        <div><h1 class="page-title">History</h1><p class="page-sub">Closed cases, confirmed causes and saved reports</p></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="k-label">Closed cases</div><div class="k-value">${rows.length}</div><div class="k-note">last 30 days</div></div>
+        <div class="kpi good"><div class="k-label">Median time to cause</div><div class="k-value">37 min</div><div class="k-note">target &lt; 2 h</div></div>
+        <div class="kpi"><div class="k-label">Top cause</div><div class="k-value" style="font-size:18px">Material moisture</div><div class="k-note">2 cases</div></div>
+        <div class="kpi"><div class="k-label">NPU checks</div><div class="k-value">128</div><div class="k-note">images re-checked</div></div>
+      </div>
+      <div class="card">${caseTable(rows, true)}</div>`;
+  }
+
+  function settingsHTML() {
+    const s = state.settings;
+    return `
+      <div class="page-head">
+        <div><h1 class="page-title">Settings</h1><p class="page-sub">Workspace, approvals and NPU behaviour</p></div>
+      </div>
+      <div class="card">
+        <div class="settings-list">
+          <div class="setting"><div><b>Automatic review</b><small>Start an investigation when a high-severity defect is detected.</small></div><label class="switch"><input type="checkbox" data-setting="autoReview" ${s.autoReview ? "checked" : ""}><span class="slider"></span></label></div>
+          <div class="setting"><div><b>Notify on high severity</b><small>Send an alert to the shift engineer and quality lead.</small></div><label class="switch"><input type="checkbox" data-setting="notifyHigh" ${s.notifyHigh ? "checked" : ""}><span class="slider"></span></label></div>
+          <div class="setting"><div><b>NPU re-check on new defect</b><small>Re-run the image classifier on every new defect before the agent investigates.</small></div><label class="switch"><input type="checkbox" data-setting="npuRecheck" ${s.npuRecheck ? "checked" : ""}><span class="slider"></span></label></div>
+          <div class="setting"><div><b>Require engineer approval</b><small>A cause cannot close a case without an engineer approval.</small></div><label class="switch"><input type="checkbox" data-setting="requireApproval" ${s.requireApproval ? "checked" : ""}><span class="slider"></span></label></div>
+        </div>
+      </div>`;
+  }
+
+  function bindInputs() {
+    const search = $("#caseSearch");
+    if (search) {
+      search.addEventListener("input", e => {
+        state.search = e.target.value;
+        const pos = e.target.selectionStart;
+        render();
+        const next = $("#caseSearch");
+        if (next) { next.focus(); next.setSelectionRange(pos, pos); }
+      });
+    }
+    const report = $("#reportText");
+    if (report) {
+      report.addEventListener("input", e => {
+        const c = findCase(state.selected);
+        if (c) c.report = e.target.value;
+      });
+    }
+    const chat = $("#chatInput");
+    if (chat) {
+      chat.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          sendChat(chat.value);
+        }
+      });
+    }
+    $$(".switch input").forEach(input => {
+      input.addEventListener("change", e => {
+        state.settings[e.target.dataset.setting] = e.target.checked;
+        toast("Setting saved.");
+      });
+    });
+  }
+
+  function sendChat(text) {
+    const c = findCase(state.selected);
+    if (!c || c.status === "closed") return;
+    const value = (text || "").trim();
+    if (!value) return;
+    c.chat.push({ role: "user", text: value });
+    render();
+    setTimeout(() => {
+      const lower = value.toLowerCase();
+      let reply = "I would check the mold temperature first. It is the strongest signal in the last 12 cases.";
+      if (lower.includes("material") || lower.includes("moisture")) reply = "The material lot is within spec, and the dryer is running. Mold temperature is 12°C below baseline after the 13:05 maintenance.";
+      else if (lower.includes("similar")) reply = "12 similar cases. 9 were mold temperature drift, 2 were material moisture, 1 was injection speed. I can open the closest case.";
+      else if (lower.includes("check") || lower.includes("first")) reply = "Check the mold heater and the thermocouple after maintenance. Then run 5 verification shots before resuming the batch.";
+      c.chat.push({ role: "agent", text: reply });
+      render();
+      const log = $("#chatLog");
+      if (log) log.scrollTop = log.scrollHeight;
+    }, 650);
+  }
+
+  function openCase(id) {
+    state.selected = id;
+    state.view = "case";
+    state.tab = "Images";
+    const c = findCase(id);
+    if (c) c.__photo = 0;
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function newInspection() {
+    toast("New inspection queued. The camera will post a case when it sees a defect.", "warn");
+  }
+
+  document.addEventListener("click", e => {
+    const nav = e.target.closest("[data-view]");
+    if (nav) {
+      state.view = nav.dataset.view;
+      state.selected = state.view === "case" ? state.selected : null;
+      render();
+      window.scrollTo({ top: 0 });
+      return;
+    }
+
+    const el = e.target.closest("[data-action]");
+    if (!el) return;
+    const action = el.dataset.action;
+
+    if (action === "open-case") openCase(el.dataset.id);
+    else if (action === "tab") { state.tab = el.dataset.tab; render(); }
+    else if (action === "thumb") { const c = findCase(state.selected); if (c) c.__photo = Number(el.dataset.index); render(); }
+    else if (action === "accept") { const c = findCase(el.dataset.id); c.accepted = true; c.rejected = false; c.status = "review"; render(); toast("Cause accepted. Report unlocked for approval.", "ok"); }
+    else if (action === "reject") { const c = findCase(el.dataset.id); c.rejected = true; c.accepted = false; render(); toast("Suggestion rejected. Choose another cause.", "warn"); }
+    else if (action === "cancel-reject") { const c = findCase(el.dataset.id); c.rejected = false; render(); }
+    else if (action === "confirm-alt") {
+      const c = findCase(el.dataset.id);
+      const checked = document.querySelector(`input[name="alt-${c.id}"]:checked`);
+      if (!checked) { toast("Pick an alternative first.", "warn"); return; }
+      const alt = c.alternatives[Number(checked.value)];
+      c.cause = alt.name; c.confidence = alt.confidence; c.accepted = true; c.rejected = false; c.status = "review";
+      render(); toast("Alternative cause recorded.", "ok");
+    }
+    else if (action === "undo-accept") { const c = findCase(el.dataset.id); c.accepted = false; c.status = "open"; render(); }
+    else if (action === "approve") {
+      const c = findCase(el.dataset.id);
+      c.status = "closed"; c.accepted = true; c.date = "Today";
+      render(); toast("Case closed. Report saved to history.", "ok");
+    }
+    else if (action === "false-positive") {
+      const c = findCase(el.dataset.id);
+      c.status = "closed"; c.cause = "False positive"; c.confidence = 100;
+      render(); toast("Case marked as false positive and closed.", "warn");
+    }
+    else if (action === "save-draft") { toast("Draft saved.", "ok"); }
+    else if (action === "send-chat") { const input = $("#chatInput"); sendChat(input ? input.value : ""); }
+    else if (action === "quick") sendChat(el.dataset.text);
+    else if (action === "filter") { state.filter = el.dataset.filter; render(); }
+    else if (action === "go-cases") { state.view = "cases"; render(); }
+    else if (action === "new-inspection") newInspection();
+    else if (action === "toast") toast(el.dataset.message || "Done.");
+  });
+
+  render();
+</script>
+</body>
+</html>

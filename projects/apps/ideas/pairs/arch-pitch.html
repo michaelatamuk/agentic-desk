@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture Studio - sun study</title>
+<style>
+  :root { --paper:#efe6d4; --paper2:#e6dbc5; --ink:#25231d; --muted:#8b8170; --line:#c9bda6; --sun:#d9772f; --warm:#e8a13c; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-height:100%; }
+  body { background:var(--paper); color:var(--ink); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; overflow-x:hidden; }
+  button { font:inherit; cursor:pointer; }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.5;
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(255,255,255,.55), transparent 70%),
+      radial-gradient(80% 60% at 50% 110%, rgba(120,90,50,.16), transparent 70%); }
+  body::after { content:""; position:fixed; inset:0; pointer-events:none; opacity:.16; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E"); }
+
+  .wrap { position:relative; z-index:1; max-width:1160px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; gap:10px; padding:16px clamp(12px,3vw,34px) 16px; }
+  header { display:flex; align-items:flex-end; justify-content:space-between; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:8px; }
+  .brand { display:flex; align-items:baseline; gap:12px; }
+  h1 { margin:0; font-size:clamp(17px,2.1vw,25px); letter-spacing:.2em; font-weight:800; }
+  h1 small { display:block; font-size:8px; letter-spacing:.32em; color:var(--muted); font-weight:600; margin-top:3px; }
+  .stamp { font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.14em; color:var(--muted); border:1px solid var(--line); padding:4px 7px; border-radius:2px; }
+  .meta { text-align:right; font-family:ui-monospace,monospace; font-size:9px; color:var(--muted); line-height:1.7; letter-spacing:.06em; }
+  .meta b { color:var(--ink); font-weight:600; }
+
+  .brief { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .brief p { margin:0; font-size:clamp(11px,1.1vw,13px); color:#5a5345; line-height:1.5; max-width:720px; }
+  .brief p em { font-style:normal; border-bottom:1px solid var(--sun); color:var(--ink); }
+  .clock { font-family:ui-monospace,monospace; font-size:clamp(16px,2.6vw,30px); letter-spacing:-.02em; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .clock span { font-size:9px; color:var(--muted); letter-spacing:.12em; margin-left:6px; }
+
+  .board { position:relative; width:100%; border:1.5px solid var(--ink); border-radius:2px; overflow:hidden; background:var(--paper2); box-shadow:0 22px 60px rgba(80,60,30,.18); }
+  .board svg { display:block; width:100%; height:auto; }
+  .board-hud { position:absolute; z-index:4; pointer-events:none; font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.16em; color:rgba(37,35,29,.55); }
+  .board-hud.tl { left:12px; top:10px; }
+  .board-hud.br { right:12px; bottom:10px; text-align:right; line-height:1.8; }
+  .board-hud b { color:var(--sun); font-weight:600; }
+
+  .plaza-status { position:absolute; z-index:5; left:50%; bottom:12px; transform:translateX(-50%); display:flex; align-items:center; gap:8px;
+    background:rgba(247,241,228,.92); border:1px solid var(--ink); border-radius:2px; padding:5px 10px; font-size:9px; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+  .plaza-status i { width:8px; height:8px; border-radius:50%; background:var(--warm); box-shadow:0 0 10px rgba(232,161,60,.8); }
+  .plaza-status.shade { background:#2b2822; color:#f3ead9; border-color:#2b2822; }
+  .plaza-status.shade i { background:#8b8170; box-shadow:none; }
+
+  .dock { display:grid; grid-template-columns:172px 1fr auto; gap:18px; align-items:center; border:1.5px solid var(--ink); border-radius:2px; padding:9px 13px 16px; background:rgba(247,241,228,.62); }
+  .dial { position:relative; width:172px; height:92px; user-select:none; touch-action:none; cursor:grab; }
+  .dial:active { cursor:grabbing; }
+  .dial svg { position:absolute; inset:0; width:100%; height:100%; }
+  .dial .knob { position:absolute; width:15px; height:15px; margin:-7.5px 0 0 -7.5px; border-radius:50%; background:var(--sun); border:1.5px solid #fdf6e8; box-shadow:0 0 0 1px var(--ink), 0 0 16px rgba(217,119,47,.55); pointer-events:none; }
+  .dial .read { position:absolute; left:0; right:0; bottom:0; text-align:center; font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.14em; color:var(--muted); }
+  .dial .read b { color:var(--ink); font-weight:600; }
+
+  .mid { display:flex; flex-direction:column; gap:7px; min-width:0; }
+  .mid .row { display:flex; align-items:center; gap:10px; }
+  .lab { font-size:8px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+  .lab b { color:var(--ink); font-family:ui-monospace,monospace; font-weight:600; letter-spacing:.06em; }
+  input[type=range] { -webkit-appearance:none; appearance:none; width:100%; height:16px; background:transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height:2px; background:var(--ink); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; margin-top:-5px; border-radius:50%; background:var(--paper); border:1.5px solid var(--ink); box-shadow:0 0 0 3px rgba(217,119,47,.14); }
+  input[type=range]::-moz-range-track { height:2px; background:var(--ink); }
+  input[type=range]::-moz-range-thumb { width:12px; height:12px; border:1.5px solid var(--ink); border-radius:50%; background:var(--paper); }
+
+  .presets { display:flex; gap:6px; }
+  .preset { border:1px solid var(--line); background:transparent; color:#5a5345; border-radius:2px; padding:3px 7px; font-size:8px; letter-spacing:.08em; }
+  .preset.on { border-color:var(--ink); background:var(--ink); color:var(--paper); }
+
+  .actions { display:flex; flex-direction:column; gap:6px; align-items:stretch; }
+  .btn { border:1.5px solid var(--ink); background:var(--ink); color:var(--paper); border-radius:2px; padding:7px 11px; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+  .btn.ghost { background:transparent; color:var(--ink); }
+  .btn:hover { opacity:.86; }
+
+  .hintline { font-size:8px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); text-align:center; }
+
+  .postcard-wrap { position:fixed; inset:0; z-index:40; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(30,26,18,.55); backdrop-filter:blur(6px); }
+  .postcard-wrap.open { display:flex; }
+  .postcard { width:min(720px,100%); background:#f8f2e3; border:1px solid var(--ink); box-shadow:0 40px 100px rgba(0,0,0,.35); padding:18px; transform:rotate(-.4deg); }
+  .postcard .top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--ink); padding-bottom:6px; margin-bottom:10px; }
+  .postcard .top b { font-size:11px; letter-spacing:.2em; }
+  .postcard .top span { font-family:ui-monospace,monospace; font-size:9px; color:var(--muted); }
+  .postcard .shot { border:1px solid var(--line); overflow:hidden; background:var(--paper2); }
+  .postcard .shot svg { display:block; width:100%; height:auto; }
+  .postcard .cap { display:flex; justify-content:space-between; gap:14px; margin-top:10px; align-items:flex-end; }
+  .postcard .cap p { margin:0; font-family:Georgia,"Times New Roman",serif; font-style:italic; font-size:13px; color:#4a4437; max-width:420px; }
+  .postcard .cap .no { font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.14em; color:var(--muted); text-align:right; }
+  .postcard .acts { display:flex; gap:8px; margin-top:14px; justify-content:flex-end; }
+
+  @media (max-width:820px) {
+    .wrap { padding:10px 10px 12px; gap:8px; }
+    h1 { font-size:15px; }
+    .brief p { font-size:10px; }
+    .clock { font-size:15px; }
+    .dock { grid-template-columns:1fr; gap:10px; padding:9px; }
+    .dial { margin:0 auto; }
+    .actions { flex-direction:row; }
+    .actions .btn { flex:1; }
+    .plaza-status { font-size:8px; bottom:8px; }
+    .board-hud.br { display:none; }
+    .hintline { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>ARCHITECTURE STUDIO <small>MILL LANE &middot; SUN STUDY 04</small></h1>
+      <span class="stamp">HELIODON</span>
+    </div>
+    <div class="meta">PROPOSAL <b id="headProposal">90 m</b> &middot; 1:500<br>PLAZA ORIENTATION <b>SW</b></div>
+  </header>
+
+  <div class="brief">
+    <p>One tower. One public plaza. Drag the sun across the sky and watch the shadow take the square. Then change the tower and see if the plaza gets its light back.</p>
+    <div class="clock"><span id="clock">16:28</span><span style="font-size:9px">ALT <b id="alt">31&deg;</b></span></div>
+  </div>
+
+  <div class="board">
+    <svg id="plan" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" aria-label="Sun study plan">
+      <defs>
+        <pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="9" stroke="#25231d" stroke-width="1" opacity=".32"/>
+        </pattern>
+        <pattern id="paving" width="26" height="26" patternUnits="userSpaceOnUse">
+          <path d="M26 0H0V26" fill="none" stroke="#c9bda6" stroke-width=".8"/>
+        </pattern>
+        <pattern id="grass" width="14" height="14" patternUnits="userSpaceOnUse">
+          <path d="M0 14L14 0" stroke="#b9ad96" stroke-width=".7" opacity=".5"/>
+        </pattern>
+      </defs>
+
+      <rect width="1000" height="620" fill="#efe6d4"/>
+
+      <!-- streets -->
+      <rect x="0" y="250" width="1000" height="66" fill="#e6dbc5"/>
+      <rect x="400" y="0" width="54" height="620" fill="#e6dbc5"/>
+      <line x1="0" y1="250" x2="1000" y2="250" stroke="#c9bda6" stroke-width="1"/>
+      <line x1="0" y1="316" x2="1000" y2="316" stroke="#c9bda6" stroke-width="1"/>
+      <line x1="400" y1="0" x2="400" y2="620" stroke="#c9bda6" stroke-width="1"/>
+      <line x1="454" y1="0" x2="454" y2="620" stroke="#c9bda6" stroke-width="1"/>
+      <line x1="0" y1="283" x2="1000" y2="283" stroke="#d6cab2" stroke-width="1" stroke-dasharray="14 12"/>
+      <line x1="427" y1="0" x2="427" y2="620" stroke="#d6cab2" stroke-width="1" stroke-dasharray="14 12"/>
+
+      <!-- plaza paving -->
+      <rect id="plaza" x="650" y="340" width="280" height="230" fill="#f5efdf"/>
+      <rect x="650" y="340" width="280" height="230" fill="url(#paving)" opacity=".8"/>
+      <rect id="plazaShade" x="650" y="340" width="280" height="230" fill="#25231d" opacity="0" style="transition:opacity .35s"/>
+
+      <!-- courtyard greenery -->
+      <rect x="70" y="340" width="260" height="230" fill="url(#grass)" opacity=".7"/>
+
+      <!-- trees (shadows updated in JS) -->
+      <g class="trees" fill="#e9dfc8" stroke="#25231d" stroke-width="1.2">
+        <g class="tree" data-x="690" data-y="380"><circle cx="690" cy="380" r="11"/><circle cx="690" cy="380" r="3" fill="#25231d" stroke="none"/></g>
+        <g class="tree" data-x="900" data-y="390"><circle cx="900" cy="390" r="14"/><circle cx="900" cy="390" r="4" fill="#25231d" stroke="none"/></g>
+        <g class="tree" data-x="700" data-y="530"><circle cx="700" cy="530" r="13"/><circle cx="700" cy="530" r="4" fill="#25231d" stroke="none"/></g>
+        <g class="tree" data-x="885" data-y="535"><circle cx="885" cy="535" r="10"/><circle cx="885" cy="535" r="3" fill="#25231d" stroke="none"/></g>
+        <g class="tree" data-x="140" data-y="395"><circle cx="140" cy="395" r="12"/><circle cx="140" cy="395" r="3.5" fill="#25231d" stroke="none"/></g>
+        <g class="tree" data-x="250" data-y="430"><circle cx="250" cy="430" r="9"/><circle cx="250" cy="430" r="3" fill="#25231d" stroke="none"/></g>
+        <g class="tree" data-x="330" data-y="520"><circle cx="330" cy="520" r="12"/><circle cx="330" cy="520" r="3.5" fill="#25231d" stroke="none"/></g>
+      </g>
+
+      <!-- sun marker on plaza -->
+      <g id="sunPatch">
+        <circle cx="790" cy="455" r="26" fill="#e8a13c" opacity=".22"/>
+        <circle cx="790" cy="455" r="9" fill="#e8a13c" opacity=".95"/>
+      </g>
+
+      <!-- buildings generated by JS -->
+      <g id="buildings"></g>
+
+      <!-- labels -->
+      <g font-family="ui-monospace,monospace" fill="#25231d" letter-spacing="1.5">
+        <text x="212" y="150" font-size="11" text-anchor="middle" opacity=".8">FOUNDRY</text>
+        <text x="794" y="150" font-size="11" text-anchor="middle" opacity=".8">WAREHOUSE 2</text>
+        <text x="200" y="470" font-size="10" text-anchor="middle" opacity=".55">MILL</text>
+        <text x="790" y="470" font-size="11" text-anchor="middle" opacity=".8">PLAZA</text>
+        <text x="540" y="452" font-size="9" text-anchor="middle" opacity=".9" id="towerLabel">PROPOSAL</text>
+        <text x="40" y="243" font-size="8" opacity=".5">MILL LANE</text>
+        <text x="437" y="600" font-size="8" opacity=".5" transform="rotate(-90 437 600)">FOUNDRY ROW</text>
+      </g>
+
+      <!-- north arrow -->
+      <g transform="translate(950 40)" stroke="#25231d" fill="none">
+        <circle r="17" stroke-width="1"/>
+        <path d="M0 -12 L5 8 L0 4 L-5 8 Z" fill="#25231d" stroke="none"/>
+        <text x="0" y="-22" font-size="8" text-anchor="middle" fill="#25231d" stroke="none" font-family="ui-monospace,monospace">N</text>
+      </g>
+
+      <g font-family="ui-monospace,monospace" fill="#8b8170" font-size="8">
+        <line x1="70" y1="600" x2="170" y2="600" stroke="#8b8170" stroke-width="1"/>
+        <line x1="70" y1="596" x2="70" y2="604" stroke="#8b8170"/>
+        <line x1="170" y1="596" x2="170" y2="604" stroke="#8b8170"/>
+        <text x="70" y="592">0</text><text x="158" y="592">25 m</text>
+      </g>
+    </svg>
+
+    <div class="board-hud tl">SUN STUDY <b>04</b> &middot; SHADOW CAST AT 1:500</div>
+    <div class="board-hud br">MILL LANE<br>SUN <b id="sunAlt2">31&deg;</b> &middot; SHADOW <b id="shadowRatio">2.1x</b></div>
+    <div class="plaza-status" id="plazaStatus"><i></i><span id="plazaText">Plaza in sun</span></div>
+  </div>
+
+  <div class="dock">
+    <div class="dial" id="dial">
+      <svg viewBox="0 0 172 92" aria-hidden="true">
+        <path d="M14 78 A72 72 0 0 1 158 78" fill="none" stroke="#25231d" stroke-width="1.2"/>
+        <path d="M14 78 A72 72 0 0 1 158 78" fill="none" stroke="#c9bda6" stroke-width="1" stroke-dasharray="2 6"/>
+        <line x1="8" y1="78" x2="164" y2="78" stroke="#25231d" stroke-width="1"/>
+        <g stroke="#8b8170" stroke-width="1">
+          <line x1="14" y1="78" x2="14" y2="84"/><line x1="86" y1="6" x2="86" y2="12"/><line x1="158" y1="78" x2="158" y2="84"/>
+        </g>
+        <text x="14" y="90" font-size="6" fill="#8b8170" font-family="ui-monospace,monospace" text-anchor="middle">06</text>
+        <text x="86" y="90" font-size="6" fill="#8b8170" font-family="ui-monospace,monospace" text-anchor="middle">13</text>
+        <text x="158" y="90" font-size="6" fill="#8b8170" font-family="ui-monospace,monospace" text-anchor="middle">20</text>
+      </svg>
+      <div class="knob" id="knob"></div>
+      <div class="read">SUN PATH &middot; <b id="dialTime">16:28</b></div>
+    </div>
+
+    <div class="mid">
+      <div class="row">
+        <span class="lab">Proposal height <b id="heightLabel">90 m</b></span>
+        <input type="range" id="height" min="20" max="120" value="90">
+      </div>
+      <div class="row" style="justify-content:space-between">
+        <div class="presets">
+          <button class="preset" data-angle="38">09:00</button>
+          <button class="preset" data-angle="90">13:00</button>
+          <button class="preset on" data-angle="130">16:30</button>
+          <button class="preset" data-angle="156">19:00</button>
+        </div>
+        <span class="hintline">Drag the sun &middot; change the tower</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="toggleProposal">Proposal: on</button>
+      <button class="btn" id="capture">Capture study</button>
+    </div>
+  </div>
+</div>
+
+<div class="postcard-wrap" id="postcardWrap">
+  <div class="postcard">
+    <div class="top"><b>MILL LANE / SUN STUDY</b><span id="cardDate">16:28 &middot; 31&deg;</span></div>
+    <div class="shot" id="cardShot"></div>
+    <div class="cap">
+      <p id="cardCaption">The tower takes the plaza at 16:10.</p>
+      <div class="no">HELIODON 04<br>1:500 &middot; 29 OCT</div>
+    </div>
+    <div class="acts">
+      <button class="btn ghost" id="closeCard">Keep studying</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const $ = s => document.querySelector(s);
+  const NS = "http://www.w3.org/2000/svg";
+  const state = { angle: 130, height: 90, proposal: true };
+  const PLAZA = { x: 790, y: 455 };
+
+  const B = [
+    { id: "a", x: 70,  y: 70,  w: 300, h: 160, hgt: 22, label: "FOUNDRY" },
+    { id: "b", x: 660, y: 70,  w: 270, h: 160, hgt: 18, label: "WAREHOUSE 2" },
+    { id: "c", x: 70,  y: 390, w: 260, h: 190, hgt: 26, label: "MILL" },
+    { id: "t", x: 460, y: 360, w: 160, h: 170, hgt: 90, label: "PROPOSAL", proposal: true }
+  ];
+
+  const groups = {};
+  const bLayer = $("#buildings");
+
+  B.forEach(b => {
+    const g = document.createElementNS(NS, "g");
+    g.setAttribute("class", "bldg");
+    const rect = document.createElementNS(NS, "rect");
+    rect.setAttribute("x", b.x); rect.setAttribute("y", b.y);
+    rect.setAttribute("width", b.w); rect.setAttribute("height", b.h);
+    rect.setAttribute("fill", "#f8f2e3");
+    rect.setAttribute("stroke", "#25231d");
+    rect.setAttribute("stroke-width", b.proposal ? "2" : "1.4");
+    if (b.proposal) rect.setAttribute("stroke-dasharray", "7 4");
+    g.appendChild(rect);
+
+    const inner = document.createElementNS(NS, "rect");
+    inner.setAttribute("x", b.x + 7); inner.setAttribute("y", b.y + 7);
+    inner.setAttribute("width", b.w - 14); inner.setAttribute("height", b.h - 14);
+    inner.setAttribute("fill", "url(#hatch)");
+    inner.setAttribute("opacity", ".7");
+    g.appendChild(inner);
+
+    if (b.proposal) {
+      const core = document.createElementNS(NS, "rect");
+      core.setAttribute("x", b.x + 34); core.setAttribute("y", b.y + 34);
+      core.setAttribute("width", b.w - 68); core.setAttribute("height", b.h - 68);
+      core.setAttribute("fill", "none");
+      core.setAttribute("stroke", "#25231d");
+      core.setAttribute("stroke-width", "1");
+      g.appendChild(core);
+    }
+    bLayer.appendChild(g);
+    groups[b.id] = g;
+  });
+
+  function sunVector(deg) {
+    const a = deg * Math.PI / 180;
+    return { x: Math.cos(a), y: 0.22 * Math.sin(a) };
+  }
+  function unit(v) { const m = Math.hypot(v.x, v.y) || 1; return { x: v.x / m, y: v.y / m }; }
+  function altitude(deg) {
+    const s = Math.sin(deg * Math.PI / 180);
+    return Math.max(6, 65 * Math.pow(s, 3));
+  }
+  function clockText(deg) {
+    const mins = Math.round((6.5 * 60) + ((deg - 15) / 150) * 13 * 60);
+    const h = Math.floor(mins / 60), m = ((mins % 60) + 60) % 60;
+    return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+  }
+  function rayRect(px, py, dx, dy, r) {
+    const invx = dx !== 0 ? 1 / dx : 1e9, invy = dy !== 0 ? 1 / dy : 1e9;
+    let t1 = (r.x - px) * invx, t2 = (r.x + r.w - px) * invx;
+    let t3 = (r.y - py) * invy, t4 = (r.y + r.h - py) * invy;
+    const tmin = Math.max(Math.min(t1, t2), Math.min(t3, t4));
+    const tmax = Math.min(Math.max(t1, t2), Math.max(t3, t4));
+    if (tmax < 0 || tmin > tmax) return null;
+    return tmin > 0 ? tmin : (tmax > 0 ? 0 : null);
+  }
+
+  function update() {
+    const deg = state.angle;
+    const v = unit(sunVector(deg));
+    const alt = altitude(deg);
+    const factor = 1 / Math.tan(alt * Math.PI / 180);
+
+    list.forEach(b => {
+      if (b.proposal && !state.proposal) { groups[b.id].style.display = "none"; return; }
+      groups[b.id].style.display = "";
+      const hgt = b.proposal ? state.height : b.hgt;
+      const L = Math.min(320, hgt * 1.6 * factor);
+      const dx = -v.x * L, dy = -v.y * L;
+      groups[b.id].style.filter = "drop-shadow(" + dx.toFixed(1) + "px " + dy.toFixed(1) + "px .7px rgba(37,35,29,.34))";
+    });
+
+    const tower = B.find(x => x.id === "t");
+    let shaded = false;
+    if (state.proposal) {
+      const d = rayRect(PLAZA.x, PLAZA.y, v.x, v.y, tower);
+      const L = Math.min(320, state.height * 1.6 * factor);
+      shaded = d !== null && d < L;
+    }
+
+    const plazaShade = $("#plazaShade");
+    plazaShade.setAttribute("opacity", shaded ? ".13" : "0");
+    $("#sunPatch").setAttribute("opacity", shaded ? ".15" : "1");
+    const status = $("#plazaStatus");
+    status.classList.toggle("shade", shaded);
+    $("#plazaText").textContent = shaded ? "Plaza in shade" : "Plaza in sun";
+
+    $("#clock").textContent = clockText(deg);
+    $("#dialTime").textContent = clockText(deg);
+    $("#alt").innerHTML = Math.round(alt) + "&deg;";
+    $("#sunAlt2").innerHTML = Math.round(alt) + "&deg;";
+    $("#shadowRatio").textContent = factor > 8 ? "flat" : (factor * 1.6).toFixed(1) + "x";
+    $("#heightLabel").textContent = state.height + " m";
+    $("#headProposal").textContent = state.proposal ? state.height + " m" : "off";
+    $("#towerLabel").textContent = state.proposal ? "PROPOSAL " + state.height + " m" : "PROPOSAL (OFF)";
+    $("#cardDate").textContent = clockText(deg) + " \u00b7 " + Math.round(alt) + "\u00b0";
+    $("#cardCaption").textContent = state.proposal
+      ? (shaded ? "The tower takes the plaza at " + clockText(deg) + "." : "The plaza keeps its light at " + clockText(deg) + ".")
+      : "Without the tower, the plaza holds the sun all day.";
+
+    let nearest = null, nd = 1e9;
+    document.querySelectorAll(".preset").forEach(p => {
+      const d = Math.abs(Number(p.dataset.angle) - deg);
+      if (d < nd) { nd = d; nearest = p; }
+    });
+    document.querySelectorAll(".preset").forEach(p => p.classList.toggle("on", p === nearest && nd < 2));
+
+    const a = deg * Math.PI / 180;
+    const kx = 86 + Math.cos(a) * 72, ky = 78 - Math.sin(a) * 72;
+    $("#knob").style.left = kx + "px";
+    $("#knob").style.top = ky + "px";
+  }
+
+  const list = B;
+
+  // dial drag
+  const dial = $("#dial");
+  let dialing = false;
+  function dialMove(clientX, clientY) {
+    const r = dial.getBoundingClientRect();
+    const cx = r.left + (86 / 172) * r.width;
+    const cy = r.top + (78 / 92) * r.height;
+    let deg = Math.atan2(cy - clientY, clientX - cx) * 180 / Math.PI;
+    deg = Math.max(15, Math.min(184, deg));
+    if (deg > 165) deg = 165;
+    state.angle = deg;
+    update();
+  }
+  dial.addEventListener("pointerdown", e => { dialing = true; dialMove(e.clientX, e.clientY); dial.setPointerCapture?.(e.pointerId); e.preventDefault(); });
+  dial.addEventListener("pointermove", e => { if (dialing) { dialMove(e.clientX, e.clientY); e.preventDefault(); } });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => dial.addEventListener(ev, () => { dialing = false; }));
+
+  document.querySelectorAll(".preset").forEach(p => p.addEventListener("click", () => { state.angle = Number(p.dataset.angle); update(); }));
+  $("#height").addEventListener("input", e => { state.height = Number(e.target.value); update(); });
+  $("#toggleProposal").addEventListener("click", () => {
+    state.proposal = !state.proposal;
+    $("#toggleProposal").textContent = "Proposal: " + (state.proposal ? "on" : "off");
+    update();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      state.angle = Math.max(15, Math.min(165, state.angle + (e.key === "ArrowLeft" ? -3 : 3)));
+      update();
+    }
+  });
+
+  $("#capture").addEventListener("click", () => {
+    const shot = $("#cardShot");
+    shot.innerHTML = "";
+    const clone = $("#plan").cloneNode(true);
+    clone.removeAttribute("id");
+    clone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+    shot.appendChild(clone);
+    $("#postcardWrap").classList.add("open");
+  });
+  $("#closeCard").addEventListener("click", () => $("#postcardWrap").classList.remove("open"));
+
+  update();
+</script>
+</body>
+</html>

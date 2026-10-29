@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic + NPU Demo Lab</title>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --panel: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --blue: #2563eb;
+    --blue-soft: #eff6ff;
+    --amber: #b45309;
+    --amber-soft: #fffbeb;
+    --green: #15803d;
+    --green-soft: #f0fdf4;
+    --gray: #475569;
+    --gray-soft: #f1f5f9;
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(15, 23, 42, .07);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  button { font: inherit; }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 310px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  aside {
+    background: #0f172a;
+    color: #cbd5e1;
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 6px;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+    flex: none;
+  }
+
+  .brand b { color: #f8fafc; font-size: 15px; display: block; }
+  .brand small { color: #94a3b8; font-size: 12px; }
+
+  .nav-label {
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 0 8px;
+  }
+
+  .app-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .app-item {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: #cbd5e1;
+    text-align: left;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+
+  .app-item:hover { background: rgba(255, 255, 255, .06); }
+
+  .app-item.active {
+    background: #172554;
+    border-color: #1d4ed8;
+    color: #ffffff;
+  }
+
+  .app-item .num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #93c5fd;
+    padding-top: 2px;
+    width: 20px;
+    flex: none;
+  }
+
+  .app-item b { display: block; font-size: 13px; line-height: 1.3; }
+  .app-item small { display: block; font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .app-item.active small { color: #bfdbfe; }
+
+  .aside-note {
+    margin-top: auto;
+    font-size: 11px;
+    color: #64748b;
+    padding: 10px 8px 0;
+    border-top: 1px solid #1e293b;
+  }
+
+  main {
+    padding: 34px clamp(18px, 4vw, 48px) 60px;
+    max-width: 1080px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 22px;
+  }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--blue-soft);
+    border: 1px solid #dbeafe;
+    padding: 5px 9px;
+    border-radius: 999px;
+  }
+
+  h1 {
+    font-size: clamp(26px, 3vw, 38px);
+    line-height: 1.1;
+    letter-spacing: -.03em;
+    margin: 14px 0 8px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    max-width: 720px;
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .sim-badge {
+    flex: none;
+    font-size: 11px;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    padding: 6px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px;
+  }
+
+  .scenario {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(260px, .6fr);
+    gap: 22px;
+    margin-bottom: 18px;
+  }
+
+  .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .scenario-text {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .chip {
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+    font-size: 12px;
+    color: var(--gray);
+    background: var(--gray-soft);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 6px 9px;
+  }
+
+  .chip b { color: var(--ink); font-size: 12px; }
+
+  .side-note {
+    border-left: 3px solid #f59e0b;
+    background: var(--amber-soft);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #78350f;
+    margin-top: 14px;
+  }
+
+  .run {
+    margin-top: 18px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .run-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .run-title { font-size: 15px; font-weight: 700; }
+  .run-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .accel {
+    display: inline-flex;
+    background: var(--gray-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .accel button {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+
+  .accel button.active {
+    background: #ffffff;
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .12);
+  }
+
+  .progress {
+    height: 4px;
+    background: #eef2f7;
+  }
+
+  .progress > div {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #38bdf8, #2563eb);
+    transition: width .35s ease;
+  }
+
+  .run-body { padding: 18px 22px 22px; }
+
+  .steps { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 24px;
+    gap: 11px;
+    align-items: flex-start;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 11px;
+    background: #ffffff;
+    opacity: .48;
+    transition: opacity .2s, border-color .2s, background .2s, transform .2s;
+  }
+
+  .step.active {
+    opacity: 1;
+    border-color: #93c5fd;
+    background: #f8fbff;
+    transform: translateX(2px);
+  }
+
+  .step.active .badge { animation: pulse 1s ease-in-out infinite; }
+
+  .step.done { opacity: .9; background: #fbfdfc; }
+  .step.done .state { color: var(--green); }
+
+  .badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .02em;
+  }
+
+  .badge.agent { background: var(--blue-soft); color: var(--blue); border: 1px solid #dbeafe; }
+  .badge.npu { background: var(--amber-soft); color: var(--amber); border: 1px solid #fde68a; }
+  .badge.tool { background: var(--gray-soft); color: var(--gray); border: 1px solid var(--line); }
+  .badge.human { background: var(--green-soft); color: var(--green); border: 1px solid #bbf7d0; }
+
+  .step-title { font-size: 13px; font-weight: 700; }
+  .step-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .step-meta {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 5px;
+  }
+
+  .type {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .09em;
+    color: var(--muted);
+  }
+
+  .state { font-size: 14px; color: #cbd5e1; text-align: right; }
+  .step.done .state::before { content: "✓"; }
+  .step.active .state::before { content: "•"; color: var(--blue); }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  .btn {
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .btn-primary { background: var(--blue); color: #ffffff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-primary:disabled { background: #bfdbfe; cursor: wait; }
+
+  .btn-ghost {
+    background: #ffffff;
+    color: var(--gray);
+    border: 1px solid var(--line);
+  }
+
+  .hint { font-size: 12px; color: var(--muted); }
+
+  .result { margin-top: 18px; padding: 0; overflow: hidden; }
+  .result.hidden { display: none; }
+
+  .result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+  }
+
+  .result-title { font-size: 15px; font-weight: 800; color: var(--green); }
+  .result-time { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+  .result-body { padding: 20px 22px 24px; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .metric {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    background: #fbfdff;
+  }
+
+  .metric .v { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+  .metric .l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .metric .n { font-size: 11px; color: var(--gray); margin-top: 6px; }
+
+  blockquote {
+    margin: 16px 0 0;
+    border-left: 3px solid #86efac;
+    background: var(--green-soft);
+    border-radius: 0 10px 10px 0;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #14532d;
+  }
+
+  .accel-note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @media (max-width: 800px) {
+    .shell { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; }
+    .scenario { grid-template-columns: 1fr; }
+    .metrics { grid-template-columns: 1fr; }
+    .top { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside>
+    <div class="brand">
+      <div class="brand-mark">A+</div>
+      <div>
+        <b>Demo Lab</b>
+        <small>Agentic + NPU</small>
+      </div>
+    </div>
+    <div>
+      <div class="nav-label">Scenarios</div>
+      <div class="app-list" id="appList"></div>
+    </div>
+    <div class="aside-note">
+      Simulation only. No real models, customer data or NPU are used. Every number is illustrative.
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div>
+        <div class="kicker" id="appTag">Industrial quality</div>
+        <h1 id="appTitle">RootCause</h1>
+        <p class="subtitle" id="appOneLine"></p>
+      </div>
+      <div class="sim-badge">Simulation · no real data</div>
+    </div>
+
+    <section class="card scenario">
+      <div>
+        <div class="label">Scenario</div>
+        <p class="scenario-text" id="scenarioText"></p>
+        <div class="chips">
+          <span class="chip"><b>Buyer</b> <span id="buyerChip"></span></span>
+          <span class="chip"><b>Pain</b> <span id="painChip"></span></span>
+        </div>
+      </div>
+      <div>
+        <div class="label">Why the demo lands</div>
+        <div class="side-note" id="whyNote"></div>
+      </div>
+    </section>
+
+    <section class="card run">
+      <div class="run-head">
+        <div>
+          <div class="run-title">The run</div>
+          <div class="run-sub">Watch the agent plan, call the NPU, read the result and decide the next step.</div>
+        </div>
+        <div class="accel" id="accel">
+          <button data-accel="npu" class="active">NPU</button>
+          <button data-accel="cpu">CPU</button>
+        </div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+      <div class="run-body">
+        <div class="steps" id="steps"></div>
+        <div class="actions">
+          <button class="btn btn-primary" id="runBtn">Run 60-second demo</button>
+          <button class="btn btn-ghost" id="resetBtn">Reset</button>
+          <span class="hint" id="runHint">3–6 steps · one loop</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card result hidden" id="result">
+      <div class="result-head">
+        <div class="result-title">Demo complete</div>
+        <div class="result-time" id="resultTime"></div>
+      </div>
+      <div class="result-body">
+        <div class="metrics" id="metrics"></div>
+        <blockquote id="quote"></blockquote>
+        <div class="accel-note" id="accelNote"></div>
+        <div class="actions">
+          <button class="btn btn-primary" id="againBtn">Run again</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const APPS = [
+    {
+      id: "rootcause",
+      name: "RootCause",
+      tag: "Industrial quality",
+      title: "RootCause",
+      oneLine: "An AI quality engineer for factories. When a bad part is found, it finds the likely cause and writes the report with evidence.",
+      buyer: "Plant Director / VP Quality",
+      pain: "Defect found in seconds; root cause takes days",
+      scenario: "A short shot appears on injection-molding line 3. The shift ends in two hours.",
+      why: "The buyer sees time and scrap money, not a model. The agent changes its next question after each NPU result.",
+      npuTime: "18 min",
+      cpuTime: "2 h 10 min",
+      steps: [
+        { type: "agent", title: "Read the defect event", detail: "Short shot on line 3; plan the investigation." },
+        { type: "tool", title: "Pull the facts", detail: "Machine settings, material lot, maintenance log." },
+        { type: "npu", title: "Re-check the images", detail: "48 images clustered; 3 defect shapes found." },
+        { type: "agent", title: "Compare past cases", detail: "12 similar cases; temperature drift ranks first." },
+        { type: "human", title: "Engineer approves", detail: "Cause: mold temperature drift after maintenance." },
+        { type: "agent", title: "Draft the report", detail: "Quality report with photos and evidence." }
+      ],
+      metrics: [
+        { v: "-12%", l: "Scrap risk", n: "on the flagged batch" },
+        { v: "42", l: "Images checked", n: "by the NPU" },
+        { v: "1", l: "Cause confirmed", n: "engineer approved" }
+      ],
+      quote: "We found the cause before the shift ended."
+    },
+    {
+      id: "georesponse",
+      name: "GeoResponse",
+      tag: "Geospatial",
+      title: "GeoResponse",
+      oneLine: "An AI analyst for imagery. When an area changes, it finds the damage, ranks what matters and writes the assessment with a map.",
+      buyer: "Insurer / Utility / Agency",
+      pain: "Imagery arrives in minutes; assessment takes days",
+      scenario: "Flood imagery arrives for a 40 km² area with 1,240 tiles.",
+      why: "A map and a priority list are immediately useful. The buyer can send teams to the right places before lunch.",
+      npuTime: "42 min",
+      cpuTime: "4 h 30 min",
+      steps: [
+        { type: "agent", title: "Plan the assessment", detail: "40 km²; flood extent first, then roads and power." },
+        { type: "npu", title: "Find flooded buildings and roads", detail: "On-site inference over 1,240 tiles." },
+        { type: "tool", title: "Add context", detail: "Power assets, population, access roads." },
+        { type: "agent", title: "Rank the sites", detail: "18 priority sites by risk and access." },
+        { type: "human", title: "Analyst corrects", detail: "2 false positives removed." },
+        { type: "agent", title: "Produce the map and report", detail: "One-page assessment with evidence." }
+      ],
+      metrics: [
+        { v: "40 km²", l: "Area assessed", n: "1,240 tiles" },
+        { v: "18", l: "Priority sites", n: "ranked by risk" },
+        { v: "96%", l: "Detection", n: "on the reviewed sample" }
+      ],
+      quote: "We knew where to send the teams before the second coffee."
+    },
+    {
+      id: "imaging",
+      name: "Imaging Assistant",
+      tag: "Medical imaging",
+      title: "Imaging Assistant",
+      oneLine: "An AI first reader for radiology. It flags findings, gathers history and drafts a report for the doctor to sign.",
+      buyer: "Hospital / Imaging centre",
+      pain: "Growing scan volume; radiologist shortage",
+      scenario: "A chest X-ray queue has 120 studies from the night shift.",
+      why: "The demo shows a doctor saving hours, not a model replacing a doctor. The human signature stays central.",
+      npuTime: "25 min",
+      cpuTime: "1 h 40 min",
+      steps: [
+        { type: "agent", title: "Triage the queue", detail: "120 studies; urgent findings first." },
+        { type: "npu", title: "Flag possible findings", detail: "7 urgent flags on the overnight batch." },
+        { type: "tool", title: "Pull prior studies", detail: "History and reason for the scan." },
+        { type: "agent", title: "Draft the reports", detail: "7 drafts with evidence and uncertainty." },
+        { type: "human", title: "Radiologist signs", detail: "1 finding confirmed; report signed." }
+      ],
+      metrics: [
+        { v: "120", l: "Studies triaged", n: "overnight queue" },
+        { v: "7", l: "Urgent flags", n: "1 confirmed" },
+        { v: "4 h", l: "Earlier", n: "urgent case reached the doctor" }
+      ],
+      quote: "The urgent case reached the doctor four hours earlier."
+    },
+    {
+      id: "labloop",
+      name: "Lab Loop",
+      tag: "Autonomous lab",
+      title: "Lab Loop",
+      oneLine: "An AI experimenter. It designs a batch, runs it or simulates it, reads the result and proposes the next batch.",
+      buyer: "Pharma / Chemical / Materials",
+      pain: "Experiment cycles take weeks",
+      scenario: "Maximise formulation yield under three safety constraints.",
+      why: "The loop is visible: the agent proposes, the NPU scores thousands of candidates, the result changes the next proposal.",
+      npuTime: "3 days",
+      cpuTime: "9 days",
+      steps: [
+        { type: "human", title: "Set the goal", detail: "Maximise yield; three safety constraints." },
+        { type: "agent", title: "Propose a batch", detail: "5 formulations from prior data and literature." },
+        { type: "npu", title: "Score 5,000 candidates", detail: "Surrogate model on the NPU." },
+        { type: "tool", title: "Run the best batch", detail: "Simulator run; result comes back." },
+        { type: "agent", title: "Update and propose next", detail: "Yield +9.4%; next batch ready." },
+        { type: "human", title: "Approve batch 2", detail: "Scientist approves the next loop." }
+      ],
+      metrics: [
+        { v: "5,000", l: "Candidates scored", n: "on the NPU" },
+        { v: "+9.4%", l: "Yield", n: "best batch" },
+        { v: "3 days", l: "Cycle", n: "was 6 weeks" }
+      ],
+      quote: "It found a better formulation while we slept."
+    },
+    {
+      id: "digitaltwin",
+      name: "Digital Twin Optimizer",
+      tag: "Process optimization",
+      title: "Digital Twin Optimizer",
+      oneLine: "An AI process engineer. It proposes settings, runs the digital twin on the NPU, scores the result and proposes the next batch.",
+      buyer: "Plant Director / VP Operations",
+      pain: "Energy and yield are expensive; simulation is slow",
+      scenario: "Cut energy 15% on a chemical line without losing yield.",
+      why: "The buyer sees a number: energy down, yield stable, payback in months. The NPU makes 1,000 runs practical.",
+      npuTime: "8 min",
+      cpuTime: "48 min",
+      steps: [
+        { type: "agent", title: "Read the line model", detail: "5 settings; energy and yield constraints." },
+        { type: "npu", title: "Run 1,000 simulations", detail: "Digital twin on the NPU; 8 minutes." },
+        { type: "agent", title: "Rank the options", detail: "Energy vs yield frontier." },
+        { type: "npu", title: "Stress-test 3 options", detail: "Robustness check on the NPU." },
+        { type: "human", title: "Engineer approves", detail: "Option B: -12.8% energy." }
+      ],
+      metrics: [
+        { v: "1,000", l: "Simulations", n: "in 8 minutes" },
+        { v: "-12.8%", l: "Energy", n: "no yield loss" },
+        { v: "4 mo", l: "Payback", n: "option B" }
+      ],
+      quote: "Run option B on line 3 tomorrow."
+    },
+    {
+      id: "film",
+      name: "AI Film Studio",
+      tag: "Media production",
+      title: "AI Film Studio",
+      oneLine: "An AI director. It plans scenes, generates shots on the NPU, critiques them against the brief and produces the cut.",
+      buyer: "CMO / Creative Director",
+      pain: "Campaign production is slow and expensive",
+      scenario: "A 15-second ad for a water bottle, young audience, three markets.",
+      why: "The output is instantly visible and the buyer can ask for 20 variants, not one. The agent critiques and regenerates.",
+      npuTime: "38 min",
+      cpuTime: "3 h 20 min",
+      steps: [
+        { type: "agent", title: "Write the concepts", detail: "3 concepts; 1 chosen storyboard." },
+        { type: "npu", title: "Generate 12 shots", detail: "Product, hands, water, light." },
+        { type: "agent", title: "Critique against the brief", detail: "3 shots are off-brand; explain why." },
+        { type: "npu", title: "Regenerate 3 shots", detail: "New angles and lighting." },
+        { type: "human", title: "Creative director picks", detail: "15-second cut approved." }
+      ],
+      metrics: [
+        { v: "20", l: "Ad variants", n: "on brand" },
+        { v: "12", l: "Shots generated", n: "3 regenerated" },
+        { v: "-70%", l: "Production cost", n: "vs a shoot" }
+      ],
+      quote: "We can do the whole quarter like this."
+    },
+    {
+      id: "synthetic",
+      name: "Synthetic World Studio",
+      tag: "Training data",
+      title: "Synthetic World Studio",
+      oneLine: "An AI scenario designer. It finds coverage gaps, generates rare cases on the NPU and proves the dataset improved.",
+      buyer: "Head of AI / Perception",
+      pain: "Rare cases are expensive or impossible to film",
+      scenario: "A warehouse robot must handle night shift, glare and a misplaced pallet.",
+      why: "The buyer sees a model metric move. The agent chooses the next scenario based on the coverage gap.",
+      npuTime: "12 min",
+      cpuTime: "1 h 15 min",
+      steps: [
+        { type: "agent", title: "Find the coverage gaps", detail: "Rain, glare, occlusion." },
+        { type: "npu", title: "Generate 300 variants", detail: "Night warehouse scenes." },
+        { type: "agent", title: "Check coverage", detail: "61% to 94% on the target cases." },
+        { type: "npu", title: "Fill the last gaps", detail: "3 new cases generated." },
+        { type: "human", title: "ML engineer exports", detail: "Dataset ready for training." }
+      ],
+      metrics: [
+        { v: "300", l: "Rare cases", n: "generated" },
+        { v: "94%", l: "Coverage", n: "was 61%" },
+        { v: "+8.2", l: "Model points", n: "on the test set" }
+      ],
+      quote: "This unblocks our safety case."
+    },
+    {
+      id: "cyber",
+      name: "Cyber Range",
+      tag: "Security",
+      title: "Cyber Range",
+      oneLine: "A live attack-and-defence loop. Agents plan, the NPU detects, the defender responds, and the exercise is scored.",
+      buyer: "CISO / Head of SOC",
+      pain: "Too few analysts; readiness is hard to prove",
+      scenario: "A small bank network with one weak service and a live red team.",
+      why: "The buyer sees a measured result, not a tabletop exercise: detection time, response time and gaps.",
+      npuTime: "10 min",
+      cpuTime: "35 min",
+      steps: [
+        { type: "agent", title: "Plan the attack", detail: "Weak service on host 3." },
+        { type: "npu", title: "Detect the anomaly", detail: "Login pattern flagged in 4m 12s." },
+        { type: "agent", title: "Defender isolates the host", detail: "Containment in 6 minutes." },
+        { type: "agent", title: "Attacker changes tactic", detail: "Lateral movement attempt." },
+        { type: "npu", title: "Score the exercise", detail: "3 gaps found; readiness report." }
+      ],
+      metrics: [
+        { v: "4m 12s", l: "Detection", n: "first anomaly" },
+        { v: "6m", l: "Response", n: "host isolated" },
+        { v: "3", l: "Gaps found", n: "in one exercise" }
+      ],
+      quote: "We measured readiness, not opinions."
+    },
+    {
+      id: "architecture",
+      name: "Generative Architecture",
+      tag: "Design",
+      title: "Generative Architecture Studio",
+      oneLine: "An AI design partner. It generates options, scores energy and cost on the NPU, and improves the best one.",
+      buyer: "Principal Architect / Developer",
+      pain: "Feasibility studies are slow; energy rules are tighter",
+      scenario: "A 120 m² house, low energy, budget €280k.",
+      why: "The buyer sees three costed options and a trade-off, not a mood board. The agent improves the design after each score.",
+      npuTime: "22 min",
+      cpuTime: "2 h 05 min",
+      steps: [
+        { type: "agent", title: "Generate 3 layouts", detail: "120 m²; low energy; €280k." },
+        { type: "npu", title: "Score energy and cost", detail: "3 options on the NPU." },
+        { type: "agent", title: "Improve the best", detail: "Daylight and circulation changes." },
+        { type: "npu", title: "Re-score the design", detail: "-18% energy vs baseline." },
+        { type: "human", title: "Architect selects", detail: "Option 2 for the client." }
+      ],
+      metrics: [
+        { v: "3", l: "Options", n: "costed" },
+        { v: "-18%", l: "Energy", n: "vs baseline" },
+        { v: "€280k", l: "Budget", n: "within target" }
+      ],
+      quote: "Three costed options before the client call."
+    }
+  ];
+
+  let current = 0;
+  let accel = "npu";
+  let runToken = 0;
+  let running = false;
+
+  const els = {
+    appList: document.getElementById("appList"),
+    appTag: document.getElementById("appTag"),
+    appTitle: document.getElementById("appTitle"),
+    appOneLine: document.getElementById("appOneLine"),
+    scenarioText: document.getElementById("scenarioText"),
+    buyerChip: document.getElementById("buyerChip"),
+    painChip: document.getElementById("painChip"),
+    whyNote: document.getElementById("whyNote"),
+    steps: document.getElementById("steps"),
+    bar: document.getElementById("bar"),
+    runBtn: document.getElementById("runBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    againBtn: document.getElementById("againBtn"),
+    runHint: document.getElementById("runHint"),
+    result: document.getElementById("result"),
+    resultTime: document.getElementById("resultTime"),
+    metrics: document.getElementById("metrics"),
+    quote: document.getElementById("quote"),
+    accelNote: document.getElementById("accelNote"),
+    accel: document.getElementById("accel")
+  };
+
+  function typeLabel(type) {
+    return { agent: "AGENT", npu: "NPU", tool: "TOOL", human: "HUMAN" }[type];
+  }
+
+  function typeLetter(type) {
+    return { agent: "A", npu: "N", tool: "T", human: "H" }[type];
+  }
+
+  function renderSidebar() {
+    els.appList.innerHTML = APPS.map((app, i) => `
+      <button class="app-item ${i === current ? "active" : ""}" data-index="${i}">
+        <span class="num">${String(i + 1).padStart(2, "0")}</span>
+        <span><b>${app.name}</b><small>${app.tag}</small></span>
+      </button>
+    `).join("");
+
+    els.appList.querySelectorAll(".app-item").forEach(btn => {
+      btn.addEventListener("click", () => selectApp(Number(btn.dataset.index)));
+    });
+  }
+
+  function renderSteps() {
+    const app = APPS[current];
+    els.steps.innerHTML = app.steps.map(step => `
+      <div class="step pending">
+        <div class="badge ${step.type}">${typeLetter(step.type)}</div>
+        <div>
+          <div class="step-title">${step.title}</div>
+          <div class="step-detail">${step.detail}</div>
+          <div class="step-meta"><span class="type">${typeLabel(step.type)}</span></div>
+        </div>
+        <div class="state"></div>
+      </div>
+    `).join("");
+    els.bar.style.width = "0%";
+    els.result.classList.add("hidden");
+    els.runHint.textContent = `${app.steps.length} steps · one loop`;
+  }
+
+  function selectApp(index) {
+    runToken++;
+    running = false;
+    current = index;
+    const app = APPS[current];
+
+    els.appTag.textContent = app.tag;
+    els.appTitle.textContent = app.title;
+    els.appOneLine.textContent = app.oneLine;
+    els.scenarioText.textContent = app.scenario;
+    els.buyerChip.textContent = app.buyer;
+    els.painChip.textContent = app.pain;
+    els.whyNote.textContent = app.why;
+
+    renderSidebar();
+    renderSteps();
+    els.runBtn.disabled = false;
+    els.runBtn.textContent = "Run 60-second demo";
+  }
+
+  function setAccel(value) {
+    if (running) return;
+    accel = value;
+    els.accel.querySelectorAll("button").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.accel === value);
+    });
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function runDemo() {
+    if (running) return;
+
+    const app = APPS[current];
+    const myToken = ++runToken;
+    running = true;
+    els.runBtn.disabled = true;
+    els.runBtn.textContent = "Running…";
+    els.result.classList.add("hidden");
+    els.bar.style.width = "0%";
+
+    const stepEls = Array.from(els.steps.querySelectorAll(".step"));
+
+    for (let i = 0; i < app.steps.length; i++) {
+      if (myToken !== runToken) return;
+      const step = app.steps[i];
+      const el = stepEls[i];
+
+      el.classList.remove("pending");
+      el.classList.add("active");
+
+      let delay = step.type === "npu" ? (accel === "npu" ? 900 : 2400) : 700;
+      await sleep(delay);
+
+      if (myToken !== runToken) return;
+      el.classList.remove("active");
+      el.classList.add("done");
+      els.bar.style.width = `${Math.round(((i + 1) / app.steps.length) * 100)}%`;
+    }
+
+    if (myToken !== runToken) return;
+
+    showResult(app);
+    running = false;
+    els.runBtn.disabled = false;
+    els.runBtn.textContent = "Run again";
+  }
+
+  function showResult(app) {
+    els.resultTime.textContent = accel === "npu" ? `${app.npuTime} · NPU run` : `${app.cpuTime} · CPU estimate`;
+
+    els.metrics.innerHTML = app.metrics.map(m => `
+      <div class="metric">
+        <div class="v">${m.v}</div>
+        <div class="l">${m.l}</div>
+        <div class="n">${m.n}</div>
+      </div>
+    `).join("");
+
+    els.quote.textContent = `“${app.quote}”`;
+    els.accelNote.textContent = accel === "npu"
+      ? `With the NPU: ${app.npuTime}. Without it, the same loop is estimated at ${app.cpuTime}.`
+      : `CPU-only estimate: ${app.cpuTime}. Switch to NPU to see the accelerated run.`;
+
+    els.result.classList.remove("hidden");
+    els.result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  els.runBtn.addEventListener("click", runDemo);
+  els.againBtn.addEventListener("click", runDemo);
+  els.resetBtn.addEventListener("click", () => {
+    runToken++;
+    running = false;
+    els.runBtn.disabled = false;
+    els.runBtn.textContent = "Run 60-second demo";
+    renderSteps();
+  });
+
+  els.accel.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => setAccel(btn.dataset.accel));
+  });
+
+  renderSidebar();
+  selectApp(0);
+</script>
+</body>
+</html>
