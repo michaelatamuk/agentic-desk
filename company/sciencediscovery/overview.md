@@ -139,6 +139,10 @@ has an NPU smoke test and the Protenix antibody pipeline; admins can add other f
 workloads. It is for running a domain model or pipeline as part of an experiment, not for chat-model
 inference.
 
+With no Ascend host, leave the broker off: `run_npu_job` is absent from the tool list, ordinary
+Python, R and shell work continues in the sandbox on CPU, and only NPU-specific workloads are
+unavailable. Model calls are unaffected.
+
 | Optional component | Use case |
 |---|---|
 | Built-in literature and data sources | Search papers (PubMed, arXiv, Europe PMC, bioRxiv, medRxiv) and query biological databases (UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL, GEO) for evidence |
