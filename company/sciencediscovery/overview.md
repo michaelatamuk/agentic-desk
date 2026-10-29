@@ -68,42 +68,75 @@ gateway; JiuwenSwarm reaches the model only through ScienceDiscovery. The intern
 
 ### Optional extras
 
-They attach to ScienceDiscovery like this:
+They attach to ScienceDiscovery like this. Every dashed edge is optional, and none changes the engine
+mode.
 
 ```mermaid
 flowchart TD
   SD["ScienceDiscovery"]
 
-  subgraph OPT["Optional — each switches on independently"]
-    direction LR
-    L["Literature and<br/>data sources"]
-    M["Custom MCP<br/>servers"]
-    R["Remote Runner<br/>hosts"]
-    N["Neo4j / memory<br/>graph"]
+  subgraph DATA["Data and tools"]
+    L["Built-in literature and data sources<br/>PubMed · arXiv · Europe PMC · bioRxiv · medRxiv<br/>UniProt · PDB · Ensembl · Reactome · ClinVar · ChEMBL · GEO"]
+    M["Custom MCP servers<br/>STDIO · HTTP · SSE"]
+  end
+
+  subgraph EXEC["Execution"]
+    R["Remote Runner hosts<br/>SSH · direct endpoint"]
+    NPU["Ascend NPU hardware<br/>via Runner's NPU broker"]
+  end
+
+  subgraph MEM["Memory storage"]
+    NEO["Neo4j 5.x<br/>optional backend"]
+    EXT["External memory-graph service<br/>optional alternative"]
+  end
+
+  subgraph NET["Network"]
     P["Network proxy"]
-    NPU["Ascend NPU"]
   end
 
   SD -.-> L
   SD -.-> M
   SD -.-> R
-  SD -.-> N
-  SD -.-> P
   SD -.-> NPU
+  SD -.-> NEO
+  SD -.-> EXT
+  SD -.-> P
 ```
 
-Every item is optional and none changes the engine mode. They add data, tools, execution, storage,
-network or hardware to either mode. The required model provider and the client are in the main
-picture above.
+**ScienceMemory storage.** ScienceMemory is a ScienceDiscovery feature, not an external service. By
+default the bundled memory-graph sidecar stores it as plain files in the memory-graph data directory
+(default `~/.science-agent/memory-graph/`, `nodes.jsonl` and `edges.jsonl`); no external database is
+needed. Neo4j 5.x is only an optional backend for larger or shared graphs. An external memory-graph
+service is a different option: set `SCIENCE_AGENT_MEMORY_GRAPH_URL` and the launcher stops managing
+that service.
+
+```mermaid
+flowchart LR
+  SM["ScienceMemory"]
+  MG["memory-graph sidecar<br/>(bundled with ScienceDiscovery)"]
+  LF[("Local files — default<br/>memory-graph data directory")]
+  NEO[("Neo4j 5.x — optional")]
+  EXT["External memory-graph service<br/>(optional)"]
+
+  SM --> MG
+  MG -->|"default"| LF
+  MG -.->|"optional backend"| NEO
+  SM -.->|"instead of the sidecar"| EXT
+```
+
+**Ascend NPU.** Off by default. When `SCIENCE_AGENT_NPU_BROKER=1`, the Agent gets a `run_npu_job`
+tool. The Agent calls that tool; ScienceDiscovery's Runner NPU broker then runs an allowlisted
+workload on the host's Ascend NPU. It is compute for code and experiments, not a model provider.
 
 | Optional component | Used for |
 |---|---|
 | Built-in literature and data sources | PubMed, arXiv, Europe PMC, bioRxiv and medRxiv; UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL and GEO |
 | Custom MCP servers | Extra tools over STDIO, Streamable HTTP or SSE, with optional OAuth |
 | Remote Runner hosts | SSH or direct-endpoint machines for execution and workspace transfer |
-| Neo4j or an external memory-graph service | ScienceMemory storage; the default is a local file store |
+| Neo4j 5.x | Optional ScienceMemory backend for larger or shared graphs; the default is local files |
+| External memory-graph service | An independently managed replacement for the bundled sidecar |
 | Network proxy | Outbound access through a configured proxy |
-| Ascend NPU | NPU execution through the runner's NPU broker |
+| Ascend NPU | Compute for allowlisted `run_npu_job` workloads through the Runner NPU broker |
 
 ## What it is
 
