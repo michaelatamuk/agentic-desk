@@ -66,13 +66,13 @@ ScienceDiscovery starts it as a separate process; the built-in `native` loop can
 gateway; JiuwenSwarm reaches the model only through ScienceDiscovery. The internal seam is the
 **run controller** (the adapter and the control plane).
 
-Other external edges are deliberately left out of the picture. The full external view — solid is
-required, dashed is optional:
+### Optional extras
+
+They attach to ScienceDiscovery like this:
 
 ```mermaid
 flowchart TD
-  C["Browser or CLI"] -->|"the researcher"| SD["ScienceDiscovery"]
-  SD -->|"model calls — required"| MP["Model provider"]
+  SD["ScienceDiscovery"]
 
   subgraph OPT["Optional — each switches on independently"]
     direction LR
@@ -92,19 +92,18 @@ flowchart TD
   SD -.-> NPU
 ```
 
-The optional pieces do not change the engine mode. They add data, tools, execution, storage, network
-or hardware to either mode.
+Every item is optional and none changes the engine mode. They add data, tools, execution, storage,
+network or hardware to either mode. The required model provider and the client are in the main
+picture above.
 
-| External component | Required? | Used for |
-|---|---|---|
-| Model provider | Yes, for an agent run | The model API and key the researcher configures; nothing is bundled |
-| Browser or CLI | One of them | The researcher's client |
-| Built-in literature and data sources | Optional | PubMed, arXiv, Europe PMC, bioRxiv and medRxiv; UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL and GEO |
-| Custom MCP servers | Optional | Extra tools over STDIO, Streamable HTTP or SSE, with optional OAuth |
-| Remote Runner hosts | Optional | SSH or direct-endpoint machines for execution and workspace transfer |
-| Neo4j or an external memory-graph service | Optional | ScienceMemory storage; the default is a local file store |
-| Network proxy | Optional | Outbound access through a configured proxy |
-| Ascend NPU | Optional | NPU execution through the runner's NPU broker |
+| Optional component | Used for |
+|---|---|
+| Built-in literature and data sources | PubMed, arXiv, Europe PMC, bioRxiv and medRxiv; UniProt, PDB, Ensembl, Reactome, ClinVar, ChEMBL and GEO |
+| Custom MCP servers | Extra tools over STDIO, Streamable HTTP or SSE, with optional OAuth |
+| Remote Runner hosts | SSH or direct-endpoint machines for execution and workspace transfer |
+| Neo4j or an external memory-graph service | ScienceMemory storage; the default is a local file store |
+| Network proxy | Outbound access through a configured proxy |
+| Ascend NPU | NPU execution through the runner's NPU broker |
 
 ## What it is
 
