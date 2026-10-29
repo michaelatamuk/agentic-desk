@@ -33,34 +33,26 @@ researcher's sessions, files and workspace stay in the workbench.
 flowchart TD
   R["Researcher"]
   SD["ScienceDiscovery — the workbench<br/>sessions · files · workspace<br/>tools · sandbox · artifacts · provenance"]
-  ENG["Engine — decides<br/>one per task"]
+  M{"Pick one engine"}
   JS["JiuwenSwarm<br/>default"]
   NL["Native loop<br/>no JiuwenSwarm"]
   GW["ScienceDiscovery<br/>model gateway"]
   MP["Model provider<br/>your key"]
-  RUN["Runner — executes tools<br/>one per run"]
-  LR["Local Runner<br/>your machine"]
-  RR["Remote Runner<br/>another host"]
-  NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
+  NPU["Ascend NPU<br/>Protenix · MindSpore jobs"]
 
   R -->|"starts a task"| SD
-  SD -->|"decides with"| ENG
-  ENG --> JS
-  ENG --> NL
+  SD -->|"every task"| M
+  M -->|"default"| JS
+  M -->|"no JiuwenSwarm"| NL
   JS -->|"model calls"| GW
   NL -->|"model calls"| GW
-  GW -->|"requests"| MP
-
-  SD -->|"executes on"| RUN
-  RUN --> LR
-  RUN --> RR
-  RUN -.->|"optional, on the host"| NPU
+  GW -->|"forwards with your key"| MP
+  SD -.->|"only for NPU jobs"| NPU
 ```
 
-**Engine = who decides. Runner = where code runs.** The engine runs every task, and its model calls
-go through the gateway to the provider. The Runner executes the tools, locally or on another host.
-The Ascend NPU is an optional device on that host, used only for `run_npu_job` workloads. If the
-host has no Ascend card, the dashed branch is absent and normal sandbox execution is unchanged.
+**When each is used:** the engine runs **every task**. The model gateway and provider are used for
+**model calls during reasoning**. The NPU is used **only** when the task calls the `run_npu_job`
+tool for heavy scientific compute. It is not a second engine and not part of the model path.
 
 **Three independent layers:**
 
@@ -74,8 +66,8 @@ A Runner is a **machine**, not an engine. The NPU is a **device on that machine*
 Runner. Normal code runs in the Runner sandbox; if that Runner has an Ascend card and its broker is
 enabled, allowlisted NPU jobs use it. The card can therefore be local or on a remote Runner.
 
-**Two independent choices:** one engine (JiuwenSwarm or native) and one Runner (local or remote).
-The model provider is used in both engine modes.
+**The diamond is the only either/or:** pick one engine. Both engines use the same ScienceDiscovery
+model gateway to reach the provider.
 
 | Mode | Agent engine | Model provider |
 |---|---|---|
