@@ -1,6 +1,6 @@
 # Orbit, explained simply
 
-*As of 28 October 2026. Sources: gateway code, a merged pull request, the public status board, bug
+*As of 29 October 2026. Sources: gateway code, a merged pull request, the [public status board](https://haowenz001.github.io/digitalmate-board/#issues), bug
 reports and the jiuwenswarm repository.*
 
 *Orbit is built by another team in the company. This note is context, not our roadmap. The app it serves,
@@ -14,7 +14,7 @@ DigitalMate, has [its own note](../digitalmate/overview.md).*
   work only there.
 - **agent-dx** is the gateway and substrate: login, per-user routing, container lifecycle and isolation.
 - In the **10.23 build**, DigitalMate moved its engine from **WorkSwarm** (jiuwenswarm) to Orbit.
-- A **27 October RFC** proposes the next step: Orbit as a plugin inside JiuwenSwarm.
+- A **[27 October RFC](https://haowenz001.github.io/digitalmate-board/#issues)** proposes the next step: Orbit as a plugin inside JiuwenSwarm.
 - The app, its screens and its roadmap are in the [DigitalMate note](../digitalmate/overview.md).
 
 ## What Orbit is
@@ -46,7 +46,7 @@ Orbit does that work: it runs the loop, calls the tools and keeps the memory.
 - **Model:** GLM-5.2 through an OpenAI-compatible API, a 1M-token context and 8 model-and-tool round trips
   per turn.
 - **Protocol:** `orbit.request` with an `action` field over `/orbit/ws`; the phone sends its language and
-  device with each message (#270).
+  device with each message ([#270](https://github.com/openJiuwen-ai/DigitalMate/issues/270)).
 - **Binding:** the same user always gets the same container, different users are isolated, and the
   template (`orbit`, version `v1-workspace`) and binding are fixed by the server, so a client cannot pick
   another user's container.
@@ -62,7 +62,7 @@ Orbit does that work: it runs the loop, calls the tools and keeps the memory.
   - A public
     [template](https://github.com/openJiuwen-ai/agent-dx/blob/master/agent/activator/examples/orbit-sfs-template.json)
     inside `agent-dx`.
-- **Public trace:** issue numbers cited on the status board, including #2282.
+- **Public trace:** issue numbers cited on the status board, including [#2282](https://github.com/openJiuwen-ai/DigitalMate/issues/2282).
 
 ## What agent-dx is
 
@@ -147,7 +147,7 @@ of which belong in the cloud, not on a phone.
 
 **Orbit is the worker; the gateway is the building manager.** One worker still needs a building manager.
 
-## What Orbit can do, from its tool list (#256)
+## What Orbit can do, from its tool list ([#256](https://github.com/openJiuwen-ai/DigitalMate/issues/256))
 
 The assistant once printed its own tool list:
 
@@ -160,10 +160,16 @@ The assistant once printed its own tool list:
 Read together, Orbit owns tasks, schedules, memory and search; the phone only draws the screens it
 proposes. That is the A2UI split in practice: data from the cloud, rendering on the phone.
 
+Recent work adds two pieces. The notification centre now shows a running task's stage, reusing the
+sanitized task title and Beebou avatar ([PR #304](https://github.com/openJiuwen-ai/DigitalMate/pull/304)).
+Final text now follows the same `final_mode` / `segment_id` protocol as WorkSwarm on both adapters, so a
+final cannot overwrite the wrong bubble or duplicate the reply
+([PR #287](https://github.com/openJiuwen-ai/DigitalMate/pull/287)).
+
 ## What comes next: Orbit as a plugin
 
-The board carries **RFC #271** (a request for comments — a design proposal), opened by **changzherui** on
-27 October: *"DM 与 Orbit 插件的端云协作、接口兼容及分阶段接入计划"*. The title's "DM" means DigitalMate. It proposes this chain:
+The [board](https://haowenz001.github.io/digitalmate-board/#issues) carries **[RFC #271](https://haowenz001.github.io/digitalmate-board/#issues)** (a request for comments — a design proposal), opened by **changzherui** on
+27 October: *"DM 与 Orbit 插件的端云协作、接口兼容及分阶段接入计划"*. The title's "DM" means DigitalMate. The issue page is private; its body is public on the board. It proposes this chain:
 
 ```mermaid
 flowchart TD
@@ -215,30 +221,30 @@ backend for a sibling product, while Orbit is specific to DigitalMate.
 Think of the plugin as a toolbox, not an engine swap. JiuwenSwarm keeps the workshop — planning, teams,
 tool calls, memory, scheduling. The Orbit plugin brings the DigitalMate-specific tools and the phone
 contract, and plugs into that workshop. Where Jiuwen already has a tool, the plugin can call Jiuwen's version
-or ship its own and override the built-in; the RFC does not say which.
+or ship its own and override the built-in; [the RFC](https://haowenz001.github.io/digitalmate-board/#issues) does not say which.
 
 The plugin slot itself already exists. JiuwenSwarm loads extension packages that can register channels,
 Gateway methods and agent plugin mounts; a package that replaces a built-in element must declare it, and
-the operator must list it for override (#7832, #7833). Another proposal adds agent templates and plugin
-packages with install, uninstall and per-session MCP mounting (#7931). Permission and confirmation rails
+the operator must list it for override ([#7832](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7832), [#7833](https://github.com/openJiuwen-ai/jiuwenswarm/pull/7833)). Another proposal adds agent templates and plugin
+packages with install, uninstall and per-session MCP mounting ([#7931](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7931)). Permission and confirmation rails
 stay protected either way. That is the machinery an Orbit plugin would use.
 
 What that machinery cannot do today is host another agent runtime. An application plugin is an in-process
 Python class that adds a workspace page, Gateway RPC methods and WebSocket routes, and may call Jiuwen's
 own agent client (`docs/zh/application-plugins.md` in the repository). It shares Jiuwen's process; there is
-no interface for "run this other harness here". The agent-plugin mounts in #7832 add hooks to Jiuwen's own
+no interface for "run this other harness here". The agent-plugin mounts in [#7832](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7832) add hooks to Jiuwen's own
 agent — turn fields, filters, input transforms, skill inventory — not a second loop. So an Orbit plugin is
 either a bridge that forwards to an Orbit service, or a port of Orbit's behaviour onto Jiuwen's harness.
-The RFC does not say which.
+[The RFC](https://haowenz001.github.io/digitalmate-board/#issues) does not say which.
 
-The RFC keeps `/orbit/ws` and `orbit.request` and stages the work:
+[The RFC](https://haowenz001.github.io/digitalmate-board/#issues) keeps `/orbit/ws` and `orbit.request` and stages the work:
 
 - **P0** tasks and artifacts — progress, files, reconnect.
 - **P1** apps and confirmations — mail/calendar queries, confirmation, no double execution.
 - **P2** personal memory — read, correct, forget.
 - **P3** follow-ups — schedule, deduplicate, resume after restart.
 
-The RFC is a proposal; its dates remain open. It links Orbit's own issue **#2282** for deployment
+The RFC is a proposal; its dates remain open. It links Orbit's own issue **[#2282](https://github.com/openJiuwen-ai/DigitalMate/issues/2282)** for deployment
 evidence.
 
 Build 10.23 runs Orbit standalone. The public plan after that is Orbit inside JiuwenSwarm.
@@ -255,27 +261,27 @@ changes hands.
 ## How we know
 
 - **Orbit's packaging, isolation and protocol:** the public template, gateway config and `orbit_ws.rs`.
-- **The engine swap:** the internal note for build 10.23, plus the board's issue and PR titles.
-- **The old architecture:** DigitalMate bug reports #8522 and #8265 on GitHub.
-- **The next architecture:** RFC #271 on the board, quoting `/orbit/ws` and `orbit.request`.
+- **The engine swap:** the internal note for build 10.23, plus the [board's](https://haowenz001.github.io/digitalmate-board/#issues) issue and PR titles.
+- **The old architecture:** DigitalMate bug reports [#8522](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8522) and [#8265](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8265) on GitHub.
+- **The next architecture:** [RFC #271](https://haowenz001.github.io/digitalmate-board/#issues) on the [board](https://haowenz001.github.io/digitalmate-board/#issues), quoting `/orbit/ws` and `orbit.request`.
 - **The double path today:** agent-dx #99, the transparent WebSocket entry for Orbit with no Jiuwen protocol
   conversion.
 - **Jiuwen on the same substrate:** jiuwenswarm commits `8dbce3539` (26 October) and `5f0232ddb`
   (27 October), `gateway/extensions/adx/`.
-- **The plugin mechanism:** jiuwenswarm issues #7832 and #7931, plus PR #7833.
+- **The plugin mechanism:** jiuwenswarm issues [#7832](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7832) and [#7931](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7931), plus PR [#7833](https://github.com/openJiuwen-ai/jiuwenswarm/pull/7833).
 - **The plugin boundary:** `docs/zh/application-plugins.md` and the extension registry, read in a local
   checkout at commit `cbde92c` (25 October).
 - **What Jiuwen already does:** the `jiuwenswarm` README on its default branch, read 27 October.
-- **The sibling product:** the ScienceDiscovery README and its issue #582, read 28 October.
+- **The sibling product:** the ScienceDiscovery README and its [issue #582](https://github.com/openJiuwen-ai/sciencediscovery/issues/582), read 28 October.
 - **The product and its releases:** the [DigitalMate note](../digitalmate/overview.md).
 
 ## Open questions
 
 - Orbit's internals: language, loop, parallel-task and memory implementation.
 - The code inside Orbit.
-- Performance and cost per user. The board shows time-to-first-token (TTFT) complaints around 5 seconds.
+- Performance and cost per user. The [board](https://haowenz001.github.io/digitalmate-board/#issues) shows time-to-first-token (TTFT) complaints around 5 seconds.
 - Approval and dates for the plugin plan.
-- Which path wins: the plugin layer in RFC #271, or Jiuwen's runtime as another ADX environment. Both are
+- Which path wins: the plugin layer in [RFC #271](https://haowenz001.github.io/digitalmate-board/#issues), or Jiuwen's runtime as another ADX environment. Both are
   now technically possible.
 
 **Unrelated projects with similar names:**
