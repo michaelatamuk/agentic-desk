@@ -1,317 +1,162 @@
-# RootCause — Full Roadmap
+# RootCause — Roadmap
 
-*Status: recommended to build. Not started.*
+Legend: `[x]` done · `[ ]` planned · **(S)** small · **(M)** medium · **(L)** large.
+"On-site" means the compute and data never leave the factory network.
+"Agent" means JiuwenSwarm orchestrates the data gathering and reasoning step.
 
----
+**One line.** When a factory finds a bad part, RootCause finds the likely cause and writes the
+quality report with evidence — in hours, not days.
 
-## The one line
+**Buyer.** Quality manager (primary pain), plant manager (budget), manufacturing engineer (user).
 
-When a factory finds a bad part, RootCause finds the likely cause and writes the quality report
-with evidence — in hours, not days.
-
----
-
-## The problem, precisely
-
-A camera can see a defect in one second. Finding why it happened takes days.
-
-An engineer searches machine settings, material batch records, maintenance logs and past defect
-reports — across four or five separate systems. Then a group meets, guesses, argues, tests, and
-someone writes a report by hand. The whole investigation depends on one or two experienced people.
-When they leave, the knowledge leaves with them.
-
-This happens dozens of times a month in any active production facility. Each investigation costs
-engineer hours. Each day of delay risks more bad parts. Each wrong conclusion risks a recall.
+**Best first industries.** Plastic injection moulding · battery cell production · electronics
+assembly · metal stamping.
 
 ---
 
-## Who buys it and why
+## Phase 0 — Conference demo
 
-**Primary buyer: Quality Manager**
-Owns scrap rate, rework cost and customer complaints. Measured on defect rate and report speed.
-Feels the pain of every investigation that takes too long.
+Goal: a working demo on a conference stage. No real factory or customer needed.
+Data source: MVTec AD open dataset (free labelled defect images) + synthetic machine data CSVs.
 
-**Economic buyer: Plant Manager or VP Operations**
-Owns production cost and downtime. Approves the budget. Cares about numbers:
-scrap cost, rework hours, line downtime, recall risk.
-
-**User: Manufacturing Engineer / Quality Engineer**
-Runs the investigation. Does the searching. Writes the report. Will either adopt or reject the tool
-based on whether it makes their job easier or harder.
-
-**Best first industries:**
-- Plastic injection moulding — visible surface defects, rich machine data, high scrap cost
-- Battery cell production — expensive materials, tight tolerances, regulatory pressure
-- Electronics assembly — high value per unit, multiple process steps, lots of sensor data
-- Metal stamping — consistent defect types, measurable machine parameters
-
----
-
-## What success looks like
-
-### Pilot metrics (one factory, one line, 90 days)
-- Time from defect found to root cause identified: from days → under 4 hours
-- Engineer hours per investigation: measure baseline before, target 60% reduction
-- Cause accuracy: actual root cause in the AI's top 3 suggestions, ≥ 70% of cases
-- Report completion time: from hours of writing → under 30 minutes
-- Engineer acceptance: at least 2 of 3 engineers on the line use it by end of pilot
-
-### Business metrics
-- Cost per investigation (before vs after)
-- Scrap rate change after implementing corrective actions from AI suggestions
-- Number of repeat defects (same cause appearing again)
+- [ ] Load MVTec AD defect images (plastic or metal surface category) **(S)**
+- [ ] Pre-load synthetic machine parameter CSV (temperature, pressure, cooling time, cycle count) **(S)**
+- [ ] Pre-load synthetic maintenance log (last service dates, sensor calibrations) **(S)**
+- [ ] Pre-load 6-month synthetic defect case history **(S)**
+- [ ] Defect detection model: inference on pre-loaded images, bounding box on screen **(M)**
+- [ ] Time-window query: pull machine data for the shift when the defect occurred **(S)**
+- [ ] Cause ranking engine: pattern match across case history and current machine data **(M)**
+- [ ] Agent (JiuwenSwarm): orchestrate data gathering and generate ranked hypotheses **(M)**
+- [ ] Three-cause output with evidence bars (confidence %, supporting data points) **(M)**
+- [ ] Quality report template: auto-fill defect, cause, evidence, corrective action draft **(M)**
+- [ ] Web UI: defect image viewer with bounding box overlay **(S)**
+- [ ] Web UI: cause list with evidence detail (expandable) **(S)**
+- [ ] Web UI: report preview, edit and approve button **(S)**
+- [ ] Case save: timestamp, approved cause, report version, engineer name **(S)**
+- [ ] Runs fully offline on one laptop — no internet required on stage **(S)**
+- [ ] Optional: USB camera integration for live defect detection on a physical sample part **(M)**
+- [ ] Demo data package: images, CSVs, case history, ready to load **(S)**
+- [ ] 90-second demo script and run-through **(S)**
 
 ---
 
-## Technical architecture
+## Phase 1 — First pilot
 
-```
-[Camera / Inspection System]
-         |
-    [NPU — on-site]
-    Defect detection
-    Image classification
-         |
-    [Data Aggregator]
-    Pulls in parallel:
-    - Machine parameters (SCADA / OPC-UA)
-    - Material batch records (MES / ERP)
-    - Maintenance logs (CMMS)
-    - Past defect cases (case database)
-         |
-    [Agent — JiuwenSwarm]
-    Finds patterns across data
-    Generates hypotheses
-    Ranks causes by evidence
-    Drafts quality report
-         |
-    [Engineer Review UI]
-    Approve / reject / comment
-    Sign the report
-         |
-    [Case Store — on-site]
-    Saves every case
-    Feeds future pattern matching
-```
+Goal: one real factory, one production line, one defect type, 90 days.
+Prove value in production conditions. Run alongside existing process, not replacing it.
 
-**Key technical decisions:**
-- All compute on-site. Factory data never leaves the factory network.
-- NPU for image inference (fast, on-site, handles many cameras).
-- JiuwenSwarm as the agent that orchestrates data gathering and reasoning.
-- Case store is local — becomes more valuable with every investigation saved.
-- No line control. No automatic changes. Read-only access to factory systems.
+### 1.1 Data connectors
 
----
+- [ ] OPC-UA connector: read 10–20 machine parameters from SCADA in real time **(M)**
+- [ ] Modbus connector: fallback for older PLCs **(M)**
+- [ ] Existing inspection camera output reader (Keyence, Cognex, or generic TCP/IP feed) **(M)**
+- [ ] Batch record CSV import from MES or ERP **(S)**
+- [ ] Historical defect data loader: 6 months from customer quality system **(M)**
+- [ ] Data normalisation and cleaning pipeline (factory data is always messy) **(M)**
 
-## Phase 0 — Conference Demo
+### 1.2 Detection and investigation
 
-**Goal:** a working demo for a conference stage. No real factory needed.
+- [ ] Defect detection model fine-tuning on customer-specific defect images **(L)**
+- [ ] Time-window aggregator: link defect event timestamp to machine state **(M)**
+- [ ] Batch record linker: match defect timestamp to active material batch **(S)**
+- [ ] Case similarity search: find past defects with matching machine state or batch **(M)**
+- [ ] Agent (JiuwenSwarm): orchestrate multi-source data pull and hypothesis generation **(M)**
+- [ ] Cause ranking: weighted by frequency in similar cases, machine deviation magnitude, batch match **(M)**
+- [ ] Evidence package per cause: supporting charts, similar past case images, data excerpts **(M)**
 
-**Duration:** 4–6 weeks
+### 1.3 Engineer workflow
 
-**What to build:**
-- Pre-load 50–100 labelled defect images (plastic injection moulded parts — publicly available
-  datasets exist, e.g. MVTec AD dataset)
-- Pre-load a CSV of machine parameters (temperature, pressure, cooling time, cycle time) for the
-  same time window — synthetic but realistic
-- Pre-load a maintenance log (last service, sensor calibrations) — synthetic
-- Pre-load 6 months of past defect cases — synthetic
-- Defect detection model: run on the pre-loaded images, mark the defect on screen
-- Cause engine: pattern match across the data, output 3 hypotheses with evidence
-- Report template: structured quality report, auto-filled, ready for engineer to edit and sign
-- Simple web UI: defect image → data summary → 3 causes with evidence bars → draft report →
-  approve button
+- [ ] Mobile-friendly engineer review UI (quality engineers are on the floor) **(M)**
+- [ ] Approve cause / reject cause / add manual cause **(S)**
+- [ ] Inline report editing before sign-off **(S)**
+- [ ] Report export in customer's existing format (PDF, Word) **(M)**
+- [ ] Case database: local, on-site, append-only **(M)**
+- [ ] Audit trail: who approved, when, which model version, which data sources **(S)**
 
-**Demo script (90 seconds on stage):**
-1. Screen shows a camera feed (pre-recorded) — a surface defect appears on a part
-2. NPU flags it, bounding box appears
-3. AI gathers: machine data for that shift, batch record for that material, last maintenance log
-4. Three causes appear with evidence: "High melt temperature (shift avg +8°C above spec) — 61%
-   confidence", "Material batch MX-2240 — 3 of last 5 defects on same batch — 24%", "Cooling
-   time deviation — 12% shorter than baseline — 15%"
-5. Draft quality report appears, pre-filled
-6. Engineer clicks Approve — case saved, report timestamped
+### 1.4 Pilot measurement
 
-**What you need for the demo:**
-- One laptop or small server
-- Optional: USB camera pointed at a physical sample part with a visible defect (dramatically
-  improves the live feel)
-- Web UI running locally
-- No internet connection required — all on-site
+- [ ] Baseline measurement: log current investigation time per case before go-live **(S)**
+- [ ] Pilot dashboard: investigation count, cause accuracy (confirmed vs suggested), time saved **(M)**
+- [ ] Weekly accuracy report for engineer feedback **(S)**
+- [ ] Feedback loop: engineer corrections feed into next cause ranking iteration **(M)**
 
----
+### 1.5 Deployment
 
-## Phase 1 — First Pilot
-
-**Goal:** one real factory, one production line, one defect type, three months.
-Prove the core value in production conditions.
-
-**Duration:** 3 months
-
-**Prerequisites:**
-- One pilot customer signed (quality manager + plant manager)
-- Access to: inspection camera output, one machine data source (SCADA or OPC-UA), one batch
-  record system
-- 6 months of historical defect data from that line
-
-**What to build:**
-
-*Week 1–2: Data connectors*
-- Camera integration: connect to the existing inspection camera system (most factories already have
-  Keyence, Cognex or similar — read their output, do not replace them)
-- SCADA connector: OPC-UA or Modbus read for 10–20 key machine parameters
-- Batch record import: CSV or API from their MES or ERP for material batch data
-
-*Week 3–4: Historical data load*
-- Load 6 months of past defect cases from their quality system
-- Clean and normalise — factory data is always messy
-- Tag causes where known (engineers know many from memory)
-- Build the initial case database
-
-*Week 5–8: Agent and UI*
-- Defect detection: run on the camera feed, on-site NPU
-- Data aggregator: pull the right time window of machine data and batch records when a defect is
-  detected
-- Cause engine: pattern matching across historical cases + current data
-- Report generator: match their existing quality report format (they always have one)
-- Engineer UI: mobile-friendly (quality engineers are on the floor, not at a desk)
-
-*Week 9–12: Trial and tuning*
-- Run alongside their existing process — do not replace it yet
-- Engineer uses both their current method and RootCause in parallel
-- Compare: was the AI's top cause correct? How long did each take?
-- Tune the cause ranking based on feedback
-- Fix integration issues (there will be many)
-
-**Pilot success criteria:**
-- System runs for 4 weeks without downtime
-- 20+ investigations completed
-- Cause accuracy ≥ 65% (top 3)
-- At least 2 engineers use it voluntarily by week 10
+- [ ] On-site server deployment (Linux, Docker) **(M)**
+- [ ] NPU broker integration for image inference on Ascend hardware (optional) **(L)**
+- [ ] No outbound network required after setup **(S)**
 
 ---
 
 ## Phase 2 — Production
 
-**Goal:** expand within the pilot factory, make the product robust, charge for it.
+Goal: expand within the pilot factory, support multiple lines and defect types, charge full price.
 
-**Duration:** 3–6 months after pilot
+### 2.1 More defect types and lines
 
-**What changes:**
-- More defect types on the same line
-- More production lines in the same factory
-- Maintenance records connector (CMMS — often SAP PM or a standalone system)
-- Supplier record connector: link batch defects back to supplier
-- Pattern detection over time: "this cause has appeared 3 times this month"
-- Analytics dashboard for the quality manager: defect rate, top causes by line, time to resolution
-- Formal subscription contract: per-line monthly fee + NPU server optional
+- [ ] Multi-defect-type model: train additional defect classifiers for the same line **(L)**
+- [ ] Multi-line support: separate data channels per line, unified dashboard **(M)**
+- [ ] Cross-line pattern detection: "this cause has appeared on three lines this week" **(M)**
 
-**New integrations to build:**
-- SAP QM (quality management module — very common in manufacturing)
-- SAP PM (plant maintenance — for maintenance records)
-- Rockwell FactoryTalk (common SCADA in North America)
-- Siemens MindSphere or TIA Portal (common in Europe)
-- Generic OPC-UA for everything else
+### 2.2 More data connectors
 
-**Pricing model:**
-- Per production line per month: €2,000–4,000
-- Setup and integration fee: €15,000–40,000 depending on complexity
-- Optional on-site NPU server: hardware + 20% margin
+- [ ] SAP QM (quality management module) connector **(L)**
+- [ ] SAP PM (plant maintenance / maintenance records) connector **(L)**
+- [ ] Rockwell FactoryTalk SCADA connector **(M)**
+- [ ] Siemens S7 / TIA Portal connector **(M)**
+- [ ] Generic REST and GraphQL connector for non-standard MES **(M)**
+- [ ] Supplier batch and certificate of conformance import **(M)**
+
+### 2.3 Analytics and management
+
+- [ ] Quality manager dashboard: defect rate, top causes by line, time to resolution **(M)**
+- [ ] Trend alerts: cause frequency crossing a threshold triggers a notification **(M)**
+- [ ] Corrective action tracking: link a cause approval to a corrective action record **(M)**
+- [ ] Cost tracking: scrap cost per defect type, savings estimate **(S)**
+
+### 2.4 Billing and operations
+
+- [ ] Per-line monthly subscription billing **(M)**
+- [ ] Setup and integration fee pricing **(S)**
+- [ ] NPU server hardware option with margin **(S)**
+- [ ] Customer admin panel: user management, line configuration, data retention **(M)**
 
 ---
 
 ## Phase 3 — Scale
 
-**Goal:** multiple factories, multiple customers, a connector library that accelerates every new
-deployment.
+Goal: multiple factories, multiple customers, a connector library that makes each new deployment faster.
 
-**Duration:** 6–18 months after production
-
-**What changes:**
-- Multi-factory deployment: one customer, five factories, one dashboard
-- Connector library: pre-built integrations for the top 10 MES/SCADA/CMMS systems — each new
-  factory takes weeks, not months
-- Cross-factory learning: anonymised patterns across customers (with consent) — "this cause is
-  common in injection moulding when humidity exceeds X"
-- Mobile app: quality engineer on the floor, photo of defect → investigation started
-- Integration with quality standards workflows: ISO 9001, IATF 16949 (automotive), FDA 21 CFR
-  Part 11 (pharma)
+- [ ] Multi-factory deployment: one customer, multiple plants, unified view **(L)**
+- [ ] Connector library: pre-built, tested integrations for the top 10 MES/SCADA/CMMS systems **(L)**
+- [ ] Cross-factory anonymised pattern sharing (opt-in): "this cause is common in injection moulding when humidity exceeds X" **(L)**
+- [ ] Mobile app for iOS and Android: photo of defect starts an investigation **(L)**
+- [ ] ISO 9001 workflow integration: link case records to corrective action and audit trail **(M)**
+- [ ] IATF 16949 compliance pack for automotive customers **(M)**
+- [ ] FDA 21 CFR Part 11 audit trail for pharmaceutical and medical device customers **(L)**
+- [ ] Multi-tenant architecture with full data isolation per customer **(L)**
+- [ ] Managed NPU server offering: hardware + deployment + support **(M)**
 
 ---
 
-## Go-to-market
+## Not planned (with reasons)
 
-**First customer approach:**
-Do not sell to procurement. Sell to the quality manager.
-
-Find quality managers at mid-size manufacturers (200–2,000 employees). The sweet spot is a factory
-that:
-- Already has inspection cameras (so integration is easier)
-- Has a scrap problem they are trying to solve (ask for their scrap rate)
-- Uses SAP or a common MES (easier to integrate)
-- Is not a tier-1 automotive (too slow) or a tiny shop (too small a budget)
-
-**How to find them:**
-- Manufacturing trade shows: Quality Expo, IMTS, Hannover Messe
-- LinkedIn: search "quality manager" + factory size
-- Through equipment vendors: camera and sensor companies (Keyence, Cognex, Balluff) sell to the
-  same buyers — partnership or referral
-
-**First conversation:**
-"How many defect investigations do your engineers do per month? How long does each one take? What
-does a bad month look like in scrap cost?"
-
-If the answers are "20+ investigations, 2+ days each, scrap costs us €50k+ per month" — that is a
-customer.
+- **Line control or automatic process adjustment** — liability and safety risk; the engineer always decides.
+- **Automatic defect rejection** — the existing rejection system stays in place; RootCause only investigates.
+- **Multi-tenant SaaS with factory data leaving the site** — data sovereignty is a core selling point.
+- **Predictive maintenance** — different problem, different buyer, different product.
+- **Generic AI for manufacturing platform** — focus stays on root cause and the quality report.
+- **Cloud GPU inference for production** — factory data must stay on-site.
 
 ---
 
-## Risks and how to handle them
+## Recommended order
 
-| Risk | How to handle it |
-|---|---|
-| Factory data is messy and inconsistent | Expect 2–3 weeks of data cleaning in every pilot. Price it in. |
-| MES/SCADA integration is slow and custom | Build generic OPC-UA and CSV connectors first. Avoid proprietary APIs until you have 3 customers using the same system. |
-| Engineers do not trust AI suggestions | Start with "advice only". The engineer always decides. Show evidence, not just conclusions. |
-| False positives erode trust fast | Set a confidence threshold. If not confident, say so. Do not guess. |
-| Sales cycles in manufacturing are long | Start with a 30-day paid proof-of-concept at fixed cost. Remove the risk from the buyer. |
-| A wrong root cause leads to more defects | Make it clear in the UI: "These are hypotheses, not diagnoses. The engineer approves." Never auto-apply. |
-
----
-
-## What not to build (ever, until much later)
-
-- Line control or automatic process adjustment
-- Automatic defect rejection (keep the existing rejection system)
-- Multi-tenant SaaS with factory data leaving the site
-- Predictive maintenance (different product, different buyer)
-- A generic "AI for manufacturing" platform
-
-Stay focused: one problem, one deliverable (the quality report), one buyer (quality manager).
-
----
-
-## Smallest possible first version (4 weeks)
-
-1. Load 6 months of defect images and machine data from one line (CSV export from their system)
-2. Detect the defect type (pre-trained model, no custom training yet)
-3. Pull machine parameters for the relevant time window
-4. Match against past cases
-5. Output 3 probable causes with evidence
-6. Pre-fill a quality report template
-7. Engineer approves → saved
-
-No camera integration. No live data. No line connection. Just: data in → causes + report out.
-If that gets used 5 times in the first month, build the live integration.
-
----
-
-## Open questions before starting
-
-- Which factory and which line first?
-- What inspection cameras do they already have?
-- What MES or SCADA system are they on?
-- Do they have 6+ months of historical defect data in a usable format?
-- What does their current quality report look like (template)?
-- Who is the quality manager and do they have budget authority?
-- What is their current scrap cost per month — the number that justifies the pilot?
+1. **Phase 0** — build the conference demo first. Takes 4–6 weeks. Needs no customer. Tests whether the concept lands with an audience.
+2. **First pilot customer** — find a quality manager at a plastic injection moulding or electronics facility. Prioritise one with Keyence cameras and OPC-UA SCADA (fastest to connect).
+3. **1.1 connectors** before anything else in Phase 1 — without data, nothing else can be tested.
+4. **1.2 detection and investigation** — the agent and cause ranking are the core product.
+5. **1.3 engineer workflow** — mobile UI and report export are what the engineer sees. Get feedback here early.
+6. **1.4 pilot measurement** — set the baseline on day 1 or the comparison has no anchor.
+7. **Phase 2 connectors** only after the pilot succeeds and a second customer is signed. Do not build SAP integration speculatively.
+8. **Phase 3** only after at least three customers are in production.
