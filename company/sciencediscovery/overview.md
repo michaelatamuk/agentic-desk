@@ -66,7 +66,34 @@ ScienceDiscovery starts it as a separate process; the built-in `native` loop can
 gateway; JiuwenSwarm reaches the model only through ScienceDiscovery. The internal seam is the
 **run controller** (the adapter and the control plane).
 
-Other external edges are deliberately left out of the picture:
+Other external edges are deliberately left out of the picture. The full external view — solid is
+required, dashed is optional:
+
+```mermaid
+flowchart TD
+  C["Browser or CLI"] -->|"the researcher"| SD["ScienceDiscovery"]
+  SD -->|"model calls — required"| MP["Model provider"]
+
+  subgraph OPT["Optional — each switches on independently"]
+    direction LR
+    L["Literature and<br/>data sources"]
+    M["Custom MCP<br/>servers"]
+    R["Remote Runner<br/>hosts"]
+    N["Neo4j / memory<br/>graph"]
+    P["Network proxy"]
+    NPU["Ascend NPU"]
+  end
+
+  SD -.-> L
+  SD -.-> M
+  SD -.-> R
+  SD -.-> N
+  SD -.-> P
+  SD -.-> NPU
+```
+
+The optional pieces do not change the engine mode. They add data, tools, execution, storage, network
+or hardware to either mode.
 
 | External component | Required? | Used for |
 |---|---|---|
