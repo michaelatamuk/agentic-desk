@@ -32,25 +32,30 @@ researcher's sessions, files and workspace stay in the workbench.
 ```mermaid
 flowchart TD
   R["Researcher"]
-  SD["ScienceDiscovery — the workbench<br/>sessions · files · workspace<br/>tools · sandbox · artifacts · provenance"]
-  ENG["Engine — decides<br/>one per task"]
-  JS["JiuwenSwarm<br/>default"]
-  NL["Native loop<br/>no JiuwenSwarm"]
-  GW["ScienceDiscovery<br/>model gateway"]
-  MP["Model provider<br/>your key"]
+  SD["ScienceDiscovery — the workbench"]
+
+  subgraph DEC["Decides with — engine and model path"]
+    direction TB
+    ENG["Engine — decides<br/>one per task"]
+    JS["JiuwenSwarm<br/>default"]
+    NL["Native loop<br/>no JiuwenSwarm"]
+    GW["ScienceDiscovery<br/>model gateway"]
+    MP["Model provider<br/>your key"]
+
+    ENG --> JS
+    ENG --> NL
+    JS -->|"model calls"| GW
+    NL -->|"model calls"| GW
+    GW -->|"requests"| MP
+  end
+
   RUN["Runner — executes tools<br/>one per run"]
   LR["Local Runner<br/>your machine"]
   RR["Remote Runner<br/>another host"]
   NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
 
   R -->|"starts a task"| SD
-  SD -->|"decides with"| ENG
-  ENG --> JS
-  ENG --> NL
-  JS -->|"model calls"| GW
-  NL -->|"model calls"| GW
-  GW -->|"requests"| MP
-
+  SD --> DEC
   SD -->|"executes on"| RUN
   RUN --> LR
   RUN --> RR
