@@ -49,18 +49,22 @@ flowchart TD
     GW -->|"requests"| MP
   end
 
-  RUN["Runner — executes tools<br/>one per run"]
-  LR["Local Runner<br/>your machine"]
-  RR["Remote Runner<br/>another host"]
-  NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
+  subgraph EXE["Executes on — runner and compute"]
+    direction TB
+    RUN["Runner — executes tools<br/>one per run"]
+    LR["Local Runner<br/>your machine"]
+    RR["Remote Runner<br/>another host"]
+    NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
+
+    RUN --> LR
+    RUN --> RR
+    LR -.->|"if Ascend present"| NPU
+    RR -.->|"if Ascend present"| NPU
+  end
 
   R -->|"starts a task"| SD
   SD --> DEC
-  SD -->|"executes on"| RUN
-  RUN --> LR
-  RUN --> RR
-  LR -.->|"if Ascend present"| NPU
-  RR -.->|"if Ascend present"| NPU
+  SD --> EXE
 ```
 
 **Engine = who decides. Runner = where code runs.** The engine runs every task, and its model calls
