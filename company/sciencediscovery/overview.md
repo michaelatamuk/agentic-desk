@@ -54,6 +54,18 @@ flowchart TD
 **model calls during reasoning**. The NPU is used **only** when the task calls the `run_npu_job`
 tool for heavy scientific compute. It is not a second engine and not part of the model path.
 
+**Three independent layers:**
+
+| Layer | Choice | Where it runs |
+|---|---|---|
+| Agent engine (decides) | JiuwenSwarm or native | With ScienceDiscovery, locally |
+| Runner (executes tools) | Local or remote | Your machine or another host |
+| Accelerator (optional) | Normal sandbox or Ascend NPU | On the selected Runner host |
+
+A Runner is a **machine**, not an engine. The NPU is a **device on that machine**, not a third
+Runner. Normal code runs in the Runner sandbox; if that Runner has an Ascend card and its broker is
+enabled, allowlisted NPU jobs use it. The card can therefore be local or on a remote Runner.
+
 **The diamond is the only either/or:** pick one engine. Both engines use the same ScienceDiscovery
 model gateway to reach the provider.
 
