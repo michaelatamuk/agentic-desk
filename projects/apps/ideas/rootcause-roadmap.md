@@ -139,6 +139,62 @@ Goal: multiple factories, multiple customers, a connector library that makes eac
 
 ---
 
+## Phase GUI — Conference-style visual experience
+
+Goal: every screen communicates the product's value in 5 seconds to a standing audience.
+No tables, no sidebars, no productivity UI. Dark industrial palette, vivid accent colours,
+large hero numbers, animated data flow. The engineer feels the intelligence working.
+
+### GUI.1 Design language
+
+- [ ] Dark industrial design system: near-black background (#0d1117), dark card surfaces, steel-blue and amber accents **(S)**
+- [ ] Typography scale: hero numbers at 72–96 px, section labels at 11 px uppercase tracking **(S)**
+- [ ] No data tables anywhere — every multi-item list is a ranked card stack or a bar chart **(S)**
+- [ ] Motion language: cards slide in from the right, evidence bars fill left-to-right, numbers count up **(M)**
+- [ ] Confidence badge system: large coloured pill (HIGH / MED / LOW) on every cause and finding **(S)**
+
+### GUI.2 Live detection screen
+
+- [ ] Full-width defect image panel occupying 60 % of the screen — the defect is the first thing seen **(M)**
+- [ ] Animated bounding box: pulsing amber outline around the defect region, not a static rectangle **(M)**
+- [ ] "DEFECT DETECTED" banner slides in from the top with defect type and timestamp **(S)**
+- [ ] Machine state strip below the image: 6 key parameters as large coloured gauges (green = normal, red = out of range) **(M)**
+- [ ] Investigation trigger button: one large "INVESTIGATE" call-to-action, not a menu **(S)**
+
+### GUI.3 Investigation screen (main conference wow moment)
+
+- [ ] Split layout: defect image left, live data-gathering sequence right **(M)**
+- [ ] Animated data-gathering sequence: each source (machine data → batch record → case history) appears as a labelled card sliding in with a short delay between them **(M)**
+- [ ] Three cause cards animate in sequentially once data gathering completes **(M)**
+- [ ] Each cause card: large cause name, evidence bar fills left-to-right to the confidence percentage, 2–3 supporting data points as coloured chips beneath **(M)**
+- [ ] Cause ranking is visual: card 1 is larger and brighter than cards 2 and 3 **(S)**
+- [ ] "View evidence" expands a cause card in place — no navigation away from this screen **(S)**
+
+### GUI.4 Cause evidence detail
+
+- [ ] Machine parameter timeline: full-width chart, anomaly window highlighted with a coloured band, threshold line visible **(M)**
+- [ ] Similar past defect gallery: 3–4 past case images as cards in a horizontal row, each labelled with its confirmed cause **(M)**
+- [ ] Batch record match: large coloured chip shows the matching batch ID and deviation magnitude **(S)**
+- [ ] "This cause explains X % of similar cases" — one large hero number below the chart **(S)**
+
+### GUI.5 Report generation screen
+
+- [ ] Full-screen report preview with typewriter animation as the agent fills each section **(M)**
+- [ ] Defect photo thumbnail embedded in the report header **(S)**
+- [ ] Cause and evidence sections auto-populated; engineer can click any section to edit inline **(M)**
+- [ ] Large centred "APPROVE AND SAVE" button at the bottom — the only primary action on this screen **(S)**
+- [ ] "Case saved" confirmation: full-screen green flash lasting 1.5 seconds, then returns to detection screen **(S)**
+
+### GUI.6 Quality manager dashboard
+
+- [ ] Three hero numbers at the top of the screen: investigations this week · average resolution time · estimated scrap prevented **(M)**
+- [ ] Top-causes bar chart: horizontal bars animate in from left, sorted by frequency, coloured by change vs last week **(M)**
+- [ ] Defect trend sparkline per production line: one row per line, trend animates in on load **(M)**
+- [ ] No navigation tabs — the entire dashboard is a single scrolling canvas **(S)**
+- [ ] Live event feed on the right: new investigations appear at the top as they are triggered **(M)**
+
+---
+
 ## Not planned (with reasons)
 
 - **Line control or automatic process adjustment** — liability and safety risk; the engineer always decides.

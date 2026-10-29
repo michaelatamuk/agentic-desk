@@ -149,6 +149,63 @@ Goal: multiple customers and sectors, global coverage, government and agricultur
 
 ---
 
+## Phase GUI — Conference-style visual experience
+
+Goal: every screen communicates the product's value in 5 seconds to a standing audience.
+The satellite map is always the primary canvas. Damage finds the viewer; the viewer never
+searches for damage. Dark space-like palette, vivid severity colours, animated zone reveals,
+numbers that count up in real time.
+
+### GUI.1 Design language
+
+- [ ] Full-screen dark satellite basemap as the permanent background — no white canvas, ever **(S)**
+- [ ] All UI panels float over the map as semi-transparent dark cards, not sidebar drawers **(S)**
+- [ ] Severity colour system: red (#ff4444) HIGH · orange (#ff8c00) MODERATE · yellow (#f5c518) MINOR — consistent everywhere **(S)**
+- [ ] Typography scale: hero numbers at 72–96 px, location labels at 11 px uppercase tracking **(S)**
+- [ ] Motion language: damage zones animate in sequentially (red first, then orange, then yellow), numbers count up **(M)**
+
+### GUI.2 Event activation screen (opening conference moment)
+
+- [ ] Full-screen satellite map of the event region — no UI visible at first **(S)**
+- [ ] "NEW IMAGERY RECEIVED" banner slides in from the top with event name, date and region **(M)**
+- [ ] Tile processing counter counts up live: "Analysing tile 412 of 847…" in a floating card **(M)**
+- [ ] Damage zones animate onto the map one by one as detection completes, starting with the highest-severity zones **(M)**
+- [ ] Hero counter in the top-right corner counts up to the final number of flagged locations **(S)**
+
+### GUI.3 Damage overview screen (main conference wow moment)
+
+- [ ] All damage zones visible on the map as coloured circles scaled by severity **(M)**
+- [ ] Animated summary strip appears at the bottom after all zones are revealed: "186 locations · 23 HIGH · 4.2 km² affected" counting up in large numbers **(M)**
+- [ ] Severity legend floats over the map bottom-left; clicking a colour filters the visible zones **(S)**
+- [ ] Clicking any zone on the map triggers the location detail card — no separate navigation **(S)**
+- [ ] Top-10 priority list panel slides in from the right: ranked cards with severity badge, confidence, and coordinates **(M)**
+
+### GUI.4 Location detail card
+
+- [ ] Before/after satellite image slider as the hero element of the card — the analyst sees the change immediately **(M)**
+- [ ] Large confidence badge (HIGH / MED / LOW) as a coloured pill in the top-right of the card **(S)**
+- [ ] Asset context line: building count, population affected, access status (OPEN / BLOCKED) as coloured chips **(S)**
+- [ ] Three action buttons at the bottom of the card: "APPROVE" (green) · "FLAG FOR ADJUSTER" (amber) · "REJECT" (red) **(S)**
+- [ ] Approving a location removes it from the map and adds it to the confirmed list with a brief green pulse **(M)**
+
+### GUI.5 Assessment generation panel
+
+- [ ] Assessment panel slides in over the map (does not replace it — the map stays visible) **(M)**
+- [ ] Agent writes the assessment live with a typewriter animation, section by section **(M)**
+- [ ] Map thumbnail with approved zone markers is embedded at the top of the assessment **(M)**
+- [ ] Each paragraph of the assessment has a coloured left-border matching its severity level **(S)**
+- [ ] "EXPORT PDF" and "EXPORT GEOJSON" as two large buttons at the bottom — no other options on this screen **(S)**
+
+### GUI.6 Analyst summary dashboard
+
+- [ ] Three hero numbers at the top: events analysed · locations approved · area covered (km²) **(M)**
+- [ ] Regional map showing all events as coloured dots by severity — clicking a dot opens that event **(M)**
+- [ ] Time-to-assessment bar for the current event: "Assessment ready 2 h 14 m after imagery delivery" as a large number with comparison to manual baseline **(S)**
+- [ ] Accuracy trend line: AI-detected vs adjuster-confirmed, animated on load **(M)**
+- [ ] No tables anywhere — every metric is a chart, a hero number or a map **(S)**
+
+---
+
 ## Not planned (with reasons)
 
 - **Own satellite or imagery collection** — imagery is a commodity; the assessment is the product.
