@@ -34,42 +34,40 @@ researcher's sessions, files and workspace stay in the workbench.
 ```mermaid
 flowchart TD
   R(["Researcher"])
-  SD["ScienceDiscovery<br/>the workbench"]
+  SD["ScienceDiscovery"]
 
-  subgraph DEC["Decides with"]
+  subgraph DEC["Engine & model"]
     direction TB
-    ENG["Engine<br/>JiuwenSwarm or native"]
+    ENG["JiuwenSwarm or native"]
     GW["Model gateway"]
     MP["Model provider"]
     ENG -->|"model calls"| GW
     GW -->|"requests"| MP
   end
 
-  subgraph EXE["Executes on"]
+  subgraph DATA["Sources"]
     direction TB
-    RUN["Runner<br/>local or remote"]
+    LIT["Literature<br/>PubMed · arXiv · Europe PMC<br/>bioRxiv · medRxiv"]
+    DB["Databases<br/>UniProt · PDB · Ensembl · Reactome<br/>ClinVar · ChEMBL · GEO"]
+    WEB["Web<br/>search · fetch"]
+    FILES["Your files<br/>datasets · PDFs · workspace"]
+    LIT ~~~ WEB
+    DB ~~~ FILES
+  end
+
+  subgraph EXE["Runners"]
+    direction TB
+    RUN["Local or remote"]
     CPU["CPU"]
     NPU["NPU"]
     RUN --> CPU
     RUN -.->|"if Ascend"| NPU
   end
 
-  subgraph DATA["Research sources"]
-    direction TB
-    LIT["Literature<br/>PubMed · arXiv · Europe PMC<br/>bioRxiv · medRxiv"]
-    DB["Databases<br/>UniProt · PDB · Ensembl · Reactome<br/>ClinVar · ChEMBL · GEO"]
-    WEB["Web<br/>search · fetch"]
-    FILES["Your files<br/>datasets · PDFs · workspace"]
-    LIT ~~~ DB
-    DB ~~~ WEB
-    WEB ~~~ FILES
-  end
-
-  R -->|"request, files"| SD
-  SD --> DEC
-  SD --> EXE
-  SD --> DATA
-  SD -.->|"answer"| R
+  R <-->|"request / answer"| SD
+  SD -->|"plans the work"| DEC
+  SD -->|"gathers evidence"| DATA
+  SD -->|"runs the experiment"| EXE
 
   classDef core fill:#ffffff,stroke:#0f172a,stroke-width:2px,color:#0f172a;
   classDef engine fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e;
@@ -78,20 +76,20 @@ flowchart TD
   class SD core;
   class ENG,GW,MP engine;
   class RUN,CPU,NPU runner;
-  class LIT,DB data;
+  class LIT,DB,WEB,FILES data;
   style DEC fill:#f8fafc,stroke:#cbd5e1;
   style EXE fill:#f8fafc,stroke:#cbd5e1;
   style DATA fill:#f8fafc,stroke:#cbd5e1;
 ```
 
-Three branches: who decides, where code runs, and which research sources the agent can query.
+Three steps: plan the work, gather evidence, run the experiment.
 
 ### Detailed view
 
 ```mermaid
 flowchart TD
   R["Researcher"]
-  SD["ScienceDiscovery — the workbench"]
+  SD["ScienceDiscovery"]
 
   subgraph DEC["Decides with"]
     direction TB
