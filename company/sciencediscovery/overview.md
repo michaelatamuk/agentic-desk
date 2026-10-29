@@ -128,7 +128,10 @@ flowchart LR
 tool. The Agent calls that tool; ScienceDiscovery's Runner NPU broker then runs an allowlisted
 workload on the host's Ascend NPU. It is compute for code and experiments, not a model provider.
 This path is separate from the model gateway: model calls never reach the NPU broker, and an
-Ascend-backed inference server would sit behind the model provider endpoint.
+Ascend-backed inference server would sit behind the model provider endpoint. The default allowlist
+has an NPU smoke test and the Protenix antibody pipeline; admins can add other fixed scientific
+workloads. It is for running a domain model or pipeline as part of an experiment, not for chat-model
+inference.
 
 | Optional component | Used for |
 |---|---|
