@@ -29,6 +29,65 @@ covers what the product is, how it runs, and the JiuwenSwarm engine it depends o
 For a product reader, ScienceDiscovery is the workbench and JiuwenSwarm is the engine it uses. The
 researcher's sessions, files and workspace stay in the workbench.
 
+### At a glance
+
+```mermaid
+flowchart TD
+  R(["Researcher"])
+  SD["ScienceDiscovery<br/>the workbench"]
+
+  subgraph DEC["Decides with"]
+    direction TB
+    ENG["Engine<br/>JiuwenSwarm or native"]
+    GW["Model gateway"]
+    MP["Model provider"]
+    ENG -->|"model calls"| GW
+    GW -->|"requests"| MP
+  end
+
+  subgraph EXE["Executes on"]
+    direction TB
+    RUN["Runner<br/>local or remote"]
+    CPU["CPU"]
+    NPU["NPU"]
+    RUN --> CPU
+    RUN -.->|"if Ascend"| NPU
+  end
+
+  subgraph DATA["Research sources"]
+    direction TB
+    LIT["Literature<br/>PubMed · arXiv · Europe PMC<br/>bioRxiv · medRxiv"]
+    DB["Databases<br/>UniProt · PDB · Ensembl · Reactome<br/>ClinVar · ChEMBL · GEO"]
+    WEB["Web<br/>search · fetch"]
+    FILES["Your files<br/>datasets · PDFs · workspace"]
+    LIT ~~~ DB
+    DB ~~~ WEB
+    WEB ~~~ FILES
+  end
+
+  R -->|"request, files"| SD
+  SD --> DEC
+  SD --> EXE
+  SD --> DATA
+  SD -.->|"answer"| R
+
+  classDef core fill:#ffffff,stroke:#0f172a,stroke-width:2px,color:#0f172a;
+  classDef engine fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e;
+  classDef runner fill:#dcfce7,stroke:#15803d,color:#14532d;
+  classDef data fill:#fef3c7,stroke:#b45309,color:#78350f;
+  class SD core;
+  class ENG,GW,MP engine;
+  class RUN,CPU,NPU runner;
+  class LIT,DB data;
+  style DEC fill:#f8fafc,stroke:#cbd5e1;
+  style EXE fill:#f8fafc,stroke:#cbd5e1;
+  style DATA fill:#f8fafc,stroke:#cbd5e1;
+```
+
+Three branches: who decides, where code runs, and which research sources the agent can query.
+
+### Detailed view
+
 ```mermaid
 flowchart TD
   R["Researcher"]
@@ -141,14 +200,14 @@ unavailable. Model calls are unaffected.
 
 ### Optional extras
 
-Only two optional extras remain: research data and ScienceMemory storage. Neither changes the engine
+Only two optional extras remain: research sources and ScienceMemory storage. Neither changes the engine
 or execution choice.
 
 ```mermaid
 flowchart TD
   SD["ScienceDiscovery"]
 
-  subgraph DATA["Research data"]
+  subgraph DATA["Research sources"]
     L["Built-in literature and data sources<br/>PubMed · arXiv · Europe PMC · bioRxiv · medRxiv<br/>UniProt · PDB · Ensembl · Reactome · ClinVar · ChEMBL · GEO"]
   end
 
