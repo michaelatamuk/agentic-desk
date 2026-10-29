@@ -127,6 +127,8 @@ flowchart LR
 **Ascend NPU.** Off by default. When `SCIENCE_AGENT_NPU_BROKER=1`, the Agent gets a `run_npu_job`
 tool. The Agent calls that tool; ScienceDiscovery's Runner NPU broker then runs an allowlisted
 workload on the host's Ascend NPU. It is compute for code and experiments, not a model provider.
+This path is separate from the model gateway: model calls never reach the NPU broker, and an
+Ascend-backed inference server would sit behind the model provider endpoint.
 
 | Optional component | Used for |
 |---|---|
