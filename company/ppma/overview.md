@@ -2,6 +2,8 @@
 
 *One document. No other reading needed. Written 28 October 2026.*
 
+*PPMA is built by another team in the company. This note is context, not our roadmap.*
+
 ## 1. In one paragraph
 
 PPMA is a memory-first manager. Apps report events from the **North**. PPMA turns them into memory,

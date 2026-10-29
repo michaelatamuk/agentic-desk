@@ -4,6 +4,9 @@ Studies of how openjiuwen works inside, written while reading the code. They are
 documentation and not release notes. Some are the only explanation that exists for a subsystem;
 others cover behaviour that no document mentions.
 
+These notes describe the platform. Our own issues and design proposals are in
+[`projects/openjiuwen/`](../../../projects/openjiuwen/README.md).
+
 ## Structure
 
 One folder per subsystem, named after the code it covers. A folder is created when the first note

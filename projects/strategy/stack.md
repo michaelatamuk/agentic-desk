@@ -1,5 +1,8 @@
 # What we build on top of Jiuwen
 
+*Our proposal for R&D direction. It argues what to build on Jiuwen and what not to build; it is not a
+company roadmap.*
+
 Jiuwen is the **brain**. We build **three parts** on top of it.
 
 > **No body → software. Has a body → hardware.**
@@ -18,7 +21,11 @@ Jiuwen is the **brain**. We build **three parts** on top of it.
 | `projects/middleware/laix/` | 3 · Enabling stack | a layer between the app and the platform |
 | `projects/middleware/cortex/` | 3 · Enabling stack | plugins that extend the platform |
 | `projects/apps/` | 1 · Products | software products |
-| `projects/channels/` | 1 · Products | shipped surfaces |
+| `projects/openjiuwen/channels/` | 1 · Products | shipped surfaces |
+
+Not on this map: company products owned by other teams — PPMA, DigitalMate/Orbit and ScienceDiscovery.
+They are context, not part of our build plan; see `../../company/`. openJiuwen is a company platform we
+contribute to: the platform row above is our work in it, not product ownership.
 
 Two projects sit in the same part and are still different things: LAIX is a **layer** with a contract
 above and below it, so it can be swapped or sold on its own. Cortex is a **set of plugins** that
