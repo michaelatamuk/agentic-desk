@@ -32,22 +32,20 @@ researcher's sessions, files and workspace stay in the workbench.
 ```mermaid
 flowchart TD
   R["Researcher"]
-  SD["ScienceDiscovery — the workbench<br/>sessions · files · workspace<br/>tools · sandbox · artifacts · provenance"]
+  SD["ScienceDiscovery<br/>the workbench"]
 
   subgraph DEC["Decider — engine (one per task)"]
+    direction LR
     JS["JiuwenSwarm<br/>default"]
     NL["Native loop<br/>no JiuwenSwarm"]
   end
 
   subgraph EXE["Executor — runner (one per run)"]
-    subgraph LOCAL["Local Runner — your machine"]
-      LC["Run on CPU"]
-      LN["Run on NPU<br/>if Ascend present"]
-    end
-    subgraph REMOTE["Remote Runner — another host"]
-      RC["Run on CPU"]
-      RN["Run on NPU<br/>if Ascend present"]
-    end
+    direction LR
+    LC["Local · CPU"]
+    LN["Local · NPU<br/>if Ascend"]
+    RC["Remote · CPU"]
+    RN["Remote · NPU<br/>if Ascend"]
   end
 
   GW["ScienceDiscovery<br/>model gateway"]
@@ -59,12 +57,20 @@ flowchart TD
   NL -->|"model calls"| GW
   GW -->|"requests"| MP
   SD -->|"executes on"| EXE
+
+  classDef core fill:#f8fafc,stroke:#334155,stroke-width:2px,color:#0f172a;
+  classDef dec fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e;
+  classDef exe fill:#dcfce7,stroke:#15803d,color:#14532d;
+  classDef ext fill:#f1f5f9,stroke:#64748b,color:#334155;
+  class SD core;
+  class JS,NL dec;
+  class LC,LN,RC,RN exe;
+  class GW,MP ext;
 ```
 
 **Decider = the engine. Executor = the runner.** The engine runs every task, and its model calls go
-through the gateway to the provider. The runner always offers a CPU path; if its host has an Ascend
-card and the broker is enabled, the same runner also offers the NPU path. With no Ascend card, only
-the CPU box applies.
+through the gateway to the provider. The executor offers four choices: local or remote, each on CPU
+or NPU. The NPU option exists only when that host has an Ascend card and the broker is enabled.
 
 **Three independent layers:**
 
