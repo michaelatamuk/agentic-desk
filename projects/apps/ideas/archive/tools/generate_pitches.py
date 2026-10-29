@@ -1,8 +1,9 @@
 from pathlib import Path
 from string import Template
 
+# Legacy generator for the original template pitches. Not used by the current site.
 BASE = Path(__file__).parent
-OUT = BASE / "pairs"
+OUT = BASE.parent / "pitches"
 OUT.mkdir(exist_ok=True)
 
 APPS = [

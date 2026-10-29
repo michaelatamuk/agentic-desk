@@ -1,3 +1,4 @@
+from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 
@@ -301,7 +302,7 @@ for si, (sc, title, desc) in enumerate(shared):
         ax.plot([vx, vx], [BAR_Y + 0.010, BAR_Y + BAR_H - 0.010],
                 transform=ax.transAxes, color=CBRD, lw=0.8, zorder=3)
 
-out = '/Users/mishka/PycharmProjects/openjiuwen/agentic-desk/projects/apps/ideas/apps-overview.png'
+out = Path(__file__).resolve().parent.parent / "assets" / "overview" / "apps-overview.png"
 plt.savefig(out, dpi=130, bbox_inches='tight', facecolor=BG, pad_inches=0.04)
 plt.close()
 print('saved:', out)
