@@ -41,6 +41,7 @@ flowchart TD
   RUN["Runner — executes tools<br/>one per run"]
   LR["Local Runner<br/>your machine"]
   RR["Remote Runner<br/>another host"]
+  SB["Normal sandbox on the selected Runner<br/>Python · R · shell"]
   NPU["Ascend NPU on the Runner host<br/>run_npu_job · Protenix · MindSpore"]
 
   R -->|"starts a task"| SD
@@ -54,6 +55,8 @@ flowchart TD
   SD -->|"executes on"| RUN
   RUN --> LR
   RUN --> RR
+  LR -->|"always"| SB
+  RR -->|"always"| SB
   LR -.->|"if Ascend present"| NPU
   RR -.->|"if Ascend present"| NPU
 ```
@@ -61,6 +64,9 @@ flowchart TD
 **Engine = who decides. Runner = where code runs.** The engine runs every task, and its model calls
 go through the gateway to the provider. The Runner executes the tools, locally or on another host.
 The NPU is an optional device on the Runner host, used only for `run_npu_job` workloads.
+
+With **no Ascend card**, the dashed branch is simply absent: the Runner still runs normal code in its
+sandbox.
 
 **Three independent layers:**
 
