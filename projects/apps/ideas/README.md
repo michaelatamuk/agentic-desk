@@ -1,6 +1,6 @@
 # Agentic App Lab
 
-Nine app concepts with a **playable demo** and a **productive studio**, plus **CUE** and **RECALL**, two concepts in design.
+Nine app concepts with a **playable demo** and a **productive studio**, plus **CUE** (concept) and **RECALL** (live demo).
 
 **Live site:** <https://michaelatamuk.github.io/agentic-desk/>
 
@@ -53,8 +53,9 @@ Concept and stage-first roadmap only; no playable demo yet.
 - [Roadmap](docs/roadmaps/cue.md)
 
 **RECALL** — the private, on-device capture layer for PPMA: meetings, calls and field notes become
-proof-backed project memory. Concept, stage-first roadmap and PPMA integration contract only; no
-playable demo yet.
+proof-backed project memory. **Live demo:** <https://jiuwendemos.github.io/recall/>. Source:
+<https://github.com/jiuwendemos/recall>. Stage, booth, manager proof, local PPMA server, contract and
+design system are implemented.
 
 - [Concept note](docs/concepts/recall.md)
 - [Roadmap](docs/roadmaps/recall.md)

@@ -1,6 +1,6 @@
 # Documentation
 
-Everything behind the nine demos, plus CUE and RECALL, two concepts in design. Grouped by purpose.
+Everything behind the nine demos, plus CUE (concept) and RECALL (live demo). Grouped by purpose.
 
 ## Stage standard
 
@@ -29,7 +29,7 @@ One page per app: buyer, problem, product loop, NPU role, business case and risk
 | Cyber Range | [cyber.md](concepts/cyber.md) |
 | Architecture Studio | [architecture.md](concepts/architecture.md) |
 | CUE (concept only) | [cue.md](concepts/cue.md) |
-| RECALL (concept only) | [recall.md](concepts/recall.md) |
+| RECALL (live demo) | [recall.md](concepts/recall.md) |
 
 ## Roadmaps
 
@@ -42,8 +42,8 @@ and acceptance tests.
 - [CUE roadmap](roadmaps/cue.md)
 - [RECALL roadmap](roadmaps/recall.md)
 
-RootCause, GeoResponse, CUE and RECALL have stage-first roadmaps. CUE and RECALL have no playable
-demo yet.
+RootCause, GeoResponse, CUE and RECALL have stage-first roadmaps. CUE has no playable demo yet.
+RECALL is live: <https://jiuwendemos.github.io/recall/>.
 
 ## Integrations
 
