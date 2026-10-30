@@ -24,6 +24,63 @@ dashboard with animations.**
 - **Audience agency.** The room makes one real decision with a visible consequence.
 - **A repeatable line.** One sentence the audience can say afterwards.
 
+## The weekly demo — what SD's cadence teaches
+
+SD is not built as one launch. It is built as a cadence. In roughly three months it landed **272
+feature commits, 329 test commits, 582 fixes, 198 docs commits and 91 CI commits**, with release tags
+every few weeks and visible capability changes weekly or biweekly.
+
+What the commits actually add:
+
+- **UI-visible slices:** desktop workbench, project/session management, settings, artifact preview,
+  CSV/table viewer, onboarding, sample session, interface language, error diagnostics.
+- **Trust features:** consent, permissions, sandboxing, reviewer, execution machines, remote runners,
+  audit and provenance.
+- **Platform breadth:** model providers, skills, Claude Code/Codex, MCP, connectors, memory, remote
+  execution.
+- **Quality:** tests, docs, CI gates and release notes ship alongside features.
+- **Onboarding:** first-run, sample session, guided tour and model setup are product features, not
+  demo debt.
+
+The pattern to copy:
+
+1. **One visible capability per cycle.** A manager can see it in 30 seconds.
+2. **One proof point.** A test, benchmark, audit, benchmark case or before/after number.
+3. **One trust feature.** Consent, permissions, sandboxing, provenance or audit.
+4. **One adoption feature.** Sample data, first-run, onboarding, language or a repeatable demo path.
+5. **One "next".** End every demo with what ships next.
+6. **Compound.** Each release should make the next demo easier and the platform story stronger.
+7. **Release notes as a narrative.** One human-written highlight, generated counts underneath.
+8. **Quality is part of the show.** A feature that ships with tests and docs is more demoable than a
+   feature that only works once.
+
+**What managers want to see:**
+
+- What changed for the user?
+- How do we know it works?
+- Is it safe and governed?
+- Will people actually use it?
+- What does it save: time, cost, risk?
+- What is next?
+- Can I try it or forward it?
+
+**The weekly demo filter:**
+
+- Can a manager understand it in 30 seconds?
+- Can it ship as a visible slice in 1–2 weeks?
+- What proof moves?
+- What trust or safety story does it strengthen?
+- What does it compound with?
+- What is the next release?
+- Can it be demoed twice without drift?
+
+**Sustained excitement = cadence × compounding × proof × narrative.**
+Excitement without cadence dies. Cadence without compounding becomes feature sprawl.
+
+**Conference cut vs manager cut:** the conference is 90 seconds of emotion, one verb and an audience
+choice. The manager demo is 10 minutes of proof, adoption, safety and roadmap. They are two cuts of the
+same core — do not build two products.
+
 ## The usage pattern
 
 - **People should come back for different tasks, not just different cases.**
@@ -93,6 +150,11 @@ dashboard with animations.**
 - The NPU is only for speed.
 - The demo needs the presenter to explain why it matters.
 - It competes with PPMA instead of feeding it.
+- It has only an architecture story, with no visible 1–2 week slice.
+- It needs a big-bang launch to be impressive.
+- The demo is a one-off, not a repeatable path.
+- Every release is a random feature, not a compounding platform.
+- There is no proof, trust or adoption story for managers.
 
 ## The 10-question filter
 
@@ -114,8 +176,10 @@ dashboard with animations.**
 1. Write the one-sentence idea.
 2. Answer the 10 questions in order.
 3. If any of the first four answers are weak, stop and reshape the idea.
-4. Only then write the concept note.
-5. Only after the concept survives, write the stage-first roadmap.
+4. Define the **1–2 week visible slice**, the **manager proof** and the **next release**.
+5. Only then write the concept note.
+6. Only after the concept survives, write the stage-first roadmap.
+7. Before the first demo, record the 90-second conference cut and the 10-minute manager cut.
 
 The non-negotiables are **not** that every idea must be daily, horizontal or NPU-native. They are:
 
