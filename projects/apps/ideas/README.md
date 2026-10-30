@@ -57,8 +57,10 @@ proof-backed project memory. **Live demo:** <https://jiuwendemos.github.io/recal
 <https://github.com/jiuwendemos/recall>. Stage, booth, manager proof, contract and design system are implemented. A running PPMA backend
 accepted its manifest and real capture events, and a real openjiuwen DeepAgent answered from PPMA
 memory (see docs/roadmaps/recall.md and the repo's docs/integration-live.md). The app also has a
-**blank personal workspace** with a switch back to the synthetic pack, plus a real-case example,
-an in-app case import (JSON/VTT/SRT/text) and an ingest script for adding and analysing your own case.
+**blank personal workspace** with a switch back to the synthetic pack, plus a real intelligence
+loop: raw transcript → evidence-linked decisions, actions, risks and gaps → proactive attention →
+human approval → PPMA. A real-case example, in-app import, ingest script and a 3-minute demo video
+are included.
 
 - [Concept note](docs/concepts/recall.md)
 - [Roadmap](docs/roadmaps/recall.md)
