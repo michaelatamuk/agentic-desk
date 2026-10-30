@@ -56,7 +56,9 @@ Concept and stage-first roadmap only; no playable demo yet.
 proof-backed project memory. **Live demo:** <https://jiuwendemos.github.io/recall/>. Source:
 <https://github.com/jiuwendemos/recall>. Stage, booth, manager proof, contract and design system are implemented. A running PPMA backend
 accepted its manifest and real capture events, and a real openjiuwen DeepAgent answered from PPMA
-memory (see docs/roadmaps/recall.md and the repo's docs/integration-live.md).
+memory (see docs/roadmaps/recall.md and the repo's docs/integration-live.md). The app also has a
+**blank personal workspace** with a switch back to the synthetic pack, plus a real-case example and
+ingest script for adding and analysing your own case.
 
 - [Concept note](docs/concepts/recall.md)
 - [Roadmap](docs/roadmaps/recall.md)
