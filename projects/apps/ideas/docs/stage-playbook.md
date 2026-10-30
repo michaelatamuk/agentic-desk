@@ -1,7 +1,8 @@
 # The Stage Playbook — conference style 2026
 
-This is the bar every demo must clear before it goes on a stage. It applies to all nine apps;
-RootCause and GeoResponse are the first two rewritten against it.
+This is the bar every demo must clear before it goes on a stage. It applies to all apps;
+RootCause and GeoResponse were the first two rewritten against it. CUE and RECALL are the first
+concepts designed against it from day one.
 
 The rule is simple: **a demo is not a tour of a product. It is the product's argument, performed in 90 seconds.**
 
@@ -136,7 +137,7 @@ dashboards · multi-user · chat · notifications · onboarding.
 
 Those are product features. They belong in Phase 1 or later.
 
-## Using this for the other seven apps
+## Using this for the next apps
 
 Each app needs one verb, one wrong answer, one audience choice and one repeatable line. If a concept
 cannot produce those four things, it is a product, not a stage piece.

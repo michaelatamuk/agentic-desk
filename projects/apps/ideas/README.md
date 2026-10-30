@@ -1,6 +1,6 @@
 # Agentic App Lab
 
-Nine app concepts, each with a **playable demo** you manipulate and a **productive studio** you work in.
+Nine app concepts with a **playable demo** and a **productive studio**, plus **CUE** and **RECALL**, two concepts in design.
 
 **Live site:** <https://michaelatamuk.github.io/agentic-desk/>
 
@@ -16,8 +16,10 @@ ideas/
 ├── studio/             9 productive studio demos, one per app
 ├── docs/
 │   ├── concepts/       one-page concept note per app
-│   ├── roadmaps/       stage-first plans for RootCause and GeoResponse
+│   ├── roadmaps/       stage-first plans for RootCause, GeoResponse, CUE and RECALL
+│   ├── integrations/   cross-product contracts (PPMA × RECALL)
 │   ├── ideation/       wider idea lists
+│   ├── idea-filters.md    the upstream test for a new idea
 │   └── stage-playbook.md  the 2026 conference bar
 ├── assets/             images and portfolio overview renders
 ├── tools/              render scripts
@@ -41,6 +43,22 @@ File names are consistent across `play/`, `studio/` and `docs/concepts/`:
 | Synthetic World | Paint a generated world, then release the car | [play](play/synthetic.html) | [studio](studio/synthetic.html) |
 | Cyber Range | Harden nodes and hold the core for 40 seconds | [play](play/cyber.html) | [studio](studio/cyber.html) |
 | Architecture Studio | Drag the sun and watch the tower shade the plaza | [play](play/architecture.html) | [studio](studio/architecture.html) |
+
+## New concepts (docs only)
+
+**CUE** — a live show design workspace: stage, looks, video, cues and budget before the lights go down.
+Concept and stage-first roadmap only; no playable demo yet.
+
+- [Concept note](docs/concepts/cue.md)
+- [Roadmap](docs/roadmaps/cue.md)
+
+**RECALL** — the private, on-device capture layer for PPMA: meetings, calls and field notes become
+proof-backed project memory. Concept, stage-first roadmap and PPMA integration contract only; no
+playable demo yet.
+
+- [Concept note](docs/concepts/recall.md)
+- [Roadmap](docs/roadmaps/recall.md)
+- [PPMA integration](docs/integrations/ppma-recall.md)
 
 ## Run locally
 

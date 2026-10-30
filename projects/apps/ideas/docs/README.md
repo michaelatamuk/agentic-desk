@@ -1,12 +1,17 @@
 # Documentation
 
-Everything behind the nine demos, grouped by purpose.
+Everything behind the nine demos, plus CUE and RECALL, two concepts in design. Grouped by purpose.
 
 ## Stage standard
 
 - [The Stage Playbook](stage-playbook.md) — the 2026 bar for a conference demo: 10 criteria, the
   90-second arc, the trust beat, audience agency, demo architecture, acceptance tests, stagecraft,
   data rights and post-stage motion.
+
+## Idea filters
+
+- [Idea filters](idea-filters.md) — the upstream test for a new app: repeat use, task breadth,
+  creation vs control, a real wedge, structural NPU usage, ecosystem fit and the 10-question filter.
 
 ## Concept notes
 
@@ -23,6 +28,8 @@ One page per app: buyer, problem, product loop, NPU role, business case and risk
 | Synthetic World | [synthetic.md](concepts/synthetic.md) |
 | Cyber Range | [cyber.md](concepts/cyber.md) |
 | Architecture Studio | [architecture.md](concepts/architecture.md) |
+| CUE (concept only) | [cue.md](concepts/cue.md) |
+| RECALL (concept only) | [recall.md](concepts/recall.md) |
 
 ## Roadmaps
 
@@ -32,8 +39,19 @@ and acceptance tests.
 
 - [RootCause roadmap](roadmaps/rootcause.md)
 - [GeoResponse roadmap](roadmaps/georesponse.md)
+- [CUE roadmap](roadmaps/cue.md)
+- [RECALL roadmap](roadmaps/recall.md)
 
-Only these two apps have stage-first roadmaps so far.
+RootCause, GeoResponse, CUE and RECALL have stage-first roadmaps. CUE and RECALL have no playable
+demo yet.
+
+## Integrations
+
+Cross-product contracts that define where one product ends and another begins.
+
+- [PPMA × RECALL](integrations/ppma-recall.md) — RECALL captures and proves; PPMA owns project memory
+  and action. Event types, consent, deletion, retention and failure modes.
+- [Integrations index](integrations/README.md)
 
 ## Ideation
 
