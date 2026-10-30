@@ -54,8 +54,9 @@ Concept and stage-first roadmap only; no playable demo yet.
 
 **RECALL** — the private, on-device capture layer for PPMA: meetings, calls and field notes become
 proof-backed project memory. **Live demo:** <https://jiuwendemos.github.io/recall/>. Source:
-<https://github.com/jiuwendemos/recall>. Stage, booth, manager proof, local PPMA server, contract and
-design system are implemented.
+<https://github.com/jiuwendemos/recall>. Stage, booth, manager proof, contract and design system are implemented. A running PPMA backend
+accepted its manifest and real capture events, and a real openjiuwen DeepAgent answered from PPMA
+memory (see docs/roadmaps/recall.md and the repo's docs/integration-live.md).
 
 - [Concept note](docs/concepts/recall.md)
 - [Roadmap](docs/roadmaps/recall.md)

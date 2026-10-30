@@ -43,7 +43,8 @@ and acceptance tests.
 - [RECALL roadmap](roadmaps/recall.md)
 
 RootCause, GeoResponse, CUE and RECALL have stage-first roadmaps. CUE has no playable demo yet.
-RECALL is live: <https://jiuwendemos.github.io/recall/>.
+RECALL is live: <https://jiuwendemos.github.io/recall/>. Its PPMA north contract and openjiuwen
+agent were verified against a running backend.
 
 ## Integrations
 
