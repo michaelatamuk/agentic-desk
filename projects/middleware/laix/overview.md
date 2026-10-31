@@ -182,3 +182,4 @@ at the top of the slide.
 
 - [The LAIX case](laix-case.md) — the decision layer for the right moment, and its symbiosis with
   PPMA.
+- [RECALL → LAIX modules](recall-modules.md) — the first extracted code: attention and decision record.

@@ -60,7 +60,8 @@ memory (see docs/roadmaps/recall.md and the repo's docs/integration-live.md). Th
 **blank personal workspace** with a switch back to the synthetic pack, plus a real intelligence
 loop: raw transcript → evidence-linked decisions, actions, risks and gaps → proactive attention →
 human approval → PPMA. A real-case example, in-app import, ingest script and a 3-minute demo video
-are included.
+are included. Two LAIX-ready modules are extracted from RECALL: `@laix/attention` and
+`@laix/decision-record`.
 
 - [Concept note](docs/concepts/recall.md)
 - [Roadmap](docs/roadmaps/recall.md)
