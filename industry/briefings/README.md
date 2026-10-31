@@ -46,9 +46,9 @@ One canonical file per month.
 
 - `2026-09.md` — September 2026 *(news-brief format)*
 - `2026-09-actors.md` — September 2026 *(actor-by-actor edition: every line is who did what)*
-- `2026-10.md` — October 2026 *(engineering edition; the default since this month)*
-- `2026-10-actors.md` — October 2026 *(actor-by-actor edition: every line is who did what)*
-- `2026-10-china.md` — October 2026 *(China-only edition: every line is who did what)*
+- `2026-10.md` — October 2026, as of 31 October *(engineering edition; the default since this month)*
+- `2026-10-actors.md` — October 2026, as of 31 October *(actor-by-actor edition: every line is who did what)*
+- `2026-10-china.md` — October 2026, as of 31 October *(China-only edition: every line is who did what)*
 - `2026-11.md` — November 2026 *(next)*
 
 ### Drafts
