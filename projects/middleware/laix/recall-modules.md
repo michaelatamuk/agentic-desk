@@ -1,6 +1,6 @@
 # RECALL → LAIX: extracted modules
 
-**Status: draft, extracted from RECALL v1.7.0.** This is the first concrete code contribution from a
+**Status: draft, extracted from RECALL v1.7.1.** This is the first concrete code contribution from a
 reference app into LAIX. It is deliberately small and UI-free.
 
 ## Two packages
