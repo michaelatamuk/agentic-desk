@@ -71,6 +71,7 @@ The pattern to copy:
 - What proof moves?
 - What trust or safety story does it strengthen?
 - What does it compound with?
+- Does it show a platform capability — tool use, memory, trace, evaluation — not just a prompt?
 - What is the next release?
 - Can it be demoed twice without drift?
 
@@ -123,6 +124,40 @@ same core — do not build two products.
 - **No fake NPU story.** Optional hardware is better than hardware-dependent.
 - **The demo must be offline, deterministic, resettable and have a fallback.**
 
+## Platform leverage — agent or wrapper?
+
+A direct LLM call is not a sin. A thin wrapper presented as an agentic platform is.
+
+The test: **what does the platform uniquely enable that the product needs?**
+
+- If nothing, the product can still be good — but it is not evidence for the platform.
+- If orchestration, tools, memory, skills, sandboxing, evaluation, provenance, model routing,
+  on-prem/NPU or governance matter, the platform must be the backbone and visible in the demo.
+
+| Level | What it looks like | What a manager sees |
+|---|---|---|
+| Prompt wrapper | One call → text | A generated answer |
+| Tool-using agent | Plan → tools → evidence → human | Work being done |
+| Platform-native | Orchestration, memory, skills, connectors, sandbox, eval, provenance, model routing, NPU | A system that compounds |
+
+**Platform filter:**
+
+- Is this platform-native, hybrid or deliberately standalone?
+- What does openjiuwen / PPMA uniquely enable here?
+- Where is the agentic loop visible: tools, memory, citations, recovery, audit?
+- Remove the platform — does the product still work? If yes, the platform is a plugin, not the moat.
+- Does the demo show the platform, not just the output?
+- If direct LLM is the right choice, does the product say “LLM-assisted” instead of “agentic
+  platform”?
+
+**Red flags:**
+
+- It is a prompt wrapper wearing an “agentic” badge.
+- The platform is a logo, not the architecture.
+- The demo hides the agent trace.
+- A direct cloud LLM sits inside a privacy/offline/NPU promise.
+- There is no evaluation, provenance or failure story.
+
 ## The ecosystem
 
 - **Complement, don't compete.** Strong fit with PPMA: RECALL captures; PPMA remembers and acts.
@@ -148,6 +183,10 @@ same core — do not build two products.
 - It is a crowded market with no wedge.
 - It needs hardware to be impressive.
 - The NPU is only for speed.
+- It is a prompt wrapper wearing an “agentic” badge.
+- The platform is a logo, not the architecture.
+- The demo hides the agent trace.
+- A direct cloud LLM sits inside a privacy/offline/NPU promise.
 - The demo needs the presenter to explain why it matters.
 - It competes with PPMA instead of feeding it.
 - It has only an architecture story, with no visible 1–2 week slice.
@@ -176,10 +215,11 @@ same core — do not build two products.
 1. Write the one-sentence idea.
 2. Answer the 10 questions in order.
 3. If any of the first four answers are weak, stop and reshape the idea.
-4. Define the **1–2 week visible slice**, the **manager proof** and the **next release**.
-5. Only then write the concept note.
-6. Only after the concept survives, write the stage-first roadmap.
-7. Before the first demo, record the 90-second conference cut and the 10-minute manager cut.
+4. Decide **platform-native, hybrid or standalone**; if platform-native, define the visible agentic loop.
+5. Define the **1–2 week visible slice**, the **manager proof** and the **next release**.
+6. Only then write the concept note.
+7. Only after the concept survives, write the stage-first roadmap.
+8. Before the first demo, record the 90-second conference cut and the 10-minute manager cut.
 
 The non-negotiables are **not** that every idea must be daily, horizontal or NPU-native. They are:
 
