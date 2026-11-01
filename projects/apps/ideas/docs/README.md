@@ -48,6 +48,16 @@ RootCause, GeoResponse, CUE, RECALL and StudyRoom have stage-first roadmaps. CUE
 playable demo yet. RECALL is live: <https://jiuwendemos.github.io/recall/>. Its PPMA north contract and
 openjiuwen agent were verified against a running backend.
 
+## Presentations
+
+- [LAIX to managers and PPMA builders](presentations/laix-studyroom/index.html) — a 14-slide deck
+  with StudyRoom as the example, speaker notes and two one-pagers.
+- [LAIX technical architecture](presentations/laix-studyroom/technical.html) — a 16-slide deck
+  covering core, app kit, policies, records, Live Context, parity and integration points.
+- [Product speaker notes](presentations/laix-studyroom/speaker-notes.md)
+- [Technical speaker notes](presentations/laix-studyroom/technical-notes.md)
+- [One-page handout](presentations/laix-studyroom/one-page.md)
+
 ## Integrations
 
 Cross-product contracts that define where one product ends and another begins.

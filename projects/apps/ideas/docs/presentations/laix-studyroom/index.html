@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LAIX — the decision layer · StudyRoom example</title>
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-2: #eee7da;
+      --ink: #1c1a17;
+      --muted: #6b6459;
+      --line: rgba(28, 26, 23, 0.16);
+      --cobalt: #1f4ed8;
+      --cobalt-soft: #dbe4ff;
+      --amber: #a86412;
+      --amber-soft: #f6e3c7;
+      --green: #2f6b45;
+      --green-soft: #dcebdd;
+      --red: #9b2c2c;
+      --violet: #6b4fa3;
+      --display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --body: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+      --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: #171614;
+      color: var(--ink);
+      font-family: var(--body);
+      overflow: hidden;
+    }
+
+    .deck { height: 100%; width: 100%; position: relative; }
+    .slide {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      padding: 5.2vh 6.5vw 6vh;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    .slide.dark {
+      background: #181816;
+      color: #f6f1e7;
+      --ink: #f6f1e7;
+      --muted: #bcb4a6;
+      --line: rgba(246, 241, 231, 0.18);
+      --paper: #181816;
+    }
+    .slide.dark .center { padding-bottom: 4rem; }
+    .slide--close .center { padding-bottom: 5rem; }
+
+    .kicker {
+      margin: 0 0 1.1rem;
+      color: var(--cobalt);
+      font: 700 0.72rem/1.2 var(--body);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .dark .kicker { color: #b9c7ff; }
+    h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 500; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(3rem, 6.6vw, 6.8rem); line-height: 0.98; max-width: 18ch; }
+    h2 { font-size: clamp(1.9rem, 3.5vw, 3.5rem); line-height: 1.03; max-width: 100%; min-height: 2.08em; }
+    h3 { font-size: clamp(1.05rem, 1.6vw, 1.45rem); line-height: 1.15; }
+    p { margin: 0; font-size: clamp(0.98rem, 1.45vw, 1.35rem); line-height: 1.5; }
+    .lede { margin-top: 1.2rem; max-width: 42ch; color: var(--muted); font-size: clamp(1.05rem, 1.8vw, 1.65rem); }
+    .big { font-size: clamp(1.8rem, 3.4vw, 3.4rem); line-height: 1.12; font-family: var(--display); max-width: 20ch; }
+    .small { font-size: clamp(0.78rem, 1vw, 0.95rem); line-height: 1.45; color: var(--muted); }
+    .mono { font-family: var(--mono); }
+    .accent { color: var(--cobalt); }
+    .warm { color: var(--amber); }
+    .good { color: var(--green); }
+    .bad { color: var(--red); }
+
+    .topline {
+      display: flex; justify-content: space-between; align-items: baseline;
+      border-bottom: 1px solid var(--line); padding-bottom: 0.9rem; margin-bottom: 2.2rem;
+      color: var(--muted); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .topline strong { color: var(--ink); font-weight: 650; letter-spacing: 0.02em; }
+
+    .center { margin: auto 0; }
+    .mt { margin-top: 2.2rem; }
+    .mt-s { margin-top: 1rem; }
+    .mt-l { margin-top: 3.2rem; }
+
+    .verbs { display: flex; flex-wrap: wrap; gap: 0.7rem; margin: 2rem 0 1.2rem; }
+    .verb {
+      border: 1px solid var(--line); background: rgba(255,255,255,0.28);
+      padding: 0.55rem 0.85rem; border-radius: 999px;
+      font: 650 0.9rem/1 var(--mono); letter-spacing: 0.03em;
+    }
+    .dark .verb { background: rgba(255,255,255,0.05); }
+    .verb:nth-child(1) { border-color: rgba(31,78,216,0.5); }
+    .verb:nth-child(2) { border-color: rgba(47,107,69,0.5); }
+    .verb:nth-child(3) { border-color: rgba(168,100,18,0.55); }
+
+    .receipt {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+      background: var(--line); border: 1px solid var(--line); margin-top: 2rem;
+    }
+    .receipt > div { background: var(--paper); padding: 1rem; min-height: 8.2rem; }
+    .receipt h3 { font-family: var(--body); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.8rem; }
+    .receipt p { font-size: 0.92rem; line-height: 1.4; }
+
+    .learners { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .learner { border: 1px solid var(--line); padding: 1rem; background: rgba(255,255,255,0.3); }
+    .dark .learner { background: rgba(255,255,255,0.04); }
+    .learner .who { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.8rem; }
+    .avatar { width: 2.1rem; height: 2.1rem; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--paper); font: 700 0.9rem var(--mono); }
+    .bar { height: 0.42rem; background: rgba(28,26,23,0.12); position: relative; margin: 0.7rem 0 0.4rem; }
+    .dark .bar { background: rgba(246,241,231,0.14); }
+    .bar > span { position: absolute; inset: 0 auto 0 0; background: var(--amber); }
+    .bar > i { position: absolute; top: -0.2rem; bottom: -0.2rem; width: 1px; background: var(--ink); left: 62%; }
+    .bar.good > span { background: var(--green); }
+    .bar.blue > span { background: var(--cobalt); }
+    .state { font: 650 0.72rem/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; margin-top: 2.4rem; }
+    .three > div { border-top: 2px solid var(--cobalt); padding-top: 1rem; }
+    .three h3 { font-family: var(--body); font-size: 1.05rem; margin-bottom: 0.6rem; }
+    .three p { font-size: 0.95rem; color: var(--muted); }
+
+    .table { width: 100%; border-collapse: collapse; margin-top: 2rem; font-size: clamp(0.86rem, 1.15vw, 1.02rem); }
+    .table th, .table td { text-align: left; padding: 0.7rem 0.65rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .table th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 650; }
+    .table td:first-child { color: var(--muted); white-space: nowrap; }
+    .table strong { color: var(--ink); }
+
+    .flow { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.5rem; margin-top: 2.2rem; align-items: stretch; }
+    .flow > div { border: 1px solid var(--line); padding: 0.75rem; min-height: 7.4rem; font-size: 0.82rem; line-height: 1.35; background: rgba(255,255,255,0.28); }
+    .flow > div strong { display: block; margin-bottom: 0.4rem; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .flow .laix { border-color: var(--cobalt); background: var(--cobalt-soft); }
+    .flow .ppma { border-color: var(--violet); }
+    .flow .host { border-color: var(--amber); }
+
+    .not-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.85rem; margin-top: 2.2rem; }
+    .not-grid > div { border: 1px solid var(--line); padding: 0.9rem; min-height: 6.6rem; }
+    .not-grid h3 { font-family: var(--body); font-size: 0.95rem; margin-bottom: 0.45rem; }
+    .not-grid p { font-size: 0.82rem; color: var(--muted); }
+
+    .steps { margin-top: 1.6rem; display: grid; gap: 0.7rem; }
+    .step { display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.8rem; align-items: start; border-bottom: 1px solid var(--line); padding-bottom: 0.65rem; }
+    .step .n { font: 700 0.85rem var(--mono); color: var(--cobalt); }
+    .step p { font-size: 0.98rem; }
+
+    .quote { margin-top: 2.4rem; border-left: 4px solid var(--cobalt); padding-left: 1.2rem; font-family: var(--display); font-size: clamp(1.5rem, 2.8vw, 2.6rem); line-height: 1.15; max-width: 24ch; }
+
+    .footer {
+      position: absolute; left: 6.5vw; right: 6.5vw; bottom: 2.2vh;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--muted); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .progress { position: fixed; left: 0; bottom: 0; height: 3px; background: var(--cobalt); z-index: 20; transition: width 180ms ease; }
+    .count { position: fixed; right: 1.2rem; bottom: 1rem; z-index: 30; color: var(--muted); font: 0.72rem var(--mono); background: var(--paper); border: 1px solid var(--line); padding: 0.3rem 0.45rem; }
+    .notes-panel {
+      display: none; position: fixed; left: 0; right: 0; bottom: 0; max-height: 42vh; overflow: auto;
+      background: #fffdf8; border-top: 2px solid var(--cobalt); color: var(--ink);
+      padding: 1rem 1.4rem 1.4rem; z-index: 40;
+      font-size: 0.92rem; line-height: 1.5;
+    }
+    .notes-panel.show { display: block; }
+    .notes-panel h3 { font-family: var(--body); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.6rem; }
+    .notes { display: none; }
+
+    .title-meta { margin-top: auto; display: flex; gap: 1.2rem; flex-wrap: wrap; color: var(--muted); font: 0.78rem var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+    .title-rule { width: 5rem; height: 2px; background: var(--cobalt); margin: 1.4rem 0; }
+
+    .callout { margin-top: 1.6rem; padding: 1rem 1.2rem; border: 1px solid var(--line); background: rgba(255,255,255,0.3); }
+    .callout p { font-size: 0.95rem; }
+    .pill { display: inline-block; padding: 0.25rem 0.5rem; border: 1px solid currentColor; border-radius: 999px; font: 650 0.7rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+    .pill.good { color: var(--green); background: var(--green-soft); border-color: transparent; }
+    .pill.warn { color: var(--amber); background: var(--amber-soft); border-color: transparent; }
+    .pill.blue { color: var(--cobalt); background: var(--cobalt-soft); border-color: transparent; }
+
+    @media (max-width: 900px) {
+      .slide { padding: 5vh 5vw 8vh; }
+      .receipt { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .learners, .three, .not-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr 1fr; }
+      h1 { font-size: 3.2rem; }
+      h2 { font-size: 2.3rem; }
+    }
+
+    @media print {
+      body { overflow: visible; background: white; }
+      .deck { height: auto; }
+      .slide { display: flex !important; page-break-after: always; width: 100%; height: 100vh; }
+      .count, .progress, .notes-panel { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide dark active">
+      <div class="topline"><span><strong>LAIX</strong> · decision layer</span><span>StudyRoom example</span></div>
+      <div class="center">
+        <p class="kicker">For managers and PPMA builders</p>
+        <h1>Every app can see.<br />Few can decide.</h1>
+        <div class="title-rule"></div>
+        <p class="lede">LAIX is the decision layer between what an app senses and what it does. StudyRoom is the example: a live small-group learning room where the hardest decision is often to wait.</p>
+        <div class="title-meta"><span>One decision</span><span>One reason</span><span>One record</span></div>
+      </div>
+      <div class="footer"><span>StudyRoom · Phase 0</span><span>Use ← → · N for notes · F for full screen</span></div>
+      <aside class="notes">Open with the line, not the architecture. “Every app is getting better at seeing. Very few can decide what to do next — and even fewer can explain why they did nothing.” Pause. Then: “LAIX is that decision layer. StudyRoom is the example.”</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Cold open</strong></span><span>StudyRoom</span></div>
+      <p class="kicker">A room of three learners</p>
+      <h2>Alice is stuck.<br />The teacher cannot watch all three.</h2>
+      <div class="learners">
+        <div class="learner">
+          <div class="who"><span class="avatar">A</span><strong>Alice</strong><span class="pill warn">stuck</span></div>
+          <p class="small">2 wrong attempts · 3:00 on problem</p>
+          <div class="bar"><span style="width:48%"></span><i></i></div>
+          <p class="state">evidence 48% · below the line</p>
+        </div>
+        <div class="learner">
+          <div class="who"><span class="avatar">B</span><strong>Ben</strong><span class="pill good">available</span></div>
+          <p class="small">Finished · offers to explain</p>
+          <div class="bar blue"><span style="width:18%"></span><i></i></div>
+          <p class="state">evidence 18% · below the line</p>
+        </div>
+        <div class="learner">
+          <div class="who"><span class="avatar">C</span><strong>Chris</strong><span class="pill blue">focused</span></div>
+          <p class="small">Working on a stretch problem</p>
+          <div class="bar"><span style="width:18%"></span><i></i></div>
+          <p class="state">evidence 18% · below the line</p>
+        </div>
+      </div>
+      <p class="quote">“The app saw the signal. It still had to decide.”</p>
+      <div class="footer"><span>StudyRoom · the moment</span><span>02</span></div>
+      <aside class="notes">Tell the room, not the platform. Alice has two wrong answers. The teacher is one person. Ben is free but may be on a stretch problem. The room can wait, hint, ask Ben, or call the teacher. “This is not a content problem. It is a decision problem.”</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>What LAIX is</strong></span><span>One question</span></div>
+      <p class="kicker">The whole product in one sentence</p>
+      <h2>Given this situation, what should happen next?</h2>
+      <div class="verbs">
+        <span class="verb">wait</span><span class="verb">observe</span><span class="verb">guide</span>
+        <span class="verb">ask</span><span class="verb">act</span><span class="verb">verify</span><span class="verb">escalate</span>
+      </div>
+      <p class="lede">It returns one accountable decision. Not a chat answer, not a plan, not an action by itself. The host executes. LAIX decides what should happen next, and records why.</p>
+      <div class="footer"><span>LAIX · decision layer</span><span>03</span></div>
+      <aside class="notes">Do not start with the seven verbs as a taxonomy. Start with the question. Then point at the verbs and say: “These are the seven answers. The hard one is wait.” Explain that the host still owns the action.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>The decision receipt</strong></span><span>What a decision carries</span></div>
+      <p class="kicker">A decision is not a prompt</p>
+      <h2>It is a receipt anyone can inspect.</h2>
+      <div class="receipt">
+        <div><h3>Situation</h3><p>What the room believes, with evidence and uncertainty.</p></div>
+        <div><h3>Options</h3><p>Wait, hint, ask a peer, share the board, escalate.</p></div>
+        <div><h3>Hard constraints</h3><p>Consent, privacy, no interruption, cooldown, teacher-only.</p></div>
+        <div><h3>Choice</h3><p>One verb, one action, one score.</p></div>
+        <div><h3>Confidence</h3><p>Where it came from. Calibrated or not.</p></div>
+        <div><h3>Approval</h3><p>Who must agree before anything happens.</p></div>
+        <div><h3>Alternatives</h3><p>What lost, and the real reason it lost.</p></div>
+        <div><h3>Record</h3><p>What happened, who approved, what changed.</p></div>
+      </div>
+      <p class="lede mt-s">For a teacher, this is trust. For a builder, this is the contract. For a manager, this is the audit trail.</p>
+      <div class="footer"><span>LAIX · decision receipt</span><span>04</span></div>
+      <aside class="notes">This is the memorable artifact. Managers remember “decision receipt”; builders remember “contract.” Say: “A prompt gives you an answer. A decision gives you an answer, the alternatives, the constraints, the approval and the record.”</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>StudyRoom · the moment</strong></span><span>What the decision looks like</span></div>
+      <p class="kicker">The same room, five moments</p>
+      <h2>The right answer at the right moment.</h2>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Moment</th><th>LAIX</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Evidence below the line</td><td><strong>wait</strong></td><td>Help would interrupt without enough reason.</td></tr>
+            <tr><td>False hand raise</td><td><strong>ask</strong>, then teacher override → <strong>wait</strong></td><td>The signal was weak; the teacher saw Alice back on task.</td></tr>
+            <tr><td>Alice asks; Ben offers</td><td><strong>ask</strong> Ben, consent required</td><td>Peer help is useful, but both learners must agree.</td></tr>
+            <tr><td>Both consent</td><td><strong>act</strong>, shared board</td><td>Only the current problem and latest attempt are shared.</td></tr>
+            <tr><td>Helper leaves</td><td><strong>guide</strong>, re-plan</td><td>Continue privately; no dead end.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><p><strong>The line to repeat:</strong> “It knew when not to interrupt.”</p></div>
+      <div class="footer"><span>StudyRoom · the decision</span><span>05</span></div>
+      <aside class="notes">Use the first four rows as the current live path. The fifth row is the design intent and the next live moment. Do not claim the disconnect/re-plan is fully polished today. The point of the slide is range: wait, ask, act, override, re-plan.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Manager lens</strong></span><span>Why this matters</span></div>
+      <p class="kicker">The buyer does not buy a decision layer</p>
+      <h2>Less noise. Faster help. A record they can defend.</h2>
+      <div class="three">
+        <div><h3>Less interruption</h3><p>The room waits when evidence is weak. Teachers stop chasing every signal.</p></div>
+        <div><h3>Consistent help</h3><p>Peer help, private hints and escalation follow the same policy, not the loudest voice.</p></div>
+        <div><h3>Auditable trust</h3><p>Every decision shows its evidence, alternatives, approval and outcome.</p></div>
+      </div>
+      <p class="lede mt">One decision layer reused across apps is cheaper and safer than a different chatbot in every product.</p>
+      <div class="footer"><span>Manager lens · 20 minutes</span><span>06</span></div>
+      <aside class="notes">Managers care about teacher time, consistency and risk. Do not sell “AI.” Sell fewer unnecessary interventions, a consistent escalation path, and a record the school can explain to a parent or auditor. The reuse point is the business case: one layer, many hosts.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>What LAIX is not</strong></span><span>Boundary</span></div>
+      <p class="kicker">Say this before they ask</p>
+      <h2>It is not another brain. It is the decision layer.</h2>
+      <div class="not-grid">
+        <div><h3>Not a chatbot</h3><p>No chat bubble as the product. A decision strip with a reason.</p></div>
+        <div><h3>Not memory</h3><p>PPMA owns profiles, history, consent and audit.</p></div>
+        <div><h3>Not an agent framework</h3><p>JiuwenSwarm or the host executes tools.</p></div>
+        <div><h3>Not a teacher</h3><p>The teacher can override every decision.</p></div>
+        <div><h3>Not an LMS</h3><p>Content, grades and enrolment stay in the school system.</p></div>
+      </div>
+      <p class="quote">“One decision path. One host. One record.”</p>
+      <div class="footer"><span>Boundary · managers and builders</span><span>07</span></div>
+      <aside class="notes">This slide prevents the two predictable misunderstandings: “Is this ChatGPT for classrooms?” and “Is this trying to replace PPMA?” Say no to both. The host owns the experience. LAIX owns the decision. PPMA owns memory and permission.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Live demo path</strong></span><span>Manual only</span></div>
+      <p class="kicker">60 seconds · teacher wall</p>
+      <h2>Show the wait, the override and the consent.</h2>
+      <div class="steps">
+        <div class="step"><span class="n">01</span><p>Teacher wall: three learners, one evidence line, one decision dock.</p></div>
+        <div class="step"><span class="n">02</span><p>Alice has two wrong answers. Evidence stays below the line. <strong>LAIX waits.</strong></p></div>
+        <div class="step"><span class="n">03</span><p>False hand raise: LAIX proposes Ben. Teacher overrides: “back on task.” <strong>Re-rank to wait.</strong></p></div>
+        <div class="step"><span class="n">04</span><p>Alice asks; Ben offers. <strong>LAIX asks Ben with consent.</strong> Both accept.</p></div>
+        <div class="step"><span class="n">05</span><p>Shared board opens with only the current problem. Stop. <strong>“It knew when not to interrupt.”</strong></p></div>
+      </div>
+      <p class="small mt-s">Presenter note: use <strong>Next</strong>, never autoplay. Keep the “why” drawer closed until the alternatives are corrected.</p>
+      <div class="footer"><span>Demo · safe path</span><span>08</span></div>
+      <aside class="notes">Current build: use the teacher wall and manual Next. Stop after the shared board opens. Do not use autoplay; it takes about 105 seconds and can race with a second window. Do not open the alternatives drawer in the current build: the score/reason text is not trustworthy yet. The safe story is wait, override, ask, consent, board.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>PPMA builders · the boundary</strong></span><span>Who owns what</span></div>
+      <p class="kicker">The question they will ask first</p>
+      <h2>“Is LAIX trying to replace PPMA?”</h2>
+      <p class="lede">No. PPMA owns memory, identity, consent and audit. LAIX owns the live decision. StudyRoom is the host that connects them.</p>
+      <table class="table">
+        <thead><tr><th>Concern</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>Profiles, progress, long-term memory, audit</td><td><strong>PPMA</strong></td></tr>
+          <tr><td>Room, exercises, board, media, teacher UI</td><td><strong>StudyRoom host</strong></td></tr>
+          <tr><td>Wording, voice, delivery</td><td><strong>Digital Mate</strong></td></tr>
+          <tr><td>Tools, retries, execution</td><td><strong>JiuwenSwarm / host</strong></td></tr>
+          <tr><td>Live situation, options, choice, confidence, approval, re-plan</td><td><strong>LAIX</strong></td></tr>
+        </tbody>
+      </table>
+      <div class="footer"><span>PPMA lens · 45 minutes</span><span>09</span></div>
+      <aside class="notes">Say it before they ask. PPMA is the system of record. LAIX never reads PPMA tables. StudyRoom asks PPMA for authorized context, passes generic constraints and options to LAIX, and routes the decision back. The boundary is the product.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>PPMA builders · the sequence</strong></span><span>One adapter</span></div>
+      <p class="kicker">How the integration actually runs</p>
+      <h2>One adapter knows both worlds.</h2>
+      <div class="flow">
+        <div class="host"><strong>Host event</strong>Answer, help request, hand raise, presence.</div>
+        <div class="ppma"><strong>PPMA</strong>Authorized context, consent, memory.</div>
+        <div class="host"><strong>Adapter</strong>Situation + DecisionRequest.</div>
+        <div class="laix"><strong>LAIX</strong>Policy, alternatives, decision.</div>
+        <div class="host"><strong>Host</strong>Consent, approval, execution.</div>
+        <div class="ppma"><strong>Record</strong>Decision, approval, outcome.</div>
+        <div class="host"><strong>Next event</strong>Re-plan or continue.</div>
+      </div>
+      <p class="lede mt-s">LAIX receives opaque ids, beliefs, constraints and options. It never receives raw media, names, chat history or PPMA records.</p>
+      <div class="footer"><span>Integration · sequence</span><span>10</span></div>
+      <aside class="notes">This is the slide for builders. Walk left to right. Emphasize that PPMA is an input through the host, not a dependency of LAIX. The adapter is the only module that knows both vocabularies. The host keeps the consent and execution authority.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>PPMA builders · the contract</strong></span><span>What to implement</span></div>
+      <p class="kicker">The smallest useful integration</p>
+      <h2>A request in. A decision out.</h2>
+      <table class="table">
+        <thead><tr><th>You provide</th><th>LAIX returns</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Situation</strong> — subject, beliefs, constraints, attributes</td><td><strong>Verb</strong> — wait, observe, guide, ask, act, verify, escalate</td></tr>
+          <tr><td><strong>Options</strong> — benefit, risk, delay, cost, reversibility, approval</td><td><strong>Action</strong> — the chosen app action id</td></tr>
+          <tr><td><strong>Policy plugin</strong> — the learning rules</td><td><strong>Why</strong> — rationale, alternatives, constraints, confidence source</td></tr>
+          <tr><td><strong>Context</strong> — what the host allows</td><td><strong>Record</strong> — approval state, outcome</td></tr>
+        </tbody>
+      </table>
+      <p class="lede mt-s">The learning rules live in StudyRoom. The decision mechanics, contract and record live in LAIX.</p>
+      <div class="footer"><span>Integration · contract</span><span>11</span></div>
+      <aside class="notes">For builders, show that a domain policy is expected, not a weakness. The host owns the rules; LAIX owns the decision shape, confidence, alternatives, approval and record. The thin adapter is the only shared surface.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>What is real today</strong></span><span>Do not overclaim</span></div>
+      <p class="kicker">Phase 0 is a decision proof, not a classroom product</p>
+      <h2>Real LAIX. Real records. Simulated room.</h2>
+      <div class="three">
+        <div><h3>Real</h3><p>Pinned LAIX v0.7.0, adapter, policy plugin, decisions, alternatives, constraints, records, outcomes, audit.</p></div>
+        <div><h3>Simulated</h3><p>Learner inputs, hand raise, speech line, peer offer and disconnect. No raw media leaves the room.</p></div>
+        <div><h3>Not yet</h3><p>Real WebRTC, STT/TTS, PPMA, Digital Mate, JiuwenSwarm, auth, LMS/SIS, billing.</p></div>
+      </div>
+      <p class="lede mt">This is enough to prove the decision boundary. It is not enough to claim a classroom outcome.</p>
+      <div class="footer"><span>Truth · real vs simulated</span><span>12</span></div>
+      <aside class="notes">Be precise. The LAIX dependency and decision records are real. The room inputs are simulated. There is no learning-outcome claim. Builders will trust the boundary more if the limits are explicit.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Pilot</strong></span><span>What would make them say yes</span></div>
+      <p class="kicker">One class · one subject · 90 days</p>
+      <h2>Prove the decision, not the demo.</h2>
+      <div class="three">
+        <div><h3>Shadow first</h3><p>Show decisions to the teacher. No peer help, no automatic action.</p></div>
+        <div><h3>Measure what matters</h3><p>Time to help, interventions avoided, teacher time, false positives, consent coverage.</p></div>
+        <div><h3>Earn the next step</h3><p>Two green months, a privacy review and a signed data agreement before production.</p></div>
+      </div>
+      <p class="quote">“One class. One subject. Ninety days. A record at the end.”</p>
+      <div class="footer"><span>Pilot · 90 days</span><span>13</span></div>
+      <aside class="notes">Managers need a bounded next step. A pilot is one class, one subject, 90 days, shadow mode first. Measure time to help, interventions avoided, teacher time and false positives. Do not promise learning outcomes before measuring them.</aside>
+    </section>
+
+    <section class="slide dark slide--close">
+      <div class="topline"><span><strong>Close</strong></span><span>StudyRoom · LAIX</span></div>
+      <div class="center">
+        <p class="kicker">The line to leave in the room</p>
+        <h1>LAIX does not make the app smarter.</h1>
+        <p class="big mt">It makes the app accountable for what it does next.</p>
+        <div class="title-rule"></div>
+        <p class="lede">StudyRoom · one room · one decision · one record. The first host app built on the LAIX decision layer.</p>
+      </div>
+      <div class="footer"><span>Questions · demo · pilot</span><span>14</span></div>
+      <aside class="notes">End on accountability, not intelligence. If the room is quiet, ask: “What is the first workflow where you would trust this decision layer?” Then move to the pilot one-pager.</aside>
+    </section>
+  </main>
+
+  <div class="progress" id="progress"></div>
+  <div class="count" id="count">1 / 14</div>
+  <div class="notes-panel" id="notes"><h3>Speaker notes</h3><div id="notes-body"></div></div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const progress = document.getElementById('progress');
+    const count = document.getElementById('count');
+    const notes = document.getElementById('notes');
+    const notesBody = document.getElementById('notes-body');
+    let index = 0;
+    let notesOpen = false;
+
+    function render() {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+      count.textContent = `${index + 1} / ${slides.length}`;
+      const note = slides[index].querySelector('.notes');
+      notesBody.textContent = note ? note.textContent : 'No notes for this slide.';
+      notes.classList.toggle('show', notesOpen);
+      history.replaceState(null, '', `#${index + 1}`);
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(slides.length - 1, index + delta));
+      render();
+    }
+
+    function toggleNotes() {
+      notesOpen = !notesOpen;
+      notes.classList.toggle('show', notesOpen);
+    }
+
+    function fullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); go(1); }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); go(-1); }
+      if (event.key === 'Home') { index = 0; render(); }
+      if (event.key === 'End') { index = slides.length - 1; render(); }
+      if (event.key.toLowerCase() === 'n') toggleNotes();
+      if (event.key.toLowerCase() === 'f') fullscreen();
+    });
+
+    const start = Number(location.hash.replace('#', '')) - 1;
+    if (!Number.isNaN(start) && start >= 0 && start < slides.length) index = start;
+    window.addEventListener('hashchange', () => {
+      const next = Number(location.hash.replace('#', '')) - 1;
+      if (!Number.isNaN(next) && next >= 0 && next < slides.length) {
+        index = next;
+        render();
+      }
+    });
+    render();
+  </script>
+</body>
+</html>

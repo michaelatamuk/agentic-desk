@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LAIX — technical architecture</title>
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --ink: #1c1a17;
+      --muted: #6b6459;
+      --line: rgba(28,26,23,.16);
+      --cobalt: #1f4ed8;
+      --cobalt-soft: #dbe4ff;
+      --amber: #a86412;
+      --amber-soft: #f6e3c7;
+      --green: #2f6b45;
+      --green-soft: #dcebdd;
+      --violet: #6b4fa3;
+      --display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --body: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+      --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body { background: #171614; color: var(--ink); font-family: var(--body); overflow: hidden; }
+    .deck { height: 100%; width: 100%; }
+    .slide { display: none; width: 100vw; height: 100vh; padding: 5.2vh 6.5vw 6vh; background: var(--paper); position: relative; overflow: hidden; }
+    .slide.active { display: flex; flex-direction: column; }
+    .slide.dark { background: #181816; color: #f6f1e7; --ink: #f6f1e7; --muted: #bcb4a6; --line: rgba(246,241,231,.18); --paper: #181816; }
+    .slide.dark .center { padding-bottom: 4rem; }
+
+    .topline { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: .9rem; margin-bottom: 2.2rem; color: var(--muted); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+    .topline strong { color: var(--ink); font-weight: 650; letter-spacing: .02em; }
+    .kicker { margin: 0 0 1.1rem; color: var(--cobalt); font: 700 .72rem/1.2 var(--body); letter-spacing: .16em; text-transform: uppercase; }
+    .dark .kicker { color: #b9c7ff; }
+    h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 500; letter-spacing: -.02em; }
+    h1 { font-size: clamp(3rem, 6.2vw, 6.4rem); line-height: .98; max-width: 18ch; }
+    h2 { font-size: clamp(1.9rem, 3.4vw, 3.4rem); line-height: 1.03; max-width: 100%; min-height: 2.08em; }
+    h3 { font-size: clamp(1rem, 1.45vw, 1.3rem); line-height: 1.15; }
+    p { margin: 0; font-size: clamp(.94rem, 1.3vw, 1.2rem); line-height: 1.48; }
+    .lede { margin-top: 1rem; max-width: 46ch; color: var(--muted); font-size: clamp(1rem, 1.55vw, 1.4rem); }
+    .big { font-size: clamp(1.6rem, 2.8vw, 2.8rem); line-height: 1.12; font-family: var(--display); max-width: 22ch; }
+    .small { font-size: clamp(.75rem, .95vw, .9rem); line-height: 1.42; color: var(--muted); }
+    .mono { font-family: var(--mono); }
+    .accent { color: var(--cobalt); }
+    .good { color: var(--green); }
+    .warn { color: var(--amber); }
+    .center { margin: auto 0; }
+    .mt { margin-top: 1.6rem; }
+    .mt-s { margin-top: .8rem; }
+    .mt-l { margin-top: 2.6rem; }
+
+    .table { width: 100%; border-collapse: collapse; margin-top: 1.4rem; font-size: clamp(.82rem, 1.05vw, .98rem); }
+    .table th, .table td { text-align: left; padding: .62rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .table th { font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 650; }
+    .table td:first-child { color: var(--muted); }
+    .table strong { color: var(--ink); }
+
+    .stack { display: grid; gap: .55rem; margin-top: 1.4rem; }
+    .stack-row { display: grid; grid-template-columns: 8.2rem 1fr 13rem; gap: .8rem; align-items: start; border: 1px solid var(--line); padding: .8rem .9rem; background: rgba(255,255,255,.28); }
+    .stack-row .layer { font: 700 .78rem/1.2 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--cobalt); }
+    .stack-row.host { border-color: var(--amber); }
+    .stack-row.app { border-color: var(--violet); }
+    .stack-row.core { border-color: var(--cobalt); background: var(--cobalt-soft); }
+    .stack-row p { font-size: .88rem; }
+    .stack-row .import { font-size: .78rem; color: var(--muted); }
+
+    .map { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.4rem; }
+    .map-box { border: 1px solid var(--line); padding: 1rem; background: rgba(255,255,255,.28); }
+    .map-box h3 { font-family: var(--body); font-size: .95rem; margin-bottom: .6rem; }
+    .map-box.b { border-color: var(--cobalt); }
+    .map-box.a { border-color: var(--violet); }
+    .file { font-family: var(--mono); font-size: .76rem; line-height: 1.55; color: var(--muted); }
+    .file strong { color: var(--ink); font-weight: 600; }
+
+    .code { margin-top: 1.1rem; background: #1c1b18; color: #efe9dc; padding: .9rem 1rem; border-left: 3px solid var(--cobalt); font: .78rem/1.5 var(--mono); white-space: pre-wrap; overflow: hidden; }
+    .code .c { color: #9f988b; }
+    .code .k { color: #b9c7ff; }
+    .code .s { color: #e6c17a; }
+
+    .flow { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: .55rem; margin-top: 1.5rem; }
+    .flow > div { border: 1px solid var(--line); padding: .75rem; min-height: 6.4rem; font-size: .82rem; line-height: 1.35; background: rgba(255,255,255,.28); }
+    .flow > div strong { display: block; font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; margin-bottom: .35rem; }
+    .flow .l { border-color: var(--cobalt); background: var(--cobalt-soft); }
+    .flow .h { border-color: var(--amber); }
+    .flow .r { border-color: var(--green); }
+
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .9rem; margin-top: 1.3rem; }
+    .cards .card { border-top: 2px solid var(--cobalt); padding-top: .8rem; }
+    .cards .card h3 { font-family: var(--body); font-size: .9rem; margin-bottom: .4rem; }
+    .cards .card p { font-size: .84rem; color: var(--muted); }
+
+    .pill { display: inline-block; padding: .22rem .45rem; border: 1px solid currentColor; border-radius: 999px; font: 650 .66rem/1 var(--mono); text-transform: uppercase; letter-spacing: .04em; }
+    .pill.b { color: var(--cobalt); background: var(--cobalt-soft); border-color: transparent; }
+    .pill.a { color: var(--amber); background: var(--amber-soft); border-color: transparent; }
+    .pill.g { color: var(--green); background: var(--green-soft); border-color: transparent; }
+
+    .quote { margin-top: 1.8rem; border-left: 4px solid var(--cobalt); padding-left: 1.1rem; font-family: var(--display); font-size: clamp(1.3rem, 2.2vw, 2.1rem); line-height: 1.18; max-width: 30ch; }
+
+    .footer { position: absolute; left: 6.5vw; right: 6.5vw; bottom: 2.2vh; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; }
+    .progress { position: fixed; left: 0; bottom: 0; height: 3px; background: var(--cobalt); z-index: 20; transition: width 180ms ease; }
+    .count { position: fixed; right: 1.2rem; bottom: 1rem; z-index: 30; color: var(--muted); font: .68rem var(--mono); background: var(--paper); border: 1px solid var(--line); padding: .28rem .4rem; }
+    .notes-panel { display: none; position: fixed; left: 0; right: 0; bottom: 0; max-height: 42vh; overflow: auto; background: #fffdf8; border-top: 2px solid var(--cobalt); color: var(--ink); padding: .9rem 1.4rem 1.3rem; z-index: 40; font-size: .9rem; line-height: 1.5; }
+    .notes-panel.show { display: block; }
+    .notes-panel h3 { font-family: var(--body); font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .5rem; }
+    .notes { display: none; }
+
+    @media (max-width: 900px) {
+      .slide { padding: 5vh 5vw 8vh; }
+      .stack-row, .map, .cards { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr 1fr; }
+      h1 { font-size: 3rem; }
+      h2 { font-size: 2.2rem; }
+    }
+    @media print {
+      body { overflow: visible; background: white; }
+      .slide { display: flex !important; page-break-after: always; width: 100%; height: 100vh; }
+      .count, .progress, .notes-panel { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide dark">
+      <div class="topline"><span><strong>LAIX</strong> · technical architecture</span><span>v0.7.0</span></div>
+      <div class="center">
+        <p class="kicker">What is in the box, and how it fits together</p>
+        <h1>One decision layer.<br />Two surfaces.</h1>
+        <div class="quote">The host owns the world. LAIX owns the decision.</div>
+        <p class="lede">Core contains the contracts, policies, attention, outcomes and evaluation. App kit contains the optional integration surface. The host keeps memory, media, permissions and orchestration.</p>
+        <p class="mono small mt">Python primary · TypeScript mirror · shared contracts</p>
+      </div>
+      <div class="footer"><span>LAIX · technical</span><span>← → · N notes · F full screen</span></div>
+      <aside class="notes">Open with the boundary, not a feature list. LAIX is not a model, memory store or agent framework. It is the decision layer. Core is the substance; app kit is how an app uses it; the host owns the world.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Three boundaries</strong></span><span>Who imports what</span></div>
+      <p class="kicker">The architecture rule</p>
+      <h2>Core. App kit. Host.</h2>
+      <div class="stack">
+        <div class="stack-row host"><span class="layer">Host</span><p>Memory, ingestion, connectors, orchestration, permissions, missions, app policy, UI. Includes host services such as PPMA, Digital Mate and JiuwenSwarm.</p><span class="import">imports LAIX · LAIX never imports host</span></div>
+        <div class="stack-row app"><span class="layer">App kit</span><p>Layer, runtime, execution, records, delivery, platform, live-context loop, bench.</p><span class="import">imports core · optional · frozen</span></div>
+        <div class="stack-row core"><span class="layer">Core</span><p>Contracts, request/decision shapes, action and attention policies, eight packs, outcome learning, evaluation, perception, resources.</p><span class="import">imports only core</span></div>
+      </div>
+      <p class="lede mt">The host imports LAIX. LAIX uses only its own modules. This is the rule that keeps the layer reusable.</p>
+      <p class="small mt-s"><strong>PPMA is a host service.</strong> It owns memory, consent and audit; the host adapter passes only authorized generic context to LAIX. LAIX never calls PPMA.</p>
+      <div class="footer"><span>Boundaries · core / app kit / host</span><span>02</span></div>
+      <aside class="notes">This is the slide builders remember. Core has no host knowledge. App kit is optional and frozen. The host owns the product. If a host name leaks into LAIX, the boundary is broken.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Module map</strong></span><span>What is actually in the package</span></div>
+      <p class="kicker">Python primary · TypeScript mirror</p>
+      <h2>The package, not a platform diagram.</h2>
+      <div class="map">
+        <div class="map-box b"><h3>laix/core</h3><div class="file"><strong>contracts.py</strong> — ten core records<br /><strong>decisions.py</strong> — request, decision, basis<br /><strong>policies/</strong> — action + eight packs + registry<br /><strong>attention/</strong> — model, policy, timing, replay<br /><strong>outcome.py</strong> — ledger and UCB learner<br /><strong>evaluation.py</strong> — parity and comparison<br /><strong>perception.py</strong> — detector and frame<br /><strong>resources.py</strong> — budget and admission</div></div>
+        <div class="map-box a"><h3>laix/appkit</h3><div class="file"><strong>layer.py</strong> — public Layer<br /><strong>runtime/</strong> — execution, state, stores<br /><strong>records/</strong> — decision record, proposal<br /><strong>delivery.py</strong> — delivery port<br /><strong>platform.py</strong> — skills, approvals, events<br /><strong>live_context.py</strong> — detector loop<br /><strong>bench.py</strong> — LAIX-Bench</div></div>
+      </div>
+      <p class="small mt-s">TypeScript mirrors the same folders under <span class="mono">src/core</span> and <span class="mono">src/appkit</span>. Shared JSON contracts and test vectors live in <span class="mono">packages/contracts</span>.</p>
+      <div class="footer"><span>Structure · package map</span><span>03</span></div>
+      <aside class="notes">Show the actual package, not a drawing. Core is the substance. App kit is the optional integration surface. The TypeScript package mirrors the folders, so the mental model transfers.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Core</strong></span><span>The decision substance</span></div>
+      <p class="kicker">No host. No app. No vendor.</p>
+      <h2>What the core owns.</h2>
+      <table class="table">
+        <thead><tr><th>Component</th><th>Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Contracts</strong></td><td>Action, belief, constraint, decision, goal, observation, outcome, receipt, situation, trace.</td></tr>
+          <tr><td><strong>Decisions</strong></td><td>Request, public decision, alternatives, constraints, confidence source, basis.</td></tr>
+          <tr><td><strong>Policies</strong></td><td>Built-in action, eight packaged classes, registry, custom domain policies.</td></tr>
+          <tr><td><strong>Attention</strong></td><td>What deserves attention now: severity, timing, quiet hours, dedupe, outcomes.</td></tr>
+          <tr><td><strong>Outcome learning</strong></td><td>Outcome ledger and UCB learner; labels are counting, not model training.</td></tr>
+          <tr><td><strong>Evaluation</strong></td><td>Parity harness, reports, policy comparison.</td></tr>
+          <tr><td><strong>Perception</strong></td><td>Detector, detection and frame contracts; cheap vs deep is app kit.</td></tr>
+          <tr><td><strong>Resources</strong></td><td>Budget and admission for sensing and compute.</td></tr>
+        </tbody>
+      </table>
+      <div class="footer"><span>Core · decision substance</span><span>04</span></div>
+      <aside class="notes">Core is not a service. It is a package of contracts and decision logic. It knows nothing about a classroom, a factory or PPMA. That is why it can be reused.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>App kit</strong></span><span>The integration surface</span></div>
+      <p class="kicker">Optional, frozen, app-facing</p>
+      <h2>What the app kit adds.</h2>
+      <table class="table">
+        <thead><tr><th>Component</th><th>Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Layer</strong></td><td>One public entry: route a request to attention, action or a selected policy.</td></tr>
+          <tr><td><strong>Runtime</strong></td><td>Decision runtime, execution bridge, state and stores.</td></tr>
+          <tr><td><strong>Records</strong></td><td>Decision record lifecycle and proposal lifecycle.</td></tr>
+          <tr><td><strong>Delivery</strong></td><td>Port for showing, sending or holding a decision.</td></tr>
+          <tr><td><strong>Platform</strong></td><td>Skills, approvals, events, state and capability levels.</td></tr>
+          <tr><td><strong>Live Context</strong></td><td>Host-driven detector loop: cheap always, deep under budget.</td></tr>
+          <tr><td><strong>Bench</strong></td><td>Ten suites, 25 cases, Python and TypeScript.</td></tr>
+        </tbody>
+      </table>
+      <p class="lede mt-s">An app can use core only. The app kit is for the parts that touch execution, records and delivery.</p>
+      <div class="footer"><span>App kit · integration surface</span><span>05</span></div>
+      <aside class="notes">The app kit is not another brain. It is the plumbing around the decision: execute, record, deliver, perceive, bench. It imports core, never the reverse.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>The request</strong></span><span>Two shapes, one decision</span></div>
+      <p class="kicker">How Layer chooses a policy</p>
+      <h2>Attention or action. Same output.</h2>
+      <div class="map">
+        <div class="map-box b"><h3>Attention request</h3><div class="file"><strong>signals</strong> — deadline, risk, opportunity<br /><strong>context</strong> — now, quiet hours, severity<br /><strong>policy</strong> — built-in attention<br /><strong>verb</strong> — usually guide, wait or observe</div></div>
+        <div class="map-box a"><h3>Action request</h3><div class="file"><strong>situation</strong> — beliefs, goals, constraints<br /><strong>options</strong> — benefit, risk, delay, cost<br /><strong>policy</strong> — built-in action or custom<br /><strong>verb</strong> — wait, guide, ask, act, verify, escalate</div></div>
+      </div>
+      <p class="lede mt-s">A custom policy reads <span class="mono">DecisionRequest.attributes</span>. The ten decision classes all return the same public <span class="mono">Decision</span>.</p>
+      <div class="footer"><span>Request · attention / action</span><span>06</span></div>
+      <aside class="notes">Two request shapes explain policy selection. Attention is signals plus context. Action is situation plus options. A custom policy uses attributes. All ten classes return the same decision shape, which is what makes the host integration stable.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>The flow</strong></span><span>End to end</span></div>
+      <p class="kicker">One decision path</p>
+      <h2>From event to record.</h2>
+      <div class="flow">
+        <div class="h"><strong>Host event</strong>Answer, risk, deadline, hand raise.</div>
+        <div><strong>Adapter</strong>Situation, beliefs, options.</div>
+        <div class="l"><strong>LAIX</strong>Layer, policy, decision.</div>
+        <div><strong>Host</strong>Consent, approval, execution.</div>
+        <div class="r"><strong>Record</strong>Decision, outcome, audit.</div>
+      </div>
+      <div class="code"><span class="c"># the smallest integration</span>
+decision = Layer(policy=LearningPolicy()).decide(request)[0]
+
+<span class="c"># the host applies it</span>
+if decision.requires_approval:
+    ask_for_consent(decision)
+else:
+    apply(decision.action_id)
+record(decision)
+outcome(decision.decision_id, label=<span class="s">"helped"</span>)</div>
+      <p class="small mt-s">The host owns execution and storage. LAIX owns the decision, its alternatives, its constraints and the record contract.</p>
+      <p class="small mt-s"><strong>PPMA boundary:</strong> PPMA is a host service. The adapter reads authorized context through the host; LAIX never calls PPMA.</p>
+      <div class="footer"><span>Flow · event → decision → record</span><span>07</span></div>
+      <aside class="notes">Walk the flow. The adapter is the only host module that knows both worlds. The host can execute, ask or hold. LAIX does not call the host, PPMA, Digital Mate or JiuwenSwarm.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>The contract</strong></span><span>What a decision carries</span></div>
+      <p class="kicker">One shape for every policy</p>
+      <h2>Not just a verb.</h2>
+      <table class="table">
+        <thead><tr><th>Group</th><th>Fields</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Answer</strong></td><td><span class="mono">verb</span>, <span class="mono">action_id</span>, <span class="mono">reason_code</span>, <span class="mono">rationale</span></td></tr>
+          <tr><td><strong>Confidence</strong></td><td><span class="mono">confidence</span>, <span class="mono">confidence_source</span>, <span class="mono">calibrated</span></td></tr>
+          <tr><td><strong>Ranking</strong></td><td><span class="mono">score</span>, <span class="mono">breakdown</span>, <span class="mono">cost_of_waiting</span></td></tr>
+          <tr><td><strong>Choice</strong></td><td><span class="mono">alternatives</span>, <span class="mono">constraints_applied</span>, <span class="mono">requires_approval</span></td></tr>
+          <tr><td><strong>Support</strong></td><td><span class="mono">evidence</span>, <span class="mono">escalation</span>, <span class="mono">intent</span></td></tr>
+          <tr><td><strong>Audit</strong></td><td><span class="mono">decision_id</span>, <span class="mono">policy_version</span>, <span class="mono">trace_id</span>, <span class="mono">created_at</span></td></tr>
+        </tbody>
+      </table>
+      <p class="small mt-s">A score ranks inside one policy. Confidence is not a probability unless <span class="mono">calibrated</span> says so.</p>
+      <div class="footer"><span>Contract · decision shape</span><span>08</span></div>
+      <aside class="notes">This is the builder contract. A score is not a probability. The decision carries alternatives and constraints, which is why the host can explain it. The audit fields are what make the record reproducible.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Policies</strong></span><span>Rules, packs and the registry</span></div>
+      <p class="kicker">One active policy at a time</p>
+      <h2>The domain rules live in the host.</h2>
+      <div class="cards">
+        <div class="card"><h3>Built in</h3><p>Attention and action. Layer selects them from the request shape.</p></div>
+        <div class="card"><h3>Packaged</h3><p>Active perception, safety, replanning, allocation, negotiation, preference, verification, escalation.</p></div>
+        <div class="card"><h3>Custom</h3><p>Your policy class with a name, a version and a <span class="mono">decide(request)</span> method.</p></div>
+      </div>
+      <div class="code">layer = Layer(policy=LearningPolicy())
+layer.register_policy(<span class="s">"safety"</span>, SafetyConstrainedPolicy())
+layer.use_policy(<span class="s">"safety"</span>)</div>
+      <p class="small mt-s">A policy returns the same decision shape. Add a bench case before changing behaviour.</p>
+      <div class="footer"><span>Policies · built in / packaged / custom</span><span>09</span></div>
+      <aside class="notes">A custom policy is expected, not a workaround. LAIX owns the decision shape and mechanics; the host owns domain rules. The registry lets one layer expose several policy packs without changing the host contract.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>StudyRoom</strong></span><span>A concrete integration</span></div>
+      <p class="kicker">What the host actually uses</p>
+      <h2>Core + Layer + records. Enough to prove the boundary.</h2>
+      <table class="table">
+        <thead><tr><th>LAIX part</th><th>StudyRoom use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Core contracts</strong></td><td>Real: Situation, beliefs, constraints, Action options, Decision.</td></tr>
+          <tr><td><strong>Layer</strong></td><td>Real: one adapter calls the learning policy.</td></tr>
+          <tr><td><strong>Custom policy</strong></td><td>Real: <span class="mono">studyroom-learning.v1</span>.</td></tr>
+          <tr><td><strong>Records / outcomes</strong></td><td>Real: decision record, approval, outcome, audit.</td></tr>
+          <tr><td><strong>Live Context</strong></td><td>Not used in Phase 0; a natural fit for camera/STT detectors.</td></tr>
+          <tr><td><strong>Platform / app kit runtime</strong></td><td>Not used yet; the host has its own room loop.</td></tr>
+        </tbody>
+      </table>
+      <p class="small mt-s">Phase 0 proves the decision boundary. It does not prove the whole engine.</p>
+      <div class="footer"><span>Integration · StudyRoom</span><span>10</span></div>
+      <aside class="notes">Be precise about what StudyRoom uses. It uses the core contracts, Layer, a custom policy and records/outcomes. It does not use Live Context, Platform or outcome learning. That is fine for Phase 0, but do not claim the whole package is exercised.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Live Context</strong></span><span>Perception under a budget</span></div>
+      <p class="kicker">Cheap always. Deep when it pays.</p>
+      <h2>The host supplies detectors. LAIX decides what runs.</h2>
+      <div class="flow">
+        <div><strong>Event</strong>Subject, time, raw context.</div>
+        <div><strong>Cheap detector</strong>Always runs. Low cost.</div>
+        <div class="l"><strong>Budget</strong>Uncertainty, gain, cost, latency.</div>
+        <div><strong>Deep detector</strong>Only when it clears the threshold.</div>
+        <div class="r"><strong>Frame</strong>What ran, what was skipped, what was found.</div>
+      </div>
+      <div class="code">frame = context.perceive(event, uncertainty=<span class="s">0.8</span>)
+<span class="c"># frame: detections, allowed, skipped, remaining uncertainty, cost</span></div>
+      <p class="small mt-s">A natural StudyRoom extension: camera hand raise or speech as a cheap detector; a deeper model only when uncertainty is high.</p>
+      <div class="footer"><span>Live Context · cheap vs deep</span><span>11</span></div>
+      <aside class="notes">Live Context is the perception loop, not the decision. The host owns detectors and events. LAIX decides which detectors run under uncertainty and budget, and returns a frame that records what was skipped. This is the path to real multimodal StudyRoom.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Runtime, records and stores</strong></span><span>What happens after the decision</span></div>
+      <p class="kicker">The app kit plumbing</p>
+      <h2>Execute. Record. Learn.</h2>
+      <div class="map">
+        <div class="map-box a"><h3>Execution</h3><div class="file"><strong>ExecutionBridge</strong> — run, cancel, undo<br /><strong>Platform</strong> — run_skill, approval, events<br /><strong>DecisionRuntime</strong> — state around a decision</div></div>
+        <div class="map-box b"><h3>Records and stores</h3><div class="file"><strong>DecisionRecord</strong> — draft → approved → executed → undone / rejected<br /><strong>Proposal</strong> — proposed → approved / rejected<br /><strong>StateStore</strong> — short-lived experience state<br /><strong>OutcomeStore</strong> — decision consequences</div></div>
+      </div>
+      <p class="lede mt-s">The host owns the database and media. LAIX defines the contracts and the lifecycle.</p>
+      <div class="footer"><span>Runtime · execute / record / store</span><span>12</span></div>
+      <aside class="notes">The decision is not the end. The host executes, records and reports an outcome. The record lifecycle is explicit. The app owns the database; LAIX does not store raw media, transcripts or customer data.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Outcomes, evaluation, bench</strong></span><span>How decisions improve</span></div>
+      <p class="kicker">Counting, parity, regression</p>
+      <h2>Measure the decision, not just the demo.</h2>
+      <div class="cards">
+        <div class="card"><h3>Outcome learning</h3><p><span class="mono">OutcomeLedger</span> and UCB. Labels: helped, neutral, hurt, unknown. Attribution matters.</p></div>
+        <div class="card"><h3>Parity harness</h3><p>Compare policies and Python/TypeScript results on the same cases.</p></div>
+        <div class="card"><h3>LAIX-Bench</h3><p>Ten suites, 25 cases, deterministic. Add a case before a policy change.</p></div>
+      </div>
+      <p class="lede mt-s">A decision record plus an outcome is the smallest useful learning loop.</p>
+      <div class="footer"><span>Outcome · evaluation · bench</span><span>13</span></div>
+      <aside class="notes">Outcome learning is bounded counting, not model training. Bench is a regression net across ten decision classes. Parity keeps Python and TypeScript aligned. StudyRoom records outcomes, but the Phase 0 attribution needs tightening.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Parity and packaging</strong></span><span>Two packages, one mental model</span></div>
+      <p class="kicker">Python primary · TypeScript mirror</p>
+      <h2>Same contracts. Same bench.</h2>
+      <table class="table">
+        <thead><tr><th>Surface</th><th>Python</th><th>TypeScript</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Public entry</strong></td><td><span class="mono">import laix</span></td><td><span class="mono">import ... from "laix"</span></td></tr>
+          <tr><td><strong>Core</strong></td><td><span class="mono">laix/core</span></td><td><span class="mono">src/core</span></td></tr>
+          <tr><td><strong>App kit</strong></td><td><span class="mono">laix/appkit</span></td><td><span class="mono">src/appkit</span></td></tr>
+          <tr><td><strong>Contracts</strong></td><td><span class="mono">core/contracts.py</span></td><td><span class="mono">core/contracts.ts</span></td></tr>
+          <tr><td><strong>Tests</strong></td><td><span class="mono">pytest</span></td><td><span class="mono">node --test</span></td></tr>
+        </tbody>
+      </table>
+      <p class="small mt-s">Pin a release tag. Keep the adapter in the host. Do not vendor a local copy.</p>
+      <div class="footer"><span>Parity · packaging</span><span>14</span></div>
+      <aside class="notes">The TypeScript package is a mirror, not a second product. Shared contracts and test vectors keep them aligned. Hosts pin the tag and keep their adapter local. No local LAIX copy.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Extension points</strong></span><span>How to add without forking</span></div>
+      <p class="kicker">The package is meant to be extended at the edges</p>
+      <h2>Replace a piece, not the layer.</h2>
+      <table class="table">
+        <thead><tr><th>Need</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>New decision rules</strong></td><td>A policy with <span class="mono">name</span>, <span class="mono">version</span> and <span class="mono">decide(request)</span>.</td></tr>
+          <tr><td><strong>New perception</strong></td><td>A detector with <span class="mono">detect(event)</span>; cheap or deep.</td></tr>
+          <tr><td><strong>New execution</strong></td><td><span class="mono">ExecutionBridge</span> or a <span class="mono">Platform</span>.</td></tr>
+          <tr><td><strong>New storage</strong></td><td>Implement <span class="mono">StateStore</span> or <span class="mono">OutcomeStore</span>.</td></tr>
+          <tr><td><strong>New channel</strong></td><td>Implement <span class="mono">DeliveryPort</span>.</td></tr>
+        </tbody>
+      </table>
+      <p class="lede mt-s">Integration checklist: pin the tag, build one adapter, choose or write one policy, record decisions and outcomes, run the bench, shadow before switching.</p>
+      <div class="footer"><span>Extension · integration checklist</span><span>15</span></div>
+      <aside class="notes">This is the practical close for builders. Do not fork LAIX. Replace a policy, detector, execution adapter, store or delivery port. The integration checklist is the first week of work.</aside>
+    </section>
+
+    <section class="slide dark">
+      <div class="topline"><span><strong>Close</strong></span><span>LAIX · technical</span></div>
+      <div class="center">
+        <p class="kicker">One decision path</p>
+        <h1>Many hosts.<br />One record.</h1>
+        <div class="quote">LAIX is the layer between sensing and acting.</div>
+        <p class="lede">Core owns the decision substance. App kit owns the integration plumbing. The host owns the world.</p>
+        <p class="mono small mt">Next: one adapter, one policy, one decision record.</p>
+      </div>
+      <div class="footer"><span>Questions · integration · pilot</span><span>16</span></div>
+      <aside class="notes">Close on the boundary. The technical ask is not “rewrite your app.” It is one adapter, one policy, one decision record, one outcome. Then compare with the existing path in shadow mode.</aside>
+    </section>
+  </main>
+
+  <div class="progress" id="progress"></div>
+  <div class="count" id="count">1 / 16</div>
+  <div class="notes-panel" id="notes"><h3>Speaker notes</h3><div id="notes-body"></div></div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const progress = document.getElementById('progress');
+    const count = document.getElementById('count');
+    const notes = document.getElementById('notes');
+    const notesBody = document.getElementById('notes-body');
+    let index = 0;
+    let notesOpen = false;
+
+    function render() {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+      count.textContent = `${index + 1} / ${slides.length}`;
+      const note = slides[index].querySelector('.notes');
+      notesBody.textContent = note ? note.textContent : 'No notes for this slide.';
+      notes.classList.toggle('show', notesOpen);
+      history.replaceState(null, '', `#${index + 1}`);
+    }
+    function go(delta) { index = Math.max(0, Math.min(slides.length - 1, index + delta)); render(); }
+    function toggleNotes() { notesOpen = !notesOpen; notes.classList.toggle('show', notesOpen); }
+    function fullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); go(1); }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); go(-1); }
+      if (event.key === 'Home') { index = 0; render(); }
+      if (event.key === 'End') { index = slides.length - 1; render(); }
+      if (event.key.toLowerCase() === 'n') toggleNotes();
+      if (event.key.toLowerCase() === 'f') fullscreen();
+    });
+    const start = Number(location.hash.replace('#', '')) - 1;
+    if (!Number.isNaN(start) && start >= 0 && start < slides.length) index = start;
+    window.addEventListener('hashchange', () => {
+      const next = Number(location.hash.replace('#', '')) - 1;
+      if (!Number.isNaN(next) && next >= 0 && next < slides.length) { index = next; render(); }
+    });
+    render();
+  </script>
+</body>
+</html>
