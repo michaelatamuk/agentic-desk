@@ -140,12 +140,13 @@
       <p class="kicker">The architecture rule</p>
       <h2>Core. App kit. Host.</h2>
       <div class="stack">
-        <div class="stack-row host"><span class="layer">Host</span><p>Memory, ingestion, connectors, orchestration, permissions, missions, app policy, UI. Includes host services such as PPMA, Digital Mate and JiuwenSwarm.</p><span class="import">imports LAIX · LAIX never imports host</span></div>
-        <div class="stack-row app"><span class="layer">App kit</span><p>Layer, runtime, execution, records, delivery, platform, live-context loop, bench.</p><span class="import">imports core · optional · frozen</span></div>
         <div class="stack-row core"><span class="layer">Core</span><p>Contracts, request/decision shapes, action and attention policies, eight packs, outcome learning, evaluation, perception, resources.</p><span class="import">imports only core</span></div>
+        <div class="stack-row app"><span class="layer">App kit</span><p>Layer, runtime, execution, records, delivery, platform, live-context loop, bench.</p><span class="import">imports core · optional · frozen</span></div>
+        <div class="stack-row host"><span class="layer">Host</span><p>Memory, ingestion, connectors, orchestration, permissions, missions, app policy, UI. Includes host services such as PPMA, Digital Mate and JiuwenSwarm.</p><span class="import">imports LAIX · LAIX never imports host</span></div>
       </div>
-      <p class="lede mt">The host imports LAIX. LAIX uses only its own modules. This is the rule that keeps the layer reusable.</p>
-      <p class="small mt-s"><strong>PPMA is a host service.</strong> It owns memory, consent and audit; the host adapter passes only authorized generic context to LAIX. LAIX never calls PPMA.</p>
+      <p class="lede mt">Core is the base. A host can call core directly, or add the app kit for records, execution and delivery.</p>
+      <p class="small mt-s"><strong>Path A:</strong> host → core. <strong>Path B:</strong> host → app kit → core.</p>
+      <p class="small mt-s"><strong>PPMA is a host service.</strong> It owns memory, consent and audit; the host passes only authorized generic context to LAIX. LAIX never calls PPMA.</p>
       <div class="footer"><span>Boundaries · core / app kit / host</span><span>02</span></div>
       <aside class="notes">This is the slide builders remember. Core has no host knowledge. App kit is optional and frozen. The host owns the product. If a host name leaks into LAIX, the boundary is broken.</aside>
     </section>
@@ -224,7 +225,7 @@
       <h2>From event to record.</h2>
       <div class="flow">
         <div class="h"><strong>Host event</strong>Answer, risk, deadline, hand raise.</div>
-        <div><strong>Adapter</strong>Situation, beliefs, options.</div>
+        <div><strong>Request</strong>Situation, beliefs, options.</div>
         <div class="l"><strong>LAIX</strong>Layer, policy, decision.</div>
         <div><strong>Host</strong>Consent, approval, execution.</div>
         <div class="r"><strong>Record</strong>Decision, outcome, audit.</div>
@@ -240,9 +241,9 @@ else:
 record(decision)
 outcome(decision.decision_id, label=<span class="s">"helped"</span>)</div>
       <p class="small mt-s">The host owns execution and storage. LAIX owns the decision, its alternatives, its constraints and the record contract.</p>
-      <p class="small mt-s"><strong>PPMA boundary:</strong> PPMA is a host service. The adapter reads authorized context through the host; LAIX never calls PPMA.</p>
+      <p class="small mt-s"><strong>PPMA boundary:</strong> PPMA is a host service. The host reads authorized context; LAIX never calls PPMA.</p>
       <div class="footer"><span>Flow · event → decision → record</span><span>07</span></div>
-      <aside class="notes">Walk the flow. The adapter is the only host module that knows both worlds. The host can execute, ask or hold. LAIX does not call the host, PPMA, Digital Mate or JiuwenSwarm.</aside>
+      <aside class="notes">Walk the flow. The host builds a request; LAIX returns a decision; the host executes, asks or holds. LAIX does not call the host, PPMA, Digital Mate or JiuwenSwarm.</aside>
     </section>
 
     <section class="slide">
@@ -260,7 +261,7 @@ outcome(decision.decision_id, label=<span class="s">"helped"</span>)</div>
           <tr><td><strong>Audit</strong></td><td><span class="mono">decision_id</span>, <span class="mono">policy_version</span>, <span class="mono">trace_id</span>, <span class="mono">created_at</span></td></tr>
         </tbody>
       </table>
-      <p class="small mt-s">A score ranks inside one policy. Confidence is not a probability unless <span class="mono">calibrated</span> says so.</p>
+      <p class="small mt-s">The host sends a <span class="mono">DecisionRequest</span>; LAIX returns this <span class="mono">Decision</span>. A score ranks inside one policy. Confidence is not a probability unless <span class="mono">calibrated</span> says so.</p>
       <div class="footer"><span>Contract · decision shape</span><span>08</span></div>
       <aside class="notes">This is the builder contract. A score is not a probability. The decision carries alternatives and constraints, which is why the host can explain it. The audit fields are what make the record reproducible.</aside>
     </section>
@@ -290,7 +291,7 @@ layer.use_policy(<span class="s">"safety"</span>)</div>
         <thead><tr><th>LAIX part</th><th>StudyRoom use</th></tr></thead>
         <tbody>
           <tr><td><strong>Core contracts</strong></td><td>Real: Situation, beliefs, constraints, Action options, Decision.</td></tr>
-          <tr><td><strong>Layer</strong></td><td>Real: one adapter calls the learning policy.</td></tr>
+          <tr><td><strong>Layer</strong></td><td>Real: the host calls the learning policy.</td></tr>
           <tr><td><strong>Custom policy</strong></td><td>Real: <span class="mono">studyroom-learning.v1</span>.</td></tr>
           <tr><td><strong>Records / outcomes</strong></td><td>Real: decision record, approval, outcome, audit.</td></tr>
           <tr><td><strong>Live Context</strong></td><td>Not used in Phase 0; a natural fit for camera/STT detectors.</td></tr>
@@ -361,9 +362,9 @@ layer.use_policy(<span class="s">"safety"</span>)</div>
           <tr><td><strong>Tests</strong></td><td><span class="mono">pytest</span></td><td><span class="mono">node --test</span></td></tr>
         </tbody>
       </table>
-      <p class="small mt-s">Pin a release tag. Keep the adapter in the host. Do not vendor a local copy.</p>
+      <p class="small mt-s">Pin a release tag. Keep host-specific translation in the host. Do not vendor a local copy.</p>
       <div class="footer"><span>Parity · packaging</span><span>14</span></div>
-      <aside class="notes">The TypeScript package is a mirror, not a second product. Shared contracts and test vectors keep them aligned. Hosts pin the tag and keep their adapter local. No local LAIX copy.</aside>
+      <aside class="notes">The TypeScript package is a mirror, not a second product. Shared contracts and test vectors keep them aligned. Hosts pin the tag and keep host translation local. No local LAIX copy.</aside>
     </section>
 
     <section class="slide">
@@ -380,9 +381,9 @@ layer.use_policy(<span class="s">"safety"</span>)</div>
           <tr><td><strong>New channel</strong></td><td>Implement <span class="mono">DeliveryPort</span>.</td></tr>
         </tbody>
       </table>
-      <p class="lede mt-s">Integration checklist: pin the tag, build one adapter, choose or write one policy, record decisions and outcomes, run the bench, shadow before switching.</p>
+      <p class="lede mt-s">Integration checklist: pin the tag, connect one host path, choose or write one policy, record decisions and outcomes, run the bench, shadow before switching.</p>
       <div class="footer"><span>Extension · integration checklist</span><span>15</span></div>
-      <aside class="notes">This is the practical close for builders. Do not fork LAIX. Replace a policy, detector, execution adapter, store or delivery port. The integration checklist is the first week of work.</aside>
+      <aside class="notes">This is the practical close for builders. Do not fork LAIX. Replace a policy, detector, execution integration, store or delivery port. The integration checklist is the first week of work.</aside>
     </section>
 
     <section class="slide dark">
@@ -392,10 +393,10 @@ layer.use_policy(<span class="s">"safety"</span>)</div>
         <h1>Many hosts.<br />One record.</h1>
         <div class="quote">LAIX is the layer between sensing and acting.</div>
         <p class="lede">Core owns the decision substance. App kit owns the integration plumbing. The host owns the world.</p>
-        <p class="mono small mt">Next: one adapter, one policy, one decision record.</p>
+        <p class="mono small mt">Next: one host path, one policy, one decision record.</p>
       </div>
       <div class="footer"><span>Questions · integration · pilot</span><span>16</span></div>
-      <aside class="notes">Close on the boundary. The technical ask is not “rewrite your app.” It is one adapter, one policy, one decision record, one outcome. Then compare with the existing path in shadow mode.</aside>
+      <aside class="notes">Close on the boundary. The technical ask is not “rewrite your app.” It is one host path, one policy, one decision record, one outcome. Then compare with the existing path in shadow mode.</aside>
     </section>
   </main>
 
