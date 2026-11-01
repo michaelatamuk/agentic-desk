@@ -13,8 +13,9 @@ projects build on.
 - **What we do in it:** file issues, write design proposals, review and merge upstream changes, and
   build LAIX, Cortex, Max and Channels on top of it. Our issues and designs are recorded in
   [`projects/openjiuwen/`](../../projects/openjiuwen/README.md), not here.
-- **Release notes:** [`whats-new/`](whats-new/) records what changed in the platform since August
-  2026, studied after each pull. That is product history, not our contribution log.
+- **Release notes:** [`whats-new/`](whats-new/) records what changed in the platform month by
+  month since August 2026, studied after each pull. That is product history, not our
+  contribution log.
 - **Code studies:** [`notes/`](notes/) explains how the platform works inside, one folder per
   subsystem. That is product knowledge, not our contribution log.
 - **Why it matters to this folder:** it is the platform behind our projects, and the default backend
