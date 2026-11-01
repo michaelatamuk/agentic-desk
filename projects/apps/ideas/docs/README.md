@@ -1,6 +1,6 @@
 # Documentation
 
-Everything behind the nine demos, plus CUE (concept) and RECALL (live demo). Grouped by purpose.
+Everything behind the nine demos, plus CUE and StudyRoom (concepts) and RECALL (live demo). Grouped by purpose.
 
 ## Stage standard
 
@@ -30,6 +30,7 @@ One page per app: buyer, problem, product loop, NPU role, business case and risk
 | Architecture Studio | [architecture.md](concepts/architecture.md) |
 | CUE (concept only) | [cue.md](concepts/cue.md) |
 | RECALL (live demo) | [recall.md](concepts/recall.md) |
+| StudyRoom (concept only) | [studyroom.md](concepts/studyroom.md) |
 
 ## Roadmaps
 
@@ -41,10 +42,11 @@ and acceptance tests.
 - [GeoResponse roadmap](roadmaps/georesponse.md)
 - [CUE roadmap](roadmaps/cue.md)
 - [RECALL roadmap](roadmaps/recall.md)
+- [StudyRoom roadmap](roadmaps/studyroom.md)
 
-RootCause, GeoResponse, CUE and RECALL have stage-first roadmaps. CUE has no playable demo yet.
-RECALL is live: <https://jiuwendemos.github.io/recall/>. Its PPMA north contract and openjiuwen
-agent were verified against a running backend.
+RootCause, GeoResponse, CUE, RECALL and StudyRoom have stage-first roadmaps. CUE and StudyRoom have no
+playable demo yet. RECALL is live: <https://jiuwendemos.github.io/recall/>. Its PPMA north contract and
+openjiuwen agent were verified against a running backend.
 
 ## Integrations
 
