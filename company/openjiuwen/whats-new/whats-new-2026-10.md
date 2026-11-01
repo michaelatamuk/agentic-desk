@@ -153,6 +153,9 @@ grouping.
 
 ## Platform
 
+- **Client-side tools [NEW]**: a tool call can pause and be answered by the client, so
+  work that only the user's own machine can do runs inside the same turn instead of
+  being faked or skipped.
 - **Resident worker [UPGRADE]**: the Agent Runtime runs in a resident Worker process, so
   the server starts listening before the heavier runtime load and recovers the worker
   after a restart.
