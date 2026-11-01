@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LAIX — the 16 components</title>
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --ink: #1c1a17;
+      --muted: #6b6459;
+      --line: rgba(28,26,23,.16);
+      --cobalt: #1f4ed8;
+      --cobalt-soft: #dbe4ff;
+      --amber: #a86412;
+      --amber-soft: #f6e3c7;
+      --green: #2f6b45;
+      --green-soft: #dcebdd;
+      --violet: #6b4fa3;
+      --display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --body: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+      --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body { background: #171614; color: var(--ink); font-family: var(--body); overflow: hidden; }
+    .deck { height: 100%; width: 100%; }
+    .slide { display: none; width: 100vw; height: 100vh; padding: 5.1vh 6.5vw 6vh; background: var(--paper); position: relative; overflow: hidden; }
+    .slide.active { display: flex; flex-direction: column; }
+    .slide.dark { background: #181816; color: #f6f1e7; --ink: #f6f1e7; --muted: #bcb4a6; --line: rgba(246,241,231,.18); --paper: #181816; }
+    .slide.dark .center { padding-bottom: 4rem; }
+
+    .topline { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: .85rem; margin-bottom: 2rem; color: var(--muted); font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; }
+    .topline strong { color: var(--ink); font-weight: 650; letter-spacing: .02em; }
+    .kicker { margin: 0 0 1rem; color: var(--cobalt); font: 700 .7rem/1.2 var(--body); letter-spacing: .16em; text-transform: uppercase; }
+    .dark .kicker { color: #b9c7ff; }
+    h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 500; letter-spacing: -.02em; }
+    h1 { font-size: clamp(3rem, 6.2vw, 6.4rem); line-height: .98; max-width: 100%; }
+    h2 { font-size: clamp(2rem, 3.6vw, 3.7rem); line-height: 1.03; max-width: 100%; min-height: 1.1em; }
+    h3 { font-size: clamp(.95rem, 1.3vw, 1.15rem); line-height: 1.15; }
+    p { margin: 0; font-size: clamp(.92rem, 1.22vw, 1.12rem); line-height: 1.46; }
+    .lede { margin-top: .9rem; max-width: 58ch; color: var(--muted); font-size: clamp(.98rem, 1.4vw, 1.28rem); }
+    .comp-lede { margin-top: .8rem; max-width: 62ch; min-height: 2.9em; color: var(--muted); font-size: clamp(.92rem, 1.25vw, 1.14rem); }
+    .small { font-size: clamp(.72rem, .9vw, .86rem); line-height: 1.4; color: var(--muted); }
+    .mono { font-family: var(--mono); }
+    .accent { color: var(--cobalt); }
+    .good { color: var(--green); }
+    .warn { color: var(--amber); }
+    .center { margin: auto 0; }
+    .mt { margin-top: 1.4rem; }
+    .mt-s { margin-top: .7rem; }
+
+    .index { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .55rem; margin-top: 1.6rem; }
+    .index span { border: 1px solid var(--line); padding: .55rem .65rem; font: .72rem/1.2 var(--mono); color: var(--muted); background: rgba(255,255,255,.28); }
+    .index b { color: var(--cobalt); display: block; font-size: .65rem; margin-bottom: .2rem; }
+    .slide.dark .index span { background: rgba(255,255,255,.16); border-color: rgba(246,241,231,.36); color: #f6f1e7; }
+    .slide.dark .index b { color: #b9c7ff; }
+
+    .terms { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .8rem; margin-top: 1.2rem; }
+    .term { border-top: 2px solid var(--cobalt); padding-top: .65rem; min-height: 6rem; }
+    .term h3 { font-family: var(--body); font-size: .9rem; margin-bottom: .35rem; }
+    .term p { color: var(--muted); font-size: .86rem; }
+
+    .comp-grid { display: grid; grid-template-columns: 1.1fr 1fr 1.1fr; gap: .9rem; margin-top: 1rem; }
+    .concept-grid { display: grid; grid-template-columns: 1.1fr 1fr 1.1fr; gap: .9rem; margin-top: 1rem; }
+    .comp-box { border-top: 2px solid var(--cobalt); padding-top: .7rem; min-height: 9.2rem; }
+    .comp-box h3 { font-family: var(--body); font-size: .86rem; margin-bottom: .5rem; }
+    .comp-box ul { margin: 0; padding-left: 1rem; color: var(--muted); font-size: clamp(.78rem, .98vw, .92rem); line-height: 1.42; }
+    .comp-box li { margin-bottom: .3rem; }
+    .comp-box p { color: var(--muted); font-size: clamp(.8rem, 1vw, .94rem); }
+    .comp-foot { margin-top: auto; border-top: 1px solid var(--line); padding-top: .6rem; display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; }
+    .comp-foot .path { font-family: var(--mono); text-transform: none; letter-spacing: 0; color: var(--cobalt); }
+    .comp-foot .talk { text-transform: none; letter-spacing: 0; font-family: var(--body); font-size: .78rem; color: var(--muted); max-width: 58ch; }
+
+    .comp-example {
+      display: flex;
+      align-items: flex-start;
+      gap: .65rem;
+      margin-top: .65rem;
+      padding: .7rem .85rem .72rem;
+      border-left: 4px solid var(--cobalt);
+      border-radius: 0 4px 4px 0;
+      background: rgba(31,78,216,.11);
+      color: var(--ink);
+      font: .82rem/1.5 var(--mono);
+      white-space: normal;
+      overflow: visible;
+    }
+    .comp-example .ex-label {
+      flex: 0 0 auto;
+      display: inline-block;
+      margin: 0;
+      padding: .22rem .42rem;
+      border-radius: 3px;
+      background: var(--cobalt);
+      color: #fff;
+      font: 700 .6rem/1 var(--body);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .comp-example b { color: var(--cobalt); font-weight: 700; }
+    .comp-example .ex-body { display: grid; gap: .25rem; }
+    .comp-example .ex-line { display: block; }
+    .comp-example .ex-indent { padding-left: 1.2rem; }
+
+    .slide.comp.active {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 21.5rem;
+      grid-template-rows: auto auto auto auto auto auto auto;
+      column-gap: 1.7rem;
+      align-items: start;
+      align-content: start;
+    }
+    .slide.comp .topline { grid-column: 1 / -1; grid-row: 1; }
+    .slide.comp .kicker { grid-column: 1; grid-row: 2; }
+    .slide.comp h2 { grid-column: 1; grid-row: 3; min-height: 1.1em; }
+    .slide.comp .comp-lede { grid-column: 1; grid-row: 4; }
+    .slide.comp .comp-grid { grid-column: 1; grid-row: 5; }
+    .slide.comp .comp-example { grid-column: 1; grid-row: 6; }
+    .slide.comp .comp-foot { grid-column: 1; grid-row: 7; }
+    .slide.comp .comp-map { position: absolute; top: 8.2rem; right: 6.5vw; width: 21.5rem; align-self: start; }
+
+    .slide.bridge.active { justify-content: center; }
+    .slide.bridge .topline { position: absolute; top: 5.1vh; left: 6.5vw; right: 6.5vw; margin-bottom: 0; }
+
+    .comp-map {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.34);
+      padding: .65rem .6rem .55rem;
+    }
+    .map-title { font: 700 .62rem/1.2 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
+    .atlas-map { width: 100%; height: auto; display: block; }
+    .atlas-map .band { fill: rgba(31,78,216,.045); stroke: rgba(28,26,23,.12); }
+    .atlas-map .band-label { fill: var(--muted); font: 700 8px var(--body); letter-spacing: .1em; }
+    .atlas-map .node rect { fill: rgba(255,255,255,.78); stroke: rgba(28,26,23,.2); }
+    .atlas-map .node text { fill: var(--ink); font: 600 8.5px var(--body); }
+    .atlas-map .node.active rect { fill: var(--cobalt); stroke: var(--cobalt); }
+    .atlas-map .node.active text { fill: #fff; }
+    .atlas-map .edge { stroke: var(--cobalt); stroke-width: 1; fill: none; opacity: .4; }
+    .atlas-map .edge.dash { stroke-dasharray: 3 3; opacity: .28; }
+    .map-legend { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .35rem; color: var(--muted); font-size: .6rem; text-transform: uppercase; letter-spacing: .04em; }
+    .map-legend span::before { content: ""; display: inline-block; width: .45rem; height: .45rem; margin-right: .25rem; vertical-align: -1px; background: var(--cobalt); }
+    .map-legend span:nth-child(2)::before { background: var(--amber); }
+    .map-legend span:nth-child(3)::before { background: var(--green); }
+    .map-note { margin-top: .4rem; color: var(--muted); font-size: .6rem; line-height: 1.35; }
+
+    .footer { position: absolute; left: 6.5vw; right: 6.5vw; bottom: 2.1vh; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .66rem; letter-spacing: .04em; text-transform: uppercase; }
+    .progress { position: fixed; left: 0; bottom: 0; height: 3px; background: var(--cobalt); z-index: 20; transition: width 180ms ease; }
+    .count { position: fixed; right: 1.2rem; bottom: 1rem; z-index: 30; color: var(--muted); font: .66rem var(--mono); background: var(--paper); border: 1px solid var(--line); padding: .26rem .38rem; }
+    .notes-panel { display: none; position: fixed; left: 0; right: 0; bottom: 0; max-height: 42vh; overflow: auto; background: #fffdf8; border-top: 2px solid var(--cobalt); color: var(--ink); padding: .9rem 1.4rem 1.3rem; z-index: 40; font-size: .9rem; line-height: 1.5; }
+    .notes-panel.show { display: block; }
+    .notes-panel h3 { font-family: var(--body); font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .45rem; }
+    .notes { display: none; }
+
+    .flow { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: .55rem; margin-top: 1.5rem; }
+    .flow > div { border: 1px solid var(--line); padding: .75rem; min-height: 6rem; font-size: .8rem; line-height: 1.35; background: rgba(255,255,255,.28); }
+    .flow > div strong { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; margin-bottom: .3rem; }
+    .flow .core { border-color: var(--cobalt); background: var(--cobalt-soft); color: #1c1a17; }
+    .flow .app { border-color: var(--violet); }
+    .flow .host { border-color: var(--amber); }
+
+    @media (max-width: 900px) {
+      .slide { padding: 5vh 5vw 8vh; }
+      .comp-grid, .concept-grid, .index { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr 1fr; }
+      h1 { font-size: 3rem; }
+      h2 { font-size: 2.1rem; }
+    }
+    @media print {
+      body { overflow: visible; background: white; }
+      .slide { display: flex !important; page-break-after: always; width: 100%; height: 100vh; }
+      .count, .progress, .notes-panel { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide dark">
+      <div class="topline"><span><strong>LAIX</strong> · component atlas</span><span>16 components</span></div>
+      <div class="center">
+        <p class="kicker">One slide for each component</p>
+        <h1>The 16 components of LAIX.</h1>
+        <div class="lede">Seven decision-logic components. Seven integration components. Two definitions. Each one has a job, an interface and a reason to exist. Use one slide per component when you need to talk about it separately.</div>
+        <div class="index"><span><b>7</b>decision logic</span><span><b>7</b>integration</span><span><b>2</b>definitions</span><span><b>10</b>core records</span></div>
+      </div>
+      <div class="footer"><span>LAIX · 16 components</span><span>← → · N notes · F full screen</span></div>
+      <aside class="notes">This deck is an atlas, not a narrative. Each slide is a self-contained component talk. Use 3 minutes per component, or jump to the component the audience asks about. The order is 7 decision-logic components, 7 integration components, then 2 definitions.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Orientation</strong></span><span>Read this first</span></div>
+      <p class="kicker">Three words, then the pieces</p>
+      <h2>How to read this atlas.</h2>
+      <p class="lede">The 16 components use a small vocabulary. These three words are enough to start; the next slides define the rest.</p>
+      <div class="terms">
+        <div class="term"><h3>Host</h3><p>The app with the problem. It owns the room, memory, media, permissions and UI.</p></div>
+        <div class="term"><h3>Core</h3><p>The domain-neutral part: seven decision-logic components plus the contracts and schema they share.</p></div>
+        <div class="term"><h3>App kit</h3><p>The optional integration surface: Layer, runtime, records, delivery, platform, Live Context and bench.</p></div>
+      </div>
+      <p class="small mt-s">The talk starts with the practical part: 7 decision-logic components, then 7 integration components. It ends with 2 definitions: Contracts and Schema, the shared vocabulary underneath everything.</p>
+      <p class="small mt-s"><strong>The 16 are not one kind of thing:</strong> 2 definitions, 7 decision-logic components, and 7 integration components.</p>
+            <div class="footer"><span>Orientation · vocabulary</span><span>02</span></div>
+      <aside class="notes">Only define the three words that are structural: host, core, app kit. Do not define policy or decision here; the Decisions slide and the Policies slide introduce them. Do not introduce integration details here; keep those for a builder appendix.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Decision logic 01 / 07</strong></span><span>Decisions</span></div>
+      <p class="kicker">Core · decision logic</p>
+      <h2>Decisions</h2>
+      <p class="comp-lede">The input and the answer. The host sends a <span class="mono">DecisionRequest</span>; LAIX returns a <span class="mono">Decision</span> with verb, action, confidence, alternatives, constraints, approval and audit.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">DecisionRequest</span> — what the host sends: situation, signals, options or attributes</li><li><span class="mono">Situation</span> — observations and beliefs the host supplies</li><li><span class="mono">Decision</span> — what LAIX returns: verb, action, alternatives, constraints and <span class="mono">basis()</span></li><li>Breakdown, evidence ref, intent and escalation helpers</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Every rule set returns the <span class="mono">Decision</span> shape</li><li>The host maps the <span class="mono">Decision</span> to its own action model</li><li>The record layer keeps it</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>A score ranks inside one rule set. Confidence is not a probability unless <span class="mono">calibrated</span> says so. Alternatives and constraints make the answer explainable.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/decisions.py</span><span class="talk">“This is not a prompt and a reply. It is a decision with a receipt.”</span></div>
+      <div class="footer"><span>Decision logic / Decisions</span><span>01</span></div>
+      <aside class="notes">Point at the fields: verb, action_id, score, confidence, confidence_source, calibrated, alternatives, constraints_applied, requires_approval. The host uses these fields; it does not parse prose.</aside>
+    </section>
+
+<section class="slide bridge">
+      <div class="topline"><span><strong>Inside Decisions</strong></span><span>Belief</span></div>
+      <p class="kicker">Concept · not a separate component</p>
+      <h2>Belief: what the host thinks.</h2>
+      <p class="comp-lede">A <span class="mono">Belief</span> is a proposition with a confidence and its evidence. It is not a fact and not a decision. The host puts beliefs into the <span class="mono">Situation</span>; a policy scores against them.</p>
+      <div class="concept-grid">
+        <div class="comp-box"><h3>The record</h3><ul><li><span class="mono">Belief(id, proposition, confidence)</span></li><li>Evidence, source and updated time</li><li>Confidence is 0..1</li></ul></div>
+        <div class="comp-box"><h3>The meaning</h3><ul><li>“learner may need help” at 0.56</li><li>“socket is live” at 0.90</li><li>A belief is what the host currently thinks, not proof</li></ul></div>
+        <div class="comp-box"><h3>The use</h3><ul><li>A <span class="mono">Situation</span> holds beliefs</li><li>A policy scores against them</li><li>The record keeps the evidence and its source</li></ul></div>
+      </div>
+      <div class="comp-example"><span class="ex-label">Example</span><span class="ex-body"><span class="ex-line"><b>HOST PROVIDES</b> Belief(id="b1", proposition="learner may need help", confidence=.56, source="host-fusion")</span><span class="ex-line"><b>LAIX USES</b> Situation(beliefs=(b1,), constraints=...)</span></span></div>
+      <div class="footer"><span>Inside Decisions / Belief</span><span>01a</span></div>
+      <aside class="notes">Belief is not a 17th component. It is a core request record. The host supplies a proposition, a confidence and its evidence; LAIX treats it as a belief, not a fact. This is the record the Perception slide produces as Belief(“may need help”).</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Decision logic 02 / 07</strong></span><span>Policies</span></div>
+      <p class="kicker">Core · decision logic</p>
+      <h2>Policies</h2>
+      <p class="comp-lede">The rule sets. A policy reads a request and returns a decision. Some policies are built in; eight packaged policies cover common decision classes; a custom policy carries the domain rules.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li>Built-in policies for the two request shapes</li><li>Eight packaged policies for common decision classes</li><li>Registry, custom policy protocol and bandit policy</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Decisions and the host</li><li>The host selects one active policy</li><li>Tests prove the behaviour</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>One active policy at a time. The host can replace a policy without forking LAIX. The decision shape stays the same.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/policies/</span><span class="talk">“Domain rules live in the host. The decision mechanics live in LAIX.”</span></div>
+      <div class="footer"><span>Decision logic / Policies</span><span>02</span></div>
+      <aside class="notes">One active policy at a time. register_policy stores; use_policy activates. The eight packaged policies are deterministic defaults, not trained models.</aside>
+    </section>
+
+<section class="slide bridge">
+      <div class="topline"><span><strong>Inside Policies</strong></span><span>Action</span></div>
+      <p class="kicker">Concept · not a separate component</p>
+      <h2>Action: what the host can do.</h2>
+      <p class="comp-lede">An <span class="mono">Action</span> is a candidate option, not a decision and not the verb <span class="mono">act</span>. The host offers options, each with a <span class="mono">verb</span>; a policy chooses one; the decision returns that option's <span class="mono">verb</span> and <span class="mono">action_id</span>.</p>
+      <div class="concept-grid">
+        <div class="comp-box"><h3>The record</h3><ul><li><span class="mono">Action(id, verb, name)</span> — an option</li><li>Benefit, risk, delay, cost, interruption</li><li>Reversible, approval needed, app params</li></ul></div>
+        <div class="comp-box"><h3>The verb</h3><ul><li><span class="mono">ask</span> and <span class="mono">act</span> are both verbs</li><li>An option can carry <span class="mono">wait</span>, <span class="mono">guide</span>, <span class="mono">ask</span>, <span class="mono">act</span>, <span class="mono">verify</span> or <span class="mono">escalate</span></li><li>The decision repeats the chosen option's verb</li></ul></div>
+        <div class="comp-box"><h3>The policy</h3><ul><li>The built-in action policy lives in Policies</li><li>It filters hard constraints, then ranks the options</li><li>It chooses one; the rest become alternatives</li></ul></div>
+      </div>
+      <div class="comp-example"><span class="ex-label">Example</span><span class="ex-body"><span class="ex-line"><b>HOST OFFERS 3 OPTIONS</b></span><span class="ex-line ex-indent">• Action(id="ask-ben", verb="ask", risk=.35, requires_approval=True)</span><span class="ex-line ex-indent">• Action(id="open-board", verb="act", risk=.52)</span><span class="ex-line ex-indent">• Action(id="hint-alice", verb="guide", risk=.05)</span><span class="ex-line"><b>LAIX RETURNS 1 DECISION</b></span><span class="ex-line ex-indent">• Decision(verb="ask", action_id="ask-ben")</span></span></div>
+      <div class="footer"><span>Inside Policies / Action</span><span>02a</span></div>
+      <aside class="notes">Action is not a 17th component. It is an option record inside the decision request, a verb in the decision, and a built-in policy inside Policies. The host offers options; LAIX chooses one. This bridge exists because readers otherwise see “act” and “action_id” without knowing what an Action is.</aside>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span><strong>Decision logic 03 / 07</strong></span><span>Attention</span></div>
+      <p class="kicker">Core · decision logic</p>
+      <h2>Attention</h2>
+      <p class="comp-lede">Which signal deserves attention now. Severity, timing, quiet hours, dedupe and feedback — separate from the action decision.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">Signal</span> and <span class="mono">Context</span></li><li>Attention policy, scoring and timing</li><li>Feedback, outcome log and replay</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Signals, context and decisions</li><li>The request shape selects attention</li><li>Host delivery and notification policy</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>A notification is not automatically worth attention. Quiet hours, severity and history are part of the decision, not an afterthought.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/attention/</span><span class="talk">“Attention is a decision class, not a notification setting.”</span></div>
+      <div class="footer"><span>Decision logic / Attention</span><span>03</span></div>
+      <aside class="notes">Attention answers “should this reach the user now?” It is separate from “what should we do?” The same signal can be high severity and still wait because of quiet hours or dedupe.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Decision logic 04 / 07</strong></span><span>Outcome learning</span></div>
+      <p class="kicker">Core · decision logic</p>
+      <h2>Outcome learning</h2>
+      <p class="comp-lede">What happened after the decision. Labels, attribution and bounded priors — counting, not model training.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">OutcomeLedger</span> and <span class="mono">OutcomeStore</span></li><li><span class="mono">UCBBandit</span>, arms and reward mapping</li><li>Labels: helped, neutral, hurt, unknown</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Decision ids and measured results</li><li>Policy priors</li><li>Host measurement and attribution</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>No outcome means no learning. Attribution is the hard part: attach the result to the intervention, not the final check.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/outcome.py</span><span class="talk">“A decision without an outcome is just an opinion with a timestamp.”</span></div>
+      <div class="footer"><span>Decision logic / Outcome learning</span><span>04</span></div>
+      <aside class="notes">This is bounded counting. UCB adds a small prior, not a trained model. The host owns the measurement. StudyRoom’s Phase 0 attribution needs tightening: attach the outcome to the intervention, not the final verify.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Decision logic 05 / 07</strong></span><span>Evaluation</span></div>
+      <p class="kicker">Core · decision logic</p>
+      <h2>Evaluation</h2>
+      <p class="comp-lede">A policy change needs a fixture, not a vibe. Cases, rows and reports compare policies and Python/TypeScript results.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">Case</span>, <span class="mono">Row</span>, <span class="mono">Report</span></li><li><span class="mono">compare()</span> and <span class="mono">load_cases()</span></li><li>Field-level mismatch reporting and agreement rate</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Policy outputs and shared fixtures</li><li>Bench suites and their cases</li><li>Release and upgrade checks</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>You can change a policy safely only when the expected verb, reason, action and approval are pinned.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/evaluation.py</span><span class="talk">“If you cannot replay it, you cannot claim it improved.”</span></div>
+      <div class="footer"><span>Decision logic / Evaluation</span><span>05</span></div>
+      <aside class="notes">The harness compares selected fields: verb, reason_code, deliver, record, requires_approval. It is not trying to compare prose. Use it for policy changes and Python/TypeScript parity.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Decision logic 06 / 07</strong></span><span>Perception</span></div>
+      <p class="kicker">Core · decision logic</p>
+      <h2>Perception</h2>
+      <p class="comp-lede">The data shapes for what a detector sees. The host supplies detectors; detections become <span class="mono">Belief</span> records; LAIX keeps the frame and the decision separate.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">Detector</span>, <span class="mono">Detection</span></li><li><span class="mono">PerceptionEvent</span>, <span class="mono">PerceptionFrame</span></li><li>Cheap and deep metadata contracts</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>The perception loop and resource budgets</li><li>Host cameras, STT, sensors and app events</li><li>Decision requests built from detections</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>Perception is contract-first. The core does not ship a model or a camera; it defines what the host must provide.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/perception.py</span><span class="talk">“The host sees. LAIX defines what a useful observation looks like.”</span></div>
+      <div class="footer"><span>Decision logic / Perception</span><span>06</span></div>
+      <aside class="notes">Perception is the bridge from raw host events to structured observations. The detector implementation stays in the host. The core only owns the contract and frame shape.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Decision logic 07 / 07</strong></span><span>Resources</span></div>
+      <p class="kicker">Core · decision logic</p>
+      <h2>Resources</h2>
+      <p class="comp-lede">Which sensing or model call is worth making. Cheap runs continuously; deep runs only when gain, uncertainty, cost and latency justify it.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">Budget</span>, <span class="mono">SensingOption</span></li><li><span class="mono">ResourcePlan</span> and <span class="mono">ResourcePolicy</span></li><li>Allowed and skipped reasons</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Perception and the detection loop</li><li>Host compute and model budget</li><li>Outcome and cost metrics</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>Unlimited deep calls are how a live system becomes slow and expensive. The plan records what was skipped and why.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/resources.py</span><span class="talk">“Spend the expensive look where uncertainty is high and the answer matters.”</span></div>
+      <div class="footer"><span>Decision logic / Resources</span><span>07</span></div>
+      <aside class="notes">The resource policy is deterministic. Cheap detectors are admitted. Deep calls must clear information gain, cost and latency budgets. The skipped list is the evidence that the system was disciplined.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Integration 01 / 07</strong></span><span>Layer</span></div>
+      <p class="kicker">App kit · integration</p>
+      <h2>Layer</h2>
+      <p class="comp-lede">The one object a host calls. It routes the request to the attention policy, the action policy or a selected policy, and returns the public decision.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">Layer</span>, <span class="mono">DecisionRequest</span>, <span class="mono">Decision</span></li><li>Policy registry and active policy</li><li>Built-in request routing</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Core policies and decisions</li><li>App-kit runtime and records</li><li>Every host integration</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>One public entry point keeps the integration small. The host does not need to know which policy class runs behind it.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/appkit/layer.py</span><span class="talk">“One request in, one decision out. That is the whole host surface.”</span></div>
+      <div class="footer"><span>Integration / Layer</span><span>08</span></div>
+      <aside class="notes">Layer is optional in the sense that a host can use core policies directly, but it is the public convenience surface. It has one active policy at a time. The request shape selects attention or action when no policy is set.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Integration 02 / 07</strong></span><span>Runtime</span></div>
+      <p class="kicker">App kit · integration</p>
+      <h2>Runtime</h2>
+      <p class="comp-lede">The wiring around a decision: observe, state, policy, execution, outcome. Every decision gets a trace; every execution gets a receipt.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">DecisionRuntime</span>, <span class="mono">ExecutionBridge</span></li><li><span class="mono">ExperienceState</span>, <span class="mono">StateStore</span></li><li>ApprovalRequired, UnknownAction and traces</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Policies, resources and outcomes</li><li>Host execution and state ports</li><li>Host task and execution</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>The runtime is in-process and dependency-free. A cloud service can persist the same records later.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/appkit/runtime/</span><span class="talk">“The runtime wires the pieces. The host still owns the task.”</span></div>
+      <div class="footer"><span>Integration / Runtime</span><span>09</span></div>
+      <aside class="notes">DecisionRuntime is the convenience wiring: observe, decide, execute, outcome. It is not a hosted service. The host can use it or call Layer directly. The task lifecycle and execution authority still belong to the host.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Integration 03 / 07</strong></span><span>Records</span></div>
+      <p class="kicker">App kit · integration</p>
+      <h2>Records</h2>
+      <p class="comp-lede">What happened, why, who approved, and whether it can be undone. The record is the audit surface, not a log line.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">DecisionRecord</span>, evidence, approval, audit, undo</li><li>Proposal lifecycle</li><li>Hash/fingerprint and verification</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Runtime and execution</li><li>Host audit and export</li><li>Decision outcomes and replay</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>The lifecycle is explicit: draft → approved → executed → undone or rejected. A record that cannot be verified is not evidence.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/appkit/records/</span><span class="talk">“The decision record is the product’s memory of accountability.”</span></div>
+      <div class="footer"><span>Integration / Records</span><span>10</span></div>
+      <aside class="notes">Records are storage-free in LAIX; the host persists them. The record includes evidence, approval, audit and undo. Proposal is the lighter lifecycle for a suggested change.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Integration 04 / 07</strong></span><span>Delivery</span></div>
+      <p class="kicker">App kit · integration</p>
+      <h2>Delivery</h2>
+      <p class="comp-lede">Show it, send it or hold it. Delivery is a port, not a channel; the host owns the notification or UI transport.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">DeliveryPort</span> and <span class="mono">DeliveryReceipt</span></li><li><span class="mono">NullDelivery</span> for silent or test runs</li><li>Delivery outcome and acknowledgement</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Layer decisions with <span class="mono">deliver</span></li><li>Host channels: chat, email, UI, voice</li><li>Attention and quiet hours</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>A decision is not a delivery. LAIX can decide to guide now; the host decides which channel and whether it actually reaches the user.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/appkit/delivery.py</span><span class="talk">“The decision says whether to deliver. The host owns how.”</span></div>
+      <div class="footer"><span>Integration / Delivery</span><span>11</span></div>
+      <aside class="notes">Delivery is deliberately small. LAIX does not own email, chat or the UI. The host implements the port and reports a receipt. This is where notification policy meets the actual channel.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Integration 05 / 07</strong></span><span>Platform</span></div>
+      <p class="kicker">App kit · integration</p>
+      <h2>Platform</h2>
+      <p class="comp-lede">The execution seam below LAIX: run a skill, cancel it, ask for approval, read state and return events.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">Platform</span> and <span class="mono">InMemoryPlatform</span></li><li><span class="mono">SkillCall</span>, <span class="mono">ApprovalRequest</span>, <span class="mono">Event</span></li><li>Capability levels: fast, balanced, deep</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Execution bridge and runtime</li><li>Host workers, tools and approvals</li><li>Trace and receipt events</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>The host can wrap openJiuwen, a cloud runtime or its own worker. LAIX does not need to know which.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/appkit/platform.py</span><span class="talk">“Platform is where the decision becomes work.”</span></div>
+      <div class="footer"><span>Integration / Platform</span><span>12</span></div>
+      <aside class="notes">Platform is a contract, not an implementation. run_skill, cancel, request_approval, read_state, write_state, events, capability. A real platform wraps the host’s worker or openJiuwen. LAIX never imports it.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Integration 06 / 07</strong></span><span>Live Context</span></div>
+      <p class="kicker">App kit · integration</p>
+      <h2>Live Context</h2>
+      <p class="comp-lede">The perception loop. Cheap detectors run on every event; deep detectors run only when uncertainty, gain, cost and latency justify them.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">LiveContext</span> and <span class="mono">CallableDetector</span></li><li><span class="mono">PerceptionEvent</span> and <span class="mono">PerceptionFrame</span></li><li>Allowed, skipped, remaining uncertainty and cost</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Perception events and resource budgets</li><li>Host detectors and events</li><li>Decision situations built from frames</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>The host sees. LAIX decides what is worth running and records what it skipped. That is how perception stays affordable.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/appkit/live_context.py</span><span class="talk">“Cheap always. Deep only when it pays for itself.”</span></div>
+      <div class="footer"><span>Integration / Live Context</span><span>13</span></div>
+      <aside class="notes">Live Context is a loop, not a model. The host drives events. Cheap detectors run always. Deep detectors clear a budget. The frame is the audit of what was skipped. This is the natural next step for StudyRoom’s camera and STT.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Integration 07 / 07</strong></span><span>Bench</span></div>
+      <p class="kicker">App kit · integration</p>
+      <h2>Bench</h2>
+      <p class="comp-lede">The regression net. Ten suites, twenty-five cases, Python and TypeScript. A policy change without a case is a guess.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><span class="mono">run_bench()</span> and case suites</li><li>Agreement, failures and JSON output</li><li>Same cases in Python and TypeScript</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Every decision class</li><li>Evaluation and shared fixtures</li><li>CI and release gates</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>It catches drift across policies and languages. Add a case before changing behaviour, not after a regression.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/appkit/bench.py</span><span class="talk">“Bench is the contract’s regression net.”</span></div>
+      <div class="footer"><span>Integration / Bench</span><span>14</span></div>
+      <aside class="notes">Ten suites, twenty-five cases. The bench compares verb, reason_code, action_id and requires_approval. It is deterministic and local. Add a case whenever a policy changes. The same fixtures should exist in both languages.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Definition 01 / 02</strong></span><span>Contracts</span></div>
+      <p class="kicker">Core · definition</p>
+      <h2>Contracts</h2>
+      <p class="comp-lede">Agreed data shapes, not one-way inputs. Request, response and record all use the same vocabulary: what is happening, what can be done, what was chosen, and what happened.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li><strong>Request:</strong> Situation, Action, Belief, Constraint, Goal, Observation</li><li><strong>Response:</strong> Decision</li><li><strong>Record:</strong> Outcome, Receipt, Trace</li><li>Shared enums: verbs, phases, horizons, outcome labels</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Every other component uses these records</li><li>The host and the JSON schema</li><li>Python and TypeScript packages</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>Contracts are shared shapes. The request uses some, the decision uses one, the record uses the rest. If the vocabulary changes, every component changes together.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/contracts.py</span><span class="talk">"The vocabulary underneath everything you just saw. A decision layer is only as stable as its contracts."</span></div>
+      <div class="footer"><span>Definition / Contracts</span><span>15</span></div>
+      <aside class="notes">The ten core records are the shared vocabulary. They carry no app-specific names. This is the last definition slide because every earlier component already used these nouns.</aside>
+    </section>
+
+<section class="slide">
+      <div class="topline"><span><strong>Definition 02 / 02</strong></span><span>Schema</span></div>
+      <p class="kicker">Core · definition</p>
+      <h2>Schema</h2>
+      <p class="comp-lede">The contracts as machine-readable JSON. Versioned, shared and used to catch drift between Python, TypeScript and the host.</p>
+      <div class="comp-grid">
+        <div class="comp-box"><h3>What it contains</h3><ul><li>Generated JSON schema</li><li><span class="mono">SCHEMA_VERSION</span> and shared contract names</li><li>Validation-friendly record shapes</li></ul></div>
+        <div class="comp-box"><h3>What it touches</h3><ul><li>Python and TypeScript packages</li><li>Hosts and exports</li><li>Release and compatibility checks</li></ul></div>
+        <div class="comp-box"><h3>Why it matters</h3><p>A contract that cannot be validated is a suggestion. Schema versioning is how a host knows what it is integrating with.</p></div>
+      </div>
+      <div class="comp-foot"><span class="path">laix/core/schema.py · schemas/</span><span class="talk">“The schema is the contract’s executable form.”</span></div>
+      <div class="footer"><span>Definition / Schema</span><span>16</span></div>
+      <aside class="notes">This is tooling, not a runtime service. It keeps the contract honest across languages and releases. The generated schema is not a separate decision engine.</aside>
+    </section>
+
+<section class="slide dark">
+      <div class="topline"><span><strong>How they live together</strong></span><span>The map</span></div>
+      <div class="center">
+        <p class="kicker">16 components, one flow</p>
+        <h1>Core decides.<br />App kit connects.<br />Host owns.</h1>
+        <div class="flow">
+          <div class="host"><strong>Host</strong>Event, task and request.</div>
+          <div class="app"><strong>Layer</strong>Request routing and policy.</div>
+          <div class="core"><strong>Core</strong>Contracts, policies, perception, outcomes.</div>
+          <div class="app"><strong>Records</strong>Approval, audit, undo.</div>
+          <div class="app"><strong>Platform</strong>Execution seam to host work.</div>
+        </div>
+        <p class="lede">Use one component slide per topic. Use this map to reconnect them.</p>
+      </div>
+      <div class="footer"><span>LAIX · 16 components</span><span>21</span></div>
+      <aside class="notes">Close by reconnecting the atlas. Core decides. App kit connects. Host owns the world. The 16 components are not a flat list; they are a layered system. Ask which component the audience wants to go deeper on.</aside>
+    </section>
+  </main>
+
+  <div class="progress" id="progress"></div>
+  <div class="count" id="count">1 / 21</div>
+  <div class="notes-panel" id="notes"><h3>Speaker notes</h3><div id="notes-body"></div></div>
+
+  <template id="core-atlas-template">
+    <div class="map-title">Core map / active highlighted</div>
+    <svg class="atlas-map" viewBox="0 0 360 330" role="img" aria-label="Core-only LAIX map with the current component highlighted">
+      <defs><marker id="core-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1f4ed8" opacity=".5"></path></marker></defs>
+      <rect class="band" x="108" y="10" width="244" height="300" rx="4"></rect>
+      <text class="band-label" x="116" y="24">CORE</text>
+      <path class="edge" d="M86 162 L120 144" marker-end="url(#core-arrow)"></path>
+      <text x="86" y="150" font-size="7" fill="#1f4ed8" font-weight="700">calls</text>
+      <path class="edge" d="M190 64 L200 64" marker-end="url(#core-arrow)"></path>
+      <path class="edge" d="M280 64 L270 64" marker-end="url(#core-arrow)"></path>
+      <path class="edge" d="M235 78 L235 130" marker-end="url(#core-arrow)"></path>
+      <path class="edge" d="M270 144 L280 144" marker-end="url(#core-arrow)"></path>
+      <path class="edge" d="M190 224 L200 224" marker-end="url(#core-arrow)"></path>
+      <g class="node" data-node="host"><rect x="8" y="145" width="78" height="34" rx="5"></rect><text x="47" y="160" text-anchor="middle">HOST</text><text x="47" y="170" text-anchor="middle" font-size="7">calls core</text></g>
+      <g class="node" data-node="contracts"><rect x="120" y="50" width="70" height="28" rx="4"></rect><text x="155" y="68" text-anchor="middle">Contracts</text></g>
+      <g class="node" data-node="decisions"><rect x="200" y="50" width="70" height="28" rx="4"></rect><text x="235" y="68" text-anchor="middle">Decisions</text></g>
+      <g class="node" data-node="policies"><rect x="280" y="50" width="70" height="28" rx="4"></rect><text x="315" y="68" text-anchor="middle">Policies</text></g>
+      <g class="node" data-node="attention"><rect x="120" y="130" width="70" height="28" rx="4"></rect><text x="155" y="148" text-anchor="middle">Attention</text></g>
+      <g class="node" data-node="outcome"><rect x="200" y="130" width="70" height="28" rx="4"></rect><text x="235" y="148" text-anchor="middle">Outcome</text></g>
+      <g class="node" data-node="evaluation"><rect x="280" y="130" width="70" height="28" rx="4"></rect><text x="315" y="148" text-anchor="middle">Evaluation</text></g>
+      <g class="node" data-node="perception"><rect x="120" y="210" width="70" height="28" rx="4"></rect><text x="155" y="228" text-anchor="middle">Perception</text></g>
+      <g class="node" data-node="resources"><rect x="200" y="210" width="70" height="28" rx="4"></rect><text x="235" y="228" text-anchor="middle">Resources</text></g>
+      <g class="node" data-node="schema"><rect x="280" y="210" width="70" height="28" rx="4"></rect><text x="315" y="228" text-anchor="middle">Schema</text></g>
+    </svg>
+    <div class="map-note">Core only: the host calls core directly. No app kit.</div>
+  </template>
+
+  <template id="appkit-atlas-template">
+    <div class="map-title">App kit map / active highlighted</div>
+    <svg class="atlas-map" viewBox="0 0 360 330" role="img" aria-label="App kit LAIX map with the current component highlighted">
+      <defs><marker id="appkit-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#1f4ed8" opacity=".5"></path></marker></defs>
+      <rect class="band" x="108" y="10" width="130" height="280" rx="4"></rect>
+      <text class="band-label" x="116" y="24">APP KIT / OPTIONAL</text>
+      <path class="edge" d="M86 162 L116 44" marker-end="url(#appkit-arrow)"></path>
+      <path class="edge" d="M228 150 L252 148" marker-end="url(#appkit-arrow)"></path>
+      <text x="86" y="150" font-size="7" fill="#1f4ed8" font-weight="700">calls</text>
+      <g class="node" data-node="host"><rect x="8" y="145" width="78" height="34" rx="5"></rect><text x="47" y="160" text-anchor="middle">HOST</text><text x="47" y="170" text-anchor="middle" font-size="7">caller</text></g>
+      <g class="node" data-node="layer"><rect x="116" y="32" width="112" height="24" rx="4"></rect><text x="172" y="47" text-anchor="middle">Layer</text></g>
+      <g class="node" data-node="runtime"><rect x="116" y="66" width="112" height="24" rx="4"></rect><text x="172" y="81" text-anchor="middle">Runtime</text></g>
+      <g class="node" data-node="records"><rect x="116" y="100" width="112" height="24" rx="4"></rect><text x="172" y="115" text-anchor="middle">Records</text></g>
+      <g class="node" data-node="delivery"><rect x="116" y="134" width="112" height="24" rx="4"></rect><text x="172" y="149" text-anchor="middle">Delivery</text></g>
+      <g class="node" data-node="platform"><rect x="116" y="168" width="112" height="24" rx="4"></rect><text x="172" y="183" text-anchor="middle">Platform</text></g>
+      <g class="node" data-node="live_context"><rect x="116" y="202" width="112" height="24" rx="4"></rect><text x="172" y="217" text-anchor="middle">Live Context</text></g>
+      <g class="node" data-node="bench"><rect x="116" y="236" width="112" height="24" rx="4"></rect><text x="172" y="251" text-anchor="middle">Bench</text></g>
+      <g class="node"><rect x="252" y="120" width="98" height="56" rx="5"></rect><text x="301" y="142" text-anchor="middle">Core</text><text x="301" y="154" text-anchor="middle" font-size="7">base</text><text x="301" y="166" text-anchor="middle" font-size="7">contracts + policies</text></g>
+    </svg>
+    <div class="map-note">Pass B: add app kit on top of core. Core is still the base.</div>
+  </template>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const componentSlides = slides.filter((slide) => slide.querySelector('.comp-grid'));
+    const componentOrder = [
+      'decisions', 'policies', 'attention', 'outcome', 'evaluation', 'perception', 'resources',
+      'layer', 'runtime', 'records', 'delivery', 'platform', 'live_context', 'bench',
+      'contracts', 'schema'
+    ];
+    const examples = {
+      contracts: '<span class="ex-body"><span class="ex-line"><b>IN</b> Request shape: Situation(...) + Action("hint-alice", verb="guide")</span><span class="ex-line"><b>OUT</b> Response shape: Decision(verb="guide", action_id="hint-alice")</span></span>',
+      decisions: '<span class="ex-body"><span class="ex-line"><b>IN</b> DecisionRequest(situation=..., options=...)</span><span class="ex-line"><b>OUT</b> Decision(verb="ask", action_id="ask-ben", requires_approval=True)</span></span>',
+      policies: '<span class="ex-body"><span class="ex-line"><b>IN</b> DecisionRequest(...) -> LearningPolicy().decide(request)</span><span class="ex-line"><b>OUT</b> ask ask-ben</span></span>',
+      attention: '<span class="ex-body"><span class="ex-line"><b>IN</b> Signal(kind="deadline", severity="high", confidence=.9) + Context(now=23:30, quiet_hours=(22:00, 06:00))</span><span class="ex-line"><b>OUT</b> Decision(verb="wait", reason_code="quiet_hours")</span></span>',
+      outcome: '<span class="ex-body"><span class="ex-line"><b>IN</b> Outcome(decision_id="DEC-...", metric="solved_with_support", label="helped")</span><span class="ex-line"><b>OUT</b> prior +0.01</span></span>',
+      evaluation: '<span class="ex-body"><span class="ex-line"><b>IN</b> Case(id="below-line", expected=({"verb":"wait"},))</span><span class="ex-line"><b>OUT</b> Report 1/1 pass</span></span>',
+      perception: '<span class="ex-body"><span class="ex-line"><b>IN</b> Detection(id="hand-raise", kind="motion", confidence=.35)</span><span class="ex-line"><b>OUT</b> Belief("may need help")</span></span>',
+      resources: '<span class="ex-body"><span class="ex-line"><b>IN</b> Budget(max_deep_calls=1) + deep vision option</span><span class="ex-line"><b>OUT</b> ResourcePlan: allowed or skipped with reason</span></span>',
+      schema: '<span class="ex-body"><span class="ex-line"><b>IN</b> DecisionRecord</span><span class="ex-line"><b>OUT</b> validation: ok or drift</span></span>',
+      layer: '<span class="ex-body"><span class="ex-line"><b>IN</b> DecisionRequest(...)</span><span class="ex-line"><b>OUT</b> Decision(wait, action_id="wait-alice")</span></span>',
+      runtime: '<span class="ex-body"><span class="ex-line"><b>IN</b> decide(situation, options) + execute(...)</span><span class="ex-line"><b>OUT</b> Receipt</span></span>',
+      records: '<span class="ex-body"><span class="ex-line"><b>IN</b> create_record -> approve -> mark_executed</span><span class="ex-line"><b>OUT</b> status: executed</span></span>',
+      delivery: '<span class="ex-body"><span class="ex-line"><b>IN</b> decision.deliver = true</span><span class="ex-line"><b>OUT</b> DeliveryReceipt(delivered=True)</span></span>',
+      platform: '<span class="ex-body"><span class="ex-line"><b>IN</b> SkillCall("lookup", {}, trace_id="tr-1")</span><span class="ex-line"><b>OUT</b> result</span></span>',
+      live_context: '<span class="ex-body"><span class="ex-line"><b>IN</b> PerceptionEvent(subject="room", at=...)</span><span class="ex-line"><b>OUT</b> PerceptionFrame(allowed, skipped, uncertainty)</span></span>',
+      bench: '<span class="ex-body"><span class="ex-line"><b>IN</b> python -m laix.appkit.bench --suite safety</span><span class="ex-line"><b>OUT</b> 2/2, agreement 1.000</span></span>'
+    };
+    componentSlides.forEach((slide, i) => {
+      slide.classList.add('comp');
+      const map = document.createElement('div');
+      map.className = 'comp-map';
+      map.dataset.component = componentOrder[i];
+      const appkitComponents = new Set(['layer', 'runtime', 'records', 'delivery', 'platform', 'live_context', 'bench']);
+      map.dataset.layer = appkitComponents.has(componentOrder[i]) ? 'appkit' : 'core';
+      slide.appendChild(map);
+      const example = document.createElement('div');
+      example.className = 'comp-example';
+      example.innerHTML = `<span class="ex-label">Example</span>${examples[componentOrder[i]]}`;
+      slide.insertBefore(example, slide.querySelector('.comp-foot'));
+    });
+    const coreAtlas = document.getElementById('core-atlas-template').innerHTML;
+    const appkitAtlas = document.getElementById('appkit-atlas-template').innerHTML;
+    document.querySelectorAll('.comp-map').forEach((map) => {
+      map.innerHTML = map.dataset.layer === 'core' ? coreAtlas : appkitAtlas;
+      const active = map.querySelector(`[data-node="${map.dataset.component}"]`);
+      if (active) active.classList.add('active');
+    });
+    const progress = document.getElementById('progress');
+    const count = document.getElementById('count');
+    const notes = document.getElementById('notes');
+    const notesBody = document.getElementById('notes-body');
+    let index = 0;
+    let notesOpen = false;
+
+    function render() {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+      count.textContent = `${index + 1} / ${slides.length}`;
+      const note = slides[index].querySelector('.notes');
+      notesBody.textContent = note ? note.textContent : 'No notes for this slide.';
+      notes.classList.toggle('show', notesOpen);
+      history.replaceState(null, '', `#${index + 1}`);
+    }
+    function go(delta) { index = Math.max(0, Math.min(slides.length - 1, index + delta)); render(); }
+    function toggleNotes() { notesOpen = !notesOpen; notes.classList.toggle('show', notesOpen); }
+    function fullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); go(1); }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); go(-1); }
+      if (event.key === 'Home') { index = 0; render(); }
+      if (event.key === 'End') { index = slides.length - 1; render(); }
+      if (event.key.toLowerCase() === 'n') toggleNotes();
+      if (event.key.toLowerCase() === 'f') fullscreen();
+    });
+    const start = Number(location.hash.replace('#', '')) - 1;
+    if (!Number.isNaN(start) && start >= 0 && start < slides.length) index = start;
+    window.addEventListener('hashchange', () => {
+      const next = Number(location.hash.replace('#', '')) - 1;
+      if (!Number.isNaN(next) && next >= 0 && next < slides.length) { index = next; render(); }
+    });
+    render();
+  </script>
+</body>
+</html>

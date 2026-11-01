@@ -35,8 +35,10 @@ Use the product deck to establish the problem and the boundary. Use the technica
 |---|---|
 | `index.html` | The 14-slide product deck |
 | `technical.html` | The 16-slide technical architecture deck |
+| `components.html` | The 21-slide component atlas: orientation, 16 components, Belief bridge, Action bridge, close |
 | `speaker-notes.md` | Talk track, 20-minute manager run, 45-minute builder run, demo safety |
 | `technical-notes.md` | 30-minute technical run, builder Q&A, limitations |
+| `components-notes.md` | 16 component talk tracks and track selection |
 | `one-page.md` | Manager and builder one-pagers to leave behind |
 
 ## The order

@@ -54,8 +54,13 @@ openjiuwen agent were verified against a running backend.
   with StudyRoom as the example, speaker notes and two one-pagers.
 - [LAIX technical architecture](presentations/laix-studyroom/technical.html) — a 16-slide deck
   covering core, app kit, policies, records, Live Context, parity and integration points.
+- [LAIX component atlas](presentations/laix-studyroom/components.html) — one slide per component:
+  decisions, policies, attention, outcome, evaluation, perception, resources; Layer, runtime, records, delivery,
+  platform, Live Context, bench; then Contracts and Schema as definitions. Includes a Belief bridge inside
+  Decisions and an Action bridge inside Policies.
 - [Product speaker notes](presentations/laix-studyroom/speaker-notes.md)
 - [Technical speaker notes](presentations/laix-studyroom/technical-notes.md)
+- [Component talk tracks](presentations/laix-studyroom/components-notes.md)
 - [One-page handout](presentations/laix-studyroom/one-page.md)
 
 ## Integrations
