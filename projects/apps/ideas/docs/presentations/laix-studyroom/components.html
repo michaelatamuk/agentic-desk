@@ -254,11 +254,11 @@
       <h2>Action: what the host can do.</h2>
       <p class="comp-lede">An <span class="mono">Action</span> is a candidate option, not a decision and not the verb <span class="mono">act</span>. The host offers options, each with a <span class="mono">verb</span>; a policy chooses one; the decision returns that option's <span class="mono">verb</span> and <span class="mono">action_id</span>.</p>
       <div class="concept-grid">
-        <div class="comp-box"><h3>The record</h3><ul><li><span class="mono">Action(id, verb, name)</span> — an option</li><li>Benefit, risk, delay, cost, interruption</li><li>Reversible, approval needed, app params</li></ul></div>
+        <div class="comp-box"><h3>The record</h3><ul><li><span class="mono">ActionOption(id, verb, name)</span> — an option</li><li>Benefit, risk, delay, cost, interruption</li><li>Reversible, approval needed, app params</li></ul></div>
         <div class="comp-box"><h3>The verb</h3><ul><li><span class="mono">ask</span> and <span class="mono">act</span> are both verbs</li><li>An option can carry <span class="mono">wait</span>, <span class="mono">guide</span>, <span class="mono">ask</span>, <span class="mono">act</span>, <span class="mono">verify</span> or <span class="mono">escalate</span></li><li>The decision repeats the chosen option's verb</li></ul></div>
         <div class="comp-box"><h3>The policy</h3><ul><li>The built-in action policy lives in Policies</li><li>It filters hard constraints, then ranks the options</li><li>It chooses one; the rest become alternatives</li></ul></div>
       </div>
-      <div class="comp-example"><span class="ex-label">Example</span><span class="ex-body"><span class="ex-line"><b>HOST OFFERS 3 OPTIONS</b></span><span class="ex-line ex-indent">• Action(id="ask-ben", verb="ask", risk=.35, requires_approval=True)</span><span class="ex-line ex-indent">• Action(id="open-board", verb="act", risk=.52)</span><span class="ex-line ex-indent">• Action(id="hint-alice", verb="guide", risk=.05)</span><span class="ex-line"><b>LAIX RETURNS 1 DECISION</b></span><span class="ex-line ex-indent">• Decision(verb="ask", action_id="ask-ben")</span></span></div>
+      <div class="comp-example"><span class="ex-label">Example</span><span class="ex-body"><span class="ex-line"><b>HOST OFFERS 3 OPTIONS</b></span><span class="ex-line ex-indent">• ActionOption(id="ask-ben", verb="ask", risk=.35, requires_approval=True)</span><span class="ex-line ex-indent">• ActionOption(id="open-board", verb="act", risk=.52)</span><span class="ex-line ex-indent">• ActionOption(id="hint-alice", verb="guide", risk=.05)</span><span class="ex-line"><b>LAIX RETURNS 1 DECISION</b></span><span class="ex-line ex-indent">• Decision(verb="ask", action_id="ask-ben")</span></span></div>
       <div class="footer"><span>Inside Policies / Action</span><span>02a</span></div>
       <aside class="notes">Action is not a 17th component. It is an option record inside the decision request, a verb in the decision, and a built-in policy inside Policies. The host offers options; LAIX chooses one. This bridge exists because readers otherwise see “act” and “action_id” without knowing what an Action is.</aside>
     </section>
@@ -554,7 +554,7 @@
       'contracts', 'schema'
     ];
     const examples = {
-      contracts: '<span class="ex-body"><span class="ex-line"><b>IN</b> Request shape: Situation(...) + Action("hint-alice", verb="guide")</span><span class="ex-line"><b>OUT</b> Response shape: Decision(verb="guide", action_id="hint-alice")</span></span>',
+      contracts: '<span class="ex-body"><span class="ex-line"><b>IN</b> Request shape: Situation(...) + ActionOption("hint-alice", verb="guide")</span><span class="ex-line"><b>OUT</b> Response shape: Decision(verb="guide", action_id="hint-alice")</span></span>',
       decisions: '<span class="ex-body"><span class="ex-line"><b>IN</b> DecisionRequest(situation=..., options=...)</span><span class="ex-line"><b>OUT</b> Decision(verb="ask", action_id="ask-ben", requires_approval=True)</span></span>',
       policies: '<span class="ex-body"><span class="ex-line"><b>IN</b> DecisionRequest(...) -> LearningPolicy().decide(request)</span><span class="ex-line"><b>OUT</b> ask ask-ben</span></span>',
       attention: '<span class="ex-body"><span class="ex-line"><b>IN</b> Signal(kind="deadline", severity="high", confidence=.9) + Context(now=23:30, quiet_hours=(22:00, 06:00))</span><span class="ex-line"><b>OUT</b> Decision(verb="wait", reason_code="quiet_hours")</span></span>',

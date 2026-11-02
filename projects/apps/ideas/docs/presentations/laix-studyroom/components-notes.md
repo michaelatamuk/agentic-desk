@@ -75,7 +75,7 @@ At 3 minutes per component, the full atlas is about 50–55 minutes. For a 30-mi
 
 ### Action bridge / inside Policies
 
-> "Action is not a 17th component, and it is not the verb `act`. An Action is a candidate option: id, verb, name, benefit, risk, delay, cost, approval. The host offers a set of options; the built-in action policy selects one; the decision repeats the chosen verb and action_id. The other options become alternatives. `Action(verb='ask')` becomes `Decision(verb='ask', action_id=...)`; `Action(verb='act')` would produce a decision with verb act."
+> "Action is not a 17th component, and it is not the verb `act`. An Action is a candidate option: id, verb, name, benefit, risk, delay, cost, approval. The host offers a set of options; the built-in action policy selects one; the decision repeats the chosen verb and action_id. The other options become alternatives. `ActionOption(verb='ask')` becomes `Decision(verb='ask', action_id=...)`; `ActionOption(verb='act')` would produce a decision with verb act."
 
 ### 3. Attention
 
