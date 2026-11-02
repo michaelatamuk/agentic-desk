@@ -213,7 +213,7 @@
         <div class="comp-box"><h3>What it touches</h3><ul><li>Every rule set returns the <span class="mono">Decision</span> shape</li><li>The host maps the <span class="mono">Decision</span> to its own action model</li><li>The record layer keeps it</li></ul></div>
         <div class="comp-box"><h3>Why it matters</h3><p>A score ranks inside one rule set. Confidence is not a probability unless <span class="mono">calibrated</span> says so. Alternatives and constraints make the answer explainable.</p></div>
       </div>
-      <div class="comp-foot"><span class="path">laix/core/decisions.py</span><span class="talk">“This is not a prompt and a reply. It is a decision with a receipt.”</span></div>
+      <div class="comp-foot"><span class="path">laix/core/decisions.py</span><span class="talk">"This is not a prompt and a reply. It is a decision with a receipt."</span></div>
       <div class="footer"><span>Decision logic / Decisions</span><span>01</span></div>
       <aside class="notes">Point at the fields: verb, action_id, score, confidence, confidence_source, calibrated, alternatives, constraints_applied, requires_approval. The host uses these fields; it does not parse prose.</aside>
     </section>
