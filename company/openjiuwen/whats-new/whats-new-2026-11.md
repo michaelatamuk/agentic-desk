@@ -168,9 +168,3 @@ October. This week the couplings that merge introduced were cut:
   start, not only mid-conversation.
 - **Office files [UPGRADE]**: personal context collects `.docx`, and file reading handles
   GBK text plus `.docx` and `.xlsx`.
-
----
-
-# See also
-
-- [October 2026](whats-new-2026-10.md) · [September 2026](whats-new-2026-09.md) · [August 2026](whats-new-2026-08.md)
