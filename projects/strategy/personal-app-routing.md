@@ -61,6 +61,30 @@ nothing gets its own container.
 
 Parts 2–4 are table stakes, already shipped by others. The router is the only part that is ours.
 
+## Where it runs
+
+Hybrid, and the split is forced rather than chosen.
+
+| Piece | Where | Why |
+|---|---|---|
+| App definition | **Cloud**, per account | Must survive a new phone and be shareable |
+| User data | **Cloud**, per account | Same, plus backup and cross-device |
+| Rendering | **Phone** | It is the screen; also keeps offline reading |
+| Scheduler | **Cloud** | A phone cannot reliably wake an app at 12:30 when it is closed |
+| Generation | **Cloud** | Too heavy for the device, and needs the model |
+
+Phone-only fails on every requirement that matters: no cross-device, no reliable reminders (both
+HarmonyOS and Android throttle background work), no sharing, and uninstalling loses the history.
+Cloud-only fails on the other side: the UI still has to render locally, and offline reading matters.
+
+**The prerequisite we cannot skip: the host needs accounts.** DigitalMate Web is deliberately
+account-free and local-first today; while that is true, this feature can only live on the device and
+loses the point. So the first decision is not "cloud or phone" — it is whether DigitalMate gets
+identity at all.
+
+**For China**, the cloud side runs in-country (Huawei Cloud) for data residency. That is a launch
+constraint, not an optimisation.
+
 ## What already exists, and how close it is
 
 Building, hosting and persistence are commodity. This is the evidence, not the lead:
