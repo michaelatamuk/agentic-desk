@@ -47,6 +47,22 @@ nothing gets its own container.
 | Routing is the user's job | A router decides, shows which app is active, asks once when unsure |
 | Data sits inside the app | The app is a record: schema + rules + schedule + data, served by one runtime |
 
+```mermaid
+flowchart TB
+    S((Start)) --> U["User types a sentence"]
+    U --> R{"Which app?"}
+    R -->|confident| A["Lunch app"]
+    R -->|confident| B["Expense app"]
+    R -->|no app fits| G["General chat"]
+    R -->|unsure| Q["Ask once,<br/>remember the answer"]
+    Q -->|user answers| R
+    A --> DB[("Rows: schema,<br/>rules, schedule")]
+    B --> DB
+    DB --> N["Reminder or summary"]
+    G --> E((End))
+    N --> E
+```
+
 **The parts:**
 
 1. **The router.** Classify each sentence: general chat, or one of this user's apps. Above a
@@ -72,6 +88,32 @@ Hybrid, and the split is forced rather than chosen.
 | Rendering | **Phone** | It is the screen; also keeps offline reading |
 | Scheduler | **Cloud** | A phone cannot reliably wake an app at 12:30 when it is closed |
 | Generation | **Cloud** | Too heavy for the device, and needs the model |
+
+```mermaid
+flowchart LR
+    subgraph phone["Phone"]
+        UI["Renderer"]
+        Cache[("Local cache")]
+    end
+    subgraph cloud["Cloud, per account"]
+        Router["Router"]
+        Spec[("App record:<br/>schema, rules, schedule")]
+        Data[("User rows")]
+        Sched["Scheduler"]
+        Gen["Generator"]
+    end
+    U((User)) -->|types| UI
+    UI -->|sentence| Router
+    Router -->|"picks app"| Spec
+    Router -->|"reads and writes"| Data
+    Data -->|answer| UI
+    Sched -->|push| UI
+    Gen -->|creates| Spec
+    Data -.->|sync| Cache
+    UI -.->|offline read| Cache
+```
+
+*Read it left to right: the user speaks on the phone; the cloud decides which app, reads and writes its rows, and sends the answer back to the same screen. The scheduler pushes reminders; the cache keeps the app readable offline.*
 
 Phone-only fails on every requirement that matters: no cross-device, no reliable reminders (both
 HarmonyOS and Android throttle background work), no sharing, and uninstalling loses the history.
