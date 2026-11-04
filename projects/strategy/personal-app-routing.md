@@ -69,7 +69,9 @@ Building, hosting and persistence are commodity. This is the evidence, not the l
   domain, and reached [200,000 apps in four months](https://hub.baai.ac.cn/view/48029).
 - Alibaba's **Qwen Go** added **My Apps**: describe it, get it built and deployed, shareable, with
   access to the user's own data in Taobao, Amap, Damai and Quark
-  ([25 October 2026](https://tech.ifeng.com/c/8xVoOh3h24V)).
+  ([25 October 2026](https://tech.ifeng.com/c/8xVoOh3h24V)). It runs on Alibaba Cloud's
+  **Meoo (秒悟)** app-building platform behind Qwen Go's cloud Pro, is **invite-only**, and is not
+  open source — so its routing behaviour cannot be inspected from outside.
 - ByteDance's **Coze** builds agents and apps, open source, with long-term memory and background
   execution on cloud devices ([coze.cn](https://www.coze.cn/)).
 - Google's **Opal** built no-code mini-apps and is
@@ -87,6 +89,23 @@ We have not found a source showing that it does. If it does, this proposal loses
 
 **Confidence:** low-to-medium. The capability gap is unverified in both directions, which is why the
 first task is a check, not code.
+
+## What we still do not know
+
+Four questions decide whether this is a project or a dead end. None can be answered from outside the
+product.
+
+1. **Does the main chat reach the app?** In Qwen Go, does “I ate a sandwich” reach an app built in My
+   Apps, or must the user open it first? *How to check: apply to the invite-only beta and test it.*
+2. **Does the app persist?** Does it keep data and run schedules after the session ends, or is it a
+   page that lives only while open? *How to check: the same beta, over several days.*
+3. **How does sharing work?** A live link with data, or a copy of the definition? Can a recipient
+   edit it? *How to check: the sharing flow in the beta.*
+4. **Could we use Meoo instead of building a runtime?** It is Alibaba's platform under a consumer
+   feature; if it is sold commercially, the runtime is not the work. *How to check: ask Alibaba Cloud,
+   as a customer.*
+
+Until these are answered, the status is unverified — and the first one can kill the proposal.
 
 ## What the build involves
 
