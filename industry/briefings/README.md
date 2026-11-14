@@ -7,11 +7,12 @@ written in plain English. It is for someone who follows the industry but does no
 
 When asked for a month:
 
-1. Read `PROCESS.md` - it gives the numbered workflow, the nine research lenses, the recall table,
+1. Read `PROCESS.md` - it gives the numbered workflow, the ten research lenses, the recall table,
    and the named outlets for the final sweep.
 2. Read `FORMAT.md` — it gives the brief structure, geographic formatting, style rules and status
    vocabulary.
 3. Create `YYYY-MM.md` in this folder and add it to the index below.
+4. Create `YYYY-MM-huawei.md` — the Huawei-only edition. Required every month from November 2026.
 
 Run the lenses **before** reading the recall table in `PROCESS.md`. The recall table is for the
 editor's coverage check only. Discovery agents must not see it — if they do, the test is rigged
@@ -42,14 +43,17 @@ retries and logs.
 
 ### Briefs
 
-One canonical file per month.
+One canonical file per month, plus the actor, China and — from November 2026 — Huawei editions.
 
 - `2026-09.md` — September 2026 *(news-brief format)*
 - `2026-09-actors.md` — September 2026 *(actor-by-actor edition: every line is who did what)*
 - `2026-10.md` — October 2026, as of 31 October *(engineering edition; the default since this month)*
 - `2026-10-actors.md` — October 2026, as of 31 October *(actor-by-actor edition: every line is who did what)*
 - `2026-10-china.md` — October 2026, as of 31 October *(China-only edition: every line is who did what)*
-- `2026-11.md` — November 2026 *(next)*
+- `2026-11.md` — November 2026, as of 14 November *(engineering edition; month still running)*
+- `2026-11-actors.md` — November 2026, as of 14 November *(actor-by-actor edition: every line is who did what)*
+- `2026-11-china.md` — November 2026, as of 14 November *(China-only edition: every line is who did what)*
+- `2026-11-huawei.md` — November 2026, as of 14 November *(Huawei-only edition: brief plus actor ledger)*
 
 ### Drafts
 
@@ -57,6 +61,7 @@ Never published. Kept because they show how a month was cut.
 
 - `drafts/2026-10-news.md` — October 2026, long news version, superseded by the engineering edition
 - `drafts/2026-10-cut.md` — October 2026, five-story comparison cut
+- `drafts/2026-11-cutlog.md` — November 2026, cut log and coverage record
 
 ### Archive
 
