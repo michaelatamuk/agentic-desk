@@ -20,9 +20,10 @@ Run each lens as a separate sub-agent with fresh context. No lens gets a list of
 frame is the only guidance. Each returns a broad memo of everything that might matter: date, what
 happened, why it matters, status, and sources. There is no fixed number of items at this stage.
 
-Nine lenses. If you must run fewer, merge **Models and methods** with **Agent engineering**, and
+Ten lenses. If you must run fewer, merge **Models and methods** with **Agent engineering**, and
 **Enterprise deployment** with **Products and platforms** — but give the merged lens both sets of
-queries, or the second set will be skipped.
+queries, or the second set will be skipped. Do not merge the **Huawei** lens away: it produces its
+own monthly file.
 
 ### Models and methods
 
@@ -110,6 +111,16 @@ is found under one name, search the others. Xiaodou = Spell = 小豆. Qwen Go = 
 Search by company name (Alibaba, ByteDance, Tencent, Moonshot, Zhipu, MiniMax, StepX, OPPO AI) not
 only by product name.
 
+### Huawei
+
+Huawei's AI stack, in Chinese and English, with the agentic work in particular: Ascend silicon and
+CANN, Atlas, SuperPoD and CloudMatrix; Huawei Cloud AI including ModelArts, AgentArts and MaaS; Pangu
+and open models; openJiuwen/JiuwenSwarm, MindSpore and openEuler; HarmonyOS, Xiaoyi and the device
+line; named enterprise deployments and partners; standards and policy; and any security incident.
+
+This lens feeds `YYYY-MM-huawei.md`, a standing monthly output from November 2026. Do not let it
+collapse into phone-launch coverage: silicon, cloud and agent frameworks matter more than handsets.
+
 ## 2. Merge
 
 Merge the memos by theme. Overlap is normal — keep the better-sourced version. If two lenses
@@ -193,6 +204,7 @@ A missing known thread is a research failure, not an editorial choice.
 | **Agent payments** | AP2 mandate spec, Visa TAP, Mastercard Agent Pay, ACP (OpenAI/Stripe), Stripe MPP; any payment-network agent update |
 | **Control and safety** | Runtime permissions, sandbox escapes, rogue-agent incidents, liability allocation; what the labs **stopped** doing |
 | **China** | ByteDance/Doubao, Tencent/Yuanbao/WeChat, Alibaba/Qwen, Moonshot/Kimi, MiniMax, Zhipu, DeepSeek, StepX; MIIT/CAC/MOFCOM policy; funding rounds |
+| **Huawei** | Ascend 910/950, Atlas, SuperPoD, CloudMatrix, CANN; Huawei Cloud ModelArts/AgentArts/MaaS; Pangu; openJiuwen/JiuwenSwarm, MindSpore; HarmonyOS/Xiaoyi devices; named deployments; MIIT/CAICT standards; incidents |
 | **Money** | Rounds ≥$100M; M&A where the acquirer or strategic rationale is agent-related; IPOs; large compute deals |
 | **Non-AI-primary vendors** | Snowflake, Databricks, Salesforce, Oracle, SAP, ServiceNow, Workday — each may have shipped agent models or tools inside a platform update |
 | **Enterprise harnesses** | Microsoft Foundry/Agent Framework, AWS Bedrock AgentCore, Google Agent Development Kit; major version releases |

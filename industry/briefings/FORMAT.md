@@ -27,6 +27,14 @@ built, not only that it happened.
 A month may still be published in the news-brief format below when the audience is general. Only one
 format is canonical for a given month.
 
+### Huawei edition (from November 2026)
+
+`YYYY-MM-huawei.md` is a Huawei-only edition in two parts. **Part I** is a short engineering brief:
+the six things, decision-area sections with *What shipped / What changed / What to do*, decisions for
+the next 90 days and what to watch. **Part II** is the actor ledger: one line per Huawei action, grouped
+by silicon, cloud, models, agentic products, devices, enterprise, policy, money and incidents. It is
+required every month from November 2026 and sits beside the canonical brief, not in place of it.
+
 ### News-brief format
 
 `archive/2026-10-alt.md` is the reference implementation. When in doubt, look at how something is
