@@ -34,6 +34,26 @@ can take over. The leader has a goal of its own, opened after the user's input i
 held until the other members are idle, and used to gate team completion. `NativeHarness` is
 a second goal host with its own stop policy, and `spawn_teammate(goal=...)` opts a member in.
 
+```mermaid
+flowchart LR
+    subgraph member[Member]
+        C[Claim task] --> A[Goal ACTIVE]
+        A --> S[Submit]
+        S --> J{Completion assessed}
+        J -->|refused, remaining work| A
+        J -->|accepted| D[Task completed]
+        A -->|attempts exhausted| B[Goal BLOCKED]
+        B --> R[Report to leader]
+    end
+    subgraph leader[Leader]
+        U[User input delivered] --> G[Leader goal opens]
+        G --> W[Wait until members idle]
+        W --> K{Goal complete}
+        K -->|no| W
+        K -->|yes| T[Team can complete]
+    end
+```
+
 Nine scenarios run end to end in `tests/system_tests/agent_swarm/goal/`, including a lazy
 member whose first submission is refused, a reviewer round that re-opens the goal, a mid-run
 reassignment, and a member whose goal blocks at its limit. Third-party harness members,
@@ -54,6 +74,16 @@ leader with a Claude teammate and a Codex leader with a Codex teammate. Pause on
 provider that can abort but not pause now degrades to a graceful abort instead of raising.
 One operational catch: the Codex SDK can prefer its bundled CLI over the one on `PATH`, so
 point `cli_path` at a current binary.
+
+```mermaid
+flowchart LR
+    U[User] --> L[Leader on Claude or Codex SDK]
+    L --> G[Tool gateway]
+    G --> T[Team tools]
+    G --> S[ExternalSwarmflowHost]
+    S --> W[Worker agents]
+    T --> M[Teammates]
+```
 
 ## 3. Swarmflow for every teammate — [NEW]
 
@@ -117,6 +147,15 @@ under each turn that wrote: new slides are deleted, changed and deleted slides a
 re-inserted from exports, and the deck's order is restored. Code the model writes against a
 slide's XML runs in a sandbox worker, and a patch that fails part way rolls itself back.
 
+```mermaid
+flowchart LR
+    D[Open document] --> P[Task pane]
+    P -->|attach| C[Conversation]
+    C --> T[Resource tools]
+    T --> D
+    T --> U[Per-turn undo: export, hash, restore]
+```
+
 The hosts need PowerPointApi 1.8, WordApi 1.6 and ExcelApi 1.13. WPS is planned.
 
 ## 6. An AI colleague for every employee — [NEW]
@@ -160,6 +199,19 @@ On 4 November `skillpack_distill` started taking a completed multi-skill workflo
 distilling it into a SkillPack: a root `SKILL.md` that describes an ordered workflow over
 ordinary skills. SwarmSkills and nested packs are refused as members, so a pack stays a
 plain composition of single-agent skills.
+
+```mermaid
+flowchart LR
+    A[Completed workflow] --> B[skillpack_distill]
+    B --> C[Root SKILL.md and skillpack.lock.json]
+    C --> D{Inspect plan and confirm}
+    D -->|cancel| X[Stop]
+    D -->|confirm| E[Install thin ZIP]
+    E --> F[Fetch missing members from the Hub]
+    F --> G{Provenance and digest match}
+    G -->|no| X
+    G -->|yes| H[Commit the inventory]
+```
 
 Installation is confirmed and transactional:
 
