@@ -1,243 +1,180 @@
 # DigitalMate, explained simply
 
-*As of 29 October 2026. Sources: the [public status board](https://haowenz001.github.io/digitalmate-board/#issues), bug reports, one product article, and the
-Orbit note for the engine.*
+*As of 14 November 2026. Sources: the repository at `main@62278b8f` and its documentation.
+This replaces the 29 October note, which was written from the public board and had the
+architecture wrong in several places — see [What the October note got wrong](#what-the-october-note-got-wrong).*
 
-*DigitalMate is built by another team in the company. This note is context, not our roadmap. Its cloud
-engine, Orbit, has [its own note](../orbit/overview.md).*
+*DigitalMate is built by another team in the company. This note is context, not our roadmap.*
 
 ## The short version
 
-- **DigitalMate** is a HarmonyOS phone app. You say what you want in one sentence, and it builds a task
-  screen for you.
-- It has two surfaces: **A2UI task screens** (screens the agent composes) and a Bot-style **Orbit chat**
-  called OrbitHome.
-- Its cloud engine today is **Orbit**. Each user gets a container and a private workspace. A desktop
-  version also exists. The engine is described in the [Orbit note](../orbit/overview.md).
-- In the **10.23 build**, DigitalMate moved its cloud engine from **WorkSwarm** (jiuwenswarm) to a
-  standalone **Orbit** instance.
-- A **[27 October RFC](../orbit/overview.md#what-comes-next-orbit-as-a-plugin)** proposes the next step: Orbit as a plugin inside JiuwenSwarm.
+- **DigitalMate** is an AI assistant for HarmonyOS. You start a task in one sentence, attach
+  files if you need to, and the assistant runs it in the cloud and returns a result you can
+  read, edit and follow up. A discovery feed sits beside it.
+- It is **two halves in one repository**: the HarmonyOS client (`digitalmate/`) and the
+  **Personal Agent** server (`harness/personal-agent/`, `server/`). It is not only a phone app.
+- The client's default backend is `cloudBackend: "digitalmate"`. The older `workswarm`
+  conversation path is still selectable.
+- The Personal Agent owns tasks, sessions, approvals, connectors and memory, and **delegates
+  execution to WorkSwarm** (JiuwenSwarm) over a WebSocket gateway.
+- The server is **mid-migration to v3.1**: Agent Service, Router, Session Store, Model Gateway
+  and Plugin Gateway are being assembled behind the current Bridge entry point.
+- The name has changed twice: `luna` → `orbit` → `digitalmate`. "Orbit" is the previous name
+  of this engine, not a separate product.
 
 ## The picture
 
 ```mermaid
 flowchart TD
-  P["DigitalMate app<br/>HarmonyOS phone"] --> G["agent-dx gateway<br/>login · routing · isolation"]
-  G -->|"from build 10.23"| O["Orbit container<br/>one per user"]
-  G -.->|"before build 10.23 · kept for old clients"| J["Jiuwen / WorkSwarm<br/>previous engine"]
-  O --> M["model API<br/>GLM-5.2"]
-  O --> W[("workspace<br/>/data/state")]
-  classDef old fill:#eeeeee,stroke:#999999,color:#666666,stroke-dasharray:4 3;
-  class J old;
+  P["DigitalMate app<br/>HarmonyOS"] --> G["Mobile Gateway<br/>auth · routing · isolation"]
+  G --> A["Personal Agent<br/>tasks · sessions · approvals · connectors"]
+  A --> E["Engine selection<br/>digitalmate (default) · workswarm (legacy)"]
+  E --> W["WorkSwarm runtime<br/>agent loop · tools · skills"]
+  W --> M["Model API"]
+  W --> T["Tools and MCP"]
+  P --> D["Discovery feed<br/>on-device adapters · candidate pool · ranking"]
+  D --> S["External sources<br/>web · RSS · platform APIs"]
 ```
 
-The app talks to the gateway. The gateway talks to a container. The container owns the workspace where
-the user's state lives. The gateway and the container are described in the
-[Orbit note](../orbit/overview.md).
+The app talks to a gateway, the gateway to the Personal Agent, and the agent to an execution
+runtime. The discovery feed is a separate on-device path.
 
-Build **10.23** runs Orbit. Earlier builds ran WorkSwarm, the name JiuwenSwarm ships under on PyPI. The
-gateway keeps the Jiuwen path for old clients and rollback; the merged pull request calls the two engines
-"peer targets" and leaves the Jiuwen template unchanged. The [board's](https://haowenz001.github.io/digitalmate-board/#issues) public releases are **v0.1.2** (21
-October), **v0.1.3** (25 October) and **v0.1.4** (29 October); 10.23 is an internal build number.
+## What the app does
 
-## What DigitalMate is
+- **Home — cloud tasks.** Submit a task, attach files, choose skills, follow progress, answer
+  approvals, and return to the same conversation later. History and results survive.
+- **Skill centre.** Browse, install, enable, disable and uninstall skills. What is available
+  is whatever the connected service returns.
+- **Custom MCP.** Remote HTTP, SSE and cloud-launched stdio services can be selected for a
+  conversation. stdio programs run in the cloud.
+- **Discovery.** One feed over many sources, with a local candidate inventory, duplicate
+  removal and ranking, adjusted by what you read and by topic statements such as "show me more
+  about robotics".
+- **On-device aggregation.** Local tools merge results from several providers for email,
+  travel and media search. The repository also keeps A2UI components and older contracts.
 
-A mobile project from the openJiuwen community. It was
-[described publicly on 6 October](https://news.qq.com/rain/a/20261006A05U6G00).
+Two limits are stated in the repository and worth repeating: the historical Leader/Data/UI/Action
+multi-agent runtime files are **absent** from this checkout, and configuring an on-device
+data source does not register it as a cloud tool. Treat those two paths as separate.
 
-```mermaid
-flowchart TD
-  A["You say what you need"] --> B["Assistant plans one task"]
-  B --> C{"Enough detail?"}
-  C -->|"no"| D["Asks you a question<br/>then carries on"]
-  C -->|"yes"| E["Collects answers<br/>across apps and the web"]
-  D --> E
-  E --> F["Builds a task screen<br/>to read, edit and follow up"]
-  E --> G["Remembers preferences<br/>for the next request"]
-  F --> H{"Needs to act<br/>outside the app?"}
-  H -->|"yes"| I["Asks for approval first"]
-  H -->|"no"| J["Result stays in the app"]
-  I --> J
-  G -.->|"next time"| A
-```
+## How a request flows
 
-The flow: ask, get asked back if something is missing, gather, show a screen, confirm before acting, and
-remember for next time.
+1. After login the client opens `room.home` and restores the conversation from the snapshot.
+2. A message may carry attachments; files are uploaded first and passed as source IDs.
+3. The client sends `room.message`, or `task.create` when it carries attachments or device
+   context. Both use a submission ID.
+4. The Personal Agent validates and records the task, then delegates to WorkSwarm, which calls
+   the model and tools.
+5. An accepted submission is **not** a completed run. A lost response is reconciled against
+   the submission ID and a refreshed snapshot before retrying.
+6. Results stream back as `digitalmate.task.text` and other events; after a disconnect the
+   client reconciles against server state.
 
-- **Two surfaces:** `A2uiHome` for task screens and `OrbitHome` for the bot chat.
-- **The bot is called Beebou**, shown as an avatar at the top of the chat; tapping it opens activity,
-  reminders and the artifact centre ([#225](https://github.com/openJiuwen-ai/DigitalMate/issues/225), [#239](https://github.com/openJiuwen-ai/DigitalMate/issues/239), [#242](https://github.com/openJiuwen-ai/DigitalMate/issues/242)).
-- **Screen format:** [A2UI](https://a2ui.org/introduction/what-is-a2ui/) — the agent describes the screen,
-  and the phone draws it with its own components.
-- **What it keeps:** each result's source and failed providers, so a missing train or price reads as
-  missing.
-- **Open demos:** office files, ticketing, group-chat interjection and proactive reminders ([#176](https://github.com/openJiuwen-ai/DigitalMate/issues/176)–[#180](https://github.com/openJiuwen-ai/DigitalMate/issues/180)).
+## The server
 
-In one line: **a task centre for the phone, with a Bot chat beside it.**
+The v3.1 target splits responsibilities that the Bridge entry point currently holds together.
+The migration is in progress, and the documentation is explicit that a design, a merge and a
+deployment are three different facts.
 
-**Where it lives**
+| Component | Responsibility |
+|---|---|
+| **Server Runtime** | Startup profiles, component assembly, readiness, shutdown |
+| **Mobile Gateway** | Auth scope, message normalisation, client events, connection and push buffers |
+| **Router** | Choose New/Continue and ModelCall/AgentCall, then ask the owner to persist the binding |
+| **Agent Service** | Runs, scoped capabilities, interactions, revocation, checkpoints, cancel, final commit |
+| **Session Manager / Store** | Admission, capacity, claim, recovery; the single writer for session, run and receipt state |
+| **Registry / Profile** | Exact implementation versions and per-session bindings |
+| **Harness** | Agent loop, skills, rails, sub-execution and working state over a scoped HostAPI |
+| **Model Gateway** | One model dispatch, provider protocols, stream and usage observation |
+| **Plugin Gateway** | Tools, hooks and completion protocols for bound providers |
 
-- **Runs on:** a HarmonyOS phone.
-- **Code:** private. [`openJiuwen-ai/DigitalMate`](https://github.com/openJiuwen-ai/DigitalMate) returns 404
-  without access.
-- **Artifacts:** the app installed on phones. Builds are not public.
-- **Public trace:**
-  - The [status board repository](https://github.com/haowenz001/digitalmate-board) is public and readable.
-  - The [published board](https://haowenz001.github.io/digitalmate-board/) carries the snapshot from
-    29 October 2026, 07:11 UTC.
+A submission is `M`, a product session is `S`, and one execution is `R`. A second ordinary
+message can start a new run inside the same session; an explicit follow-up binds to the
+existing run.
 
-## What the board adds
+## Engines and names
 
-The [29 October snapshot](https://haowenz001.github.io/digitalmate-board/#issues) (07:11 UTC) mirrors whole issue bodies: a weekly roadmap, design proposals and test plans. Those
-say more about the product than the bug list does.
+- Execution is **WorkSwarm** (the PyPI name of JiuwenSwarm). The Personal Agent wraps it rather
+  than running an agent SDK in-process.
+- The pinned WorkSwarm build and its own `agent-core` commit are recorded in
+  `harness/personal-agent/README.md`; the production image is `digitalmate:v0.1.10`.
+- The workspace migration in `engine_rename.py` adopts directories named `orbit/` and `luna/`,
+  renames their SQLite tables and records, and moves them to `digitalmate/`. That is the
+  clearest evidence that **Orbit is the previous name of this engine**.
+- The older `workswarm` backend remains in the client for compatibility and rollback, which is
+  why the client has two backend settings rather than one.
 
-### The roadmap ([#147](https://github.com/openJiuwen-ai/DigitalMate/issues/147))
+## Connections
 
-Every week has a capability, a demo script and a tick box.
+Connections are their own subsystem, with one owner per fact: authorisation, connection state,
+credentials and task permission are kept separately.
 
-- **Week of 19–25 October, done:**
-  - One bot chat for tasks. Topics are created and continued automatically: the demo moves from Shanghai
-    basketball courts to a Nanjing trip, then asks about courts in Pudong and food in Nanjing without
-    mixing them.
-  - A clarifying card before work starts. The answer stays in the chat, and the result reflects it and
-    says what was not verified.
-  - Tasks keep running when the user changes topic or leaves the app, with progress in the chat, an
-    activity panel, a home-screen card and a notification.
-  - Structured results — text, tables, checklists, a budget — and a text fallback when an interactive
-    artifact fails.
-  - Cross-session memory that overwrites old facts: a user who switches from meat to vegetarian, or
-    changes a weekly meeting, is remembered that way.
-- **Week of 26 October, planned:**
-  - Mail, calendar and chat pulled into one brief, pushed without being asked.
-  - To-dos taken from email with their deadlines, then followed up.
-  - Inbox triage: archive marketing, flag priority mail, draft replies.
-  - A loop across apps: email → task → Feishu or Slack notice → draft reply.
-- **After that:** a standalone plugin for adding another person's agent as a contact and messaging it — send
-  a handle, wait for consent, then a private chat, with no public directory.
+| Path | What it is |
+|---|---|
+| **Feishu** | Native account connection and group reading (landed 13 November) |
+| **Gmail / Outlook** | Composio-hosted authorisation with a bounded read path (landed 14 November) |
+| **Mail pipeline** | A proposed shared Signal pipeline for durable input, publication and outbox |
+| **MCP** | Per-conversation remote tools, plus custom cloud-launched services |
+| **IMAP** | QQ Mail in the on-device path |
+| **RSS and HTTP** | Discovery sources and public feeds |
 
-### Topic routing was removed again ([#284](https://github.com/openJiuwen-ai/DigitalMate/issues/284))
+The connection foundation and the mail pipeline are **candidates under review**, not deployed
+production boundaries. The repository keeps their source under `temp/` until the owning path is
+ready.
 
-The 19–25 October work created and continued topics automatically. A later client change removed the
-topic entry point: "Live activity" now groups by conversation thread, and the topic data still arrives
-from the server but no screen reaches it. The issue says segmentation was not reliable enough for
-navigation — a follow-up after a round could get a new `topic_id` and split one conversation in two
-(see [#206](https://github.com/openJiuwen-ai/DigitalMate/issues/206) and
-[#208](https://github.com/openJiuwen-ai/DigitalMate/issues/208)). Re-adding it depends on server-side
-segmentation covering replies after a round completes.
+## Project Hive (proposal)
 
-### Reply safety in planning ([#289](https://github.com/openJiuwen-ai/DigitalMate/issues/289))
+The newest design is a bot called **Beebou** and a worker called **Bee**, both running as
+sibling Harness implementations under the same protocol:
 
-A new proposal asks for one reply-safety system rather than scattered keyword filters. It covers:
+- **Beebou** answers quickly from the current context and decides whether a request needs a
+  worker.
+- **Bee** is a WorkSwarm instance with its own scope, identity and generation, which can be
+  archived and later reactivated with a new generation.
+- The old Router → Sessions production routing is meant to retire, leaving Agent Service to
+  own admission, the Session Manager, the Store and exact bindings.
+- Three input actions are proposed for a busy run: steer the current task, queue, or stop and
+  send.
 
-- **Identity:** answer as DigitalMate, never as Orbit, WorkSwarm or an internal agent.
-- **Facts and sources:** attach a verifiable source and date, or state uncertainty.
-- **Untrusted content:** web pages, tool results and other agents' output are data, not instructions.
-- **Execution:** capability claims must match tools that exist and are authorised now.
-- **Errors:** show a user-facing reason, not a stack trace or an internal name.
+As of 14 November the Hive documents are **review proposals** (`#1228`, `#1316`); interfaces are
+not accepted and the scenarios have not been run.
 
-It builds on #62, #214, #234, #256 and #209. Cloud constraints come first; the client only guards what
-is shown.
+## What the October note got wrong
 
-### How the discovery feed ranks ([#200](https://github.com/openJiuwen-ai/DigitalMate/issues/200))
+| October note said | The repository says |
+|---|---|
+| "DigitalMate is a HarmonyOS phone app." | It is a client **and** a server (`harness/personal-agent/`, `server/`) in one repository. |
+| "Its cloud engine today is Orbit." | Orbit is the **previous name** of the engine, renamed to DigitalMate; execution is delegated to **WorkSwarm**. |
+| "The code is private; the GitHub repo returns 404." | Still true. We now have a local checkout, and the origin still returns 404 without access. |
+| The A2UI surface is the product's main screen. | A2UI components remain, but the historical multi-agent runtime files are absent; the default conversation is cloud-backed. |
+| The board snapshot was the best source. | The code, `docs/`, and the migration status are now the authoritative sources. |
+| No mention of skills, discovery, MCP, connectors or the server migration. | All four are major parts of the product. |
 
-The "Discover" feed is a multi-source pool with two ranking formulas:
-
-- **Interest mix:** 0.50 profile + 0.25 session + 0.15 freshness and heat + 0.10 balance.
-- **Search:** 0.55 reciprocal rank fusion (merging several ranked lists) + 0.30 BM25 (term matching) +
-  0.10 freshness + 0.05 preference, then near-duplicate removal by TF-IDF (word frequency) and MMR
-  (maximum marginal relevance, which trades repetition for variety).
-- **Sources:** YouTube, Bilibili, X, Hacker News, Reddit, Zhihu, GitHub, RSS, and Chinese and global news
-  feeds. Xiaohongshu and Douyin are not connected.
-- **Not from conversation memory:** the projection exists but rebuilds only after 8 remembered facts and
-  about 7 days, so a new account sees a generic feed ([#65](https://github.com/openJiuwen-ai/DigitalMate/issues/65)).
-
-### The daily brief in planning ([#200](https://github.com/openJiuwen-ai/DigitalMate/issues/200))
-
-A second proposal adds an editorial layer above that pool:
-
-- Pipeline: fetch → profile → model gives 0–10 and one line → threshold, topic de-duplication, quota →
-  summary, background, community discussion.
-- The phone shows one card per day: score and one line, tap for detail.
-- Only two controls: "more like this" and "less like this".
-- A card can become a task — follow up on an issue, make a reading list, draft something — through the
-  confirmation gate.
-- It stays one card, not a source manager, an infinite feed, or a mix with short video.
-
-### How they plan to test it ([#209](https://github.com/openJiuwen-ai/DigitalMate/issues/209))
-
-- Start from 20–50 real failures, not a large benchmark.
-- Two suites: **regression**, which should reach 100% pass^k (every trial passes, k at least 3), and
-  **capability**, which starts low and climbs — morning brief, confirmation gate, research readiness.
-- Three graders: code checks (new topic? same session? tool called?), a model rubric for intent, and a
-  weekly human spot check.
-- The test setup must behave like the production phone app.
-
-### Identities and connections ([#190](https://github.com/openJiuwen-ai/DigitalMate/issues/190), [#221](https://github.com/openJiuwen-ai/DigitalMate/issues/221))
-
-- **Identity cabinet:** three card types — company, open source, social. It stores names and roles,
-  never passwords or tokens.
-- The confirmation card shows which identity will act.
-- **Connections** are made inside the app by OAuth: Feishu first, then email, GitHub, Gitee.
-- Connecting is not sending: outbound actions still pass the gate.
-
-### Interface choices ([#153](https://github.com/openJiuwen-ai/DigitalMate/issues/153), [#219](https://github.com/openJiuwen-ai/DigitalMate/issues/219))
-
-- Artifacts appear in the reply as thumbnails or file cards. HTML preview loads a local file into a
-  WebView with JavaScript off and every other URL blocked.
-- Long tasks get a timeline of three lanes — input, model, tools — but the phone shows only a result card
-  and the duration, turns and calls. The full view is a second page.
-
-The [published board](https://haowenz001.github.io/digitalmate-board/#issues) is the public source. Individual
-issue pages point at the private repo and return 404; the bodies are public on the board.
-
-## What changed in build 10.23
-
-The internal note for build 10.23 says four things:
-
-1. The **cloud execution engine moved from WorkSwarm to Orbit**.
-2. The UI moved from **Session style to Bot style**; follow-ups and new topics happen in the main chat.
-3. Orbit brought **cross-session memory**, linked by intent.
-4. **Parallel tasks** with live progress, and notification cards on the home screen that can wake the app.
-
-Before the switch, DigitalMate was a thin client of remote JiuwenSwarm. Two public bug reports describe
-that period: [tool permission that could not be revoked](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8265)
-and [streamed output buffered until the turn ended](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8522).
-The first one spells out the old split: tools ran in the cloud, and the phone only received
-`chat.ask_user_question` cards and sent back an approval.
-
-The engine is described in the [Orbit note](../orbit/overview.md); the migration plan is there too.
-
-## Likely reasons for the switch
-
-These are the likely drivers, inferred from the public record:
-
-- **The product became a bot.** JiuwenSwarm already ships a personal assistant with memory, schedules and
-  channels, but users install it on their own machine or cluster. DigitalMate needs one bot per phone
-  user, isolated, inside a shared service.
-- **Isolation.** One container per user with its own disk is easier to defend than many users inside one
-  shared AgentServer.
-- **Release control.** The two bug reports show the team waiting on upstream JiuwenSwarm fixes. Owning the
-  Orbit template and version means shipping on their own schedule.
-- **Parallel work and memory.** Both were listed as new capabilities, and both fit a per-user workspace.
-- **The plugin plan.** [The RFC](../orbit/overview.md#what-comes-next-orbit-as-a-plugin) folds Orbit back into JiuwenSwarm, so the standalone instance is one step
-  on that path.
+The board's roadmap items are still useful history, but several are superseded: topic routing
+was removed from the client and revived on 9 November (#942), and the "Orbit as a plugin" idea
+has been overtaken by the Hive design.
 
 ## How we know
 
-- **The engine swap:** the internal note for build 10.23, plus the [board's](https://haowenz001.github.io/digitalmate-board/#issues) issue and PR titles.
-- **The old architecture:** DigitalMate bug reports [#8522](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8522) and [#8265](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8265) on GitHub.
-- **The product description:** the 6 October article.
-- **The roadmap, ranking and plans:** [board](https://haowenz001.github.io/digitalmate-board/#issues) issue bodies #147, #200, #209, #219, #221 and #190.
-- **Releases:** the [board](https://haowenz001.github.io/digitalmate-board/#issues) snapshot of 29 October.
-- **Orbit's side of the story:** the [Orbit note](../orbit/overview.md).
+- **Architecture:** `docs/architecture/server-system-overview-v3.1.md` and
+  `docs/migration_status.md`.
+- **Client behaviour:** `docs/implementations/client/harmonyos-client-task-flow-v1.md`.
+- **Execution and deployment:** `harness/personal-agent/README.md`.
+- **Name history:** `harness/personal-agent/services/agent_bridge/src/server_engine/engine_rename.py`.
+- **Connections:** `docs/architecture/server-connection-foundation-v1.md`.
+- **Hive:** `docs/implementations/contracts/beebou-bee-harness-design.md` and
+  `beebou-hive-kickoff-plan.md`.
+- **Product copy:** `README.md`.
+
+The older [Orbit note](../orbit/overview.md) is still worth reading as the previous name's
+context, but its "Orbit is the engine today" framing is out of date.
 
 ## Open questions
 
-- The code inside DigitalMate.
-- Performance and cost per user. The [board](https://haowenz001.github.io/digitalmate-board/#issues) shows time-to-first-token (TTFT) complaints around 5 seconds.
-- Whether, and when, the engine moves back to JiuwenSwarm; the plan is in the
-  [Orbit note](../orbit/overview.md).
-
-**Unrelated projects with similar names:**
-[`mlai21/DigitalMate`](https://github.com/mlai21/DigitalMate) and
-[`XDesktopSoft/DigitalMate2D`](https://github.com/XDesktopSoft/DigitalMate2D).
+- When v3.1 cuts over: the tracker (`#737`, `#963`) owns the forecast, and the docs say a
+  merge is not a deployment.
+- Whether Hive replaces the Router this month or next; it is still a proposal.
+- Real cost and latency per user. The board's TTFT complaints are not addressed by any merged
+  performance work I could find.
+- How much of the on-device aggregation path is reachable from the default UI, versus retained
+  code.
