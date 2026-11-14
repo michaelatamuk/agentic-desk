@@ -24,7 +24,7 @@ Everything here is tagged:
 
 # The big things
 
-## 1. A team can hold a goal — [NEW]
+## 1. A team can hold a goal, not just a task list — [NEW]
 
 A task board says what is done; a goal says what the team is trying to achieve. Members now
 open a goal when they claim a task, and before a member submits, the completion claim is
@@ -59,7 +59,7 @@ member whose first submission is refused, a reviewer round that re-opens the goa
 reassignment, and a member whose goal blocks at its limit. Third-party harness members,
 human members and bridge members are outside this scope.
 
-## 2. The leader can run on someone else's harness — [NEW]
+## 2. The team leader can run on Claude Code or Codex — [NEW]
 
 `LeaderSpec.cli_agent` names an entry in `external_cli_agents`, and the team leader runs on
 the Claude or Codex SDK harness instead of the native one. It keeps the leader tool set —
@@ -85,7 +85,7 @@ flowchart LR
     T --> M[Teammates]
 ```
 
-## 3. Swarmflow for every teammate — [NEW]
+## 3. Every teammate can start its own workflow — [NEW]
 
 `swarmflow` is the tool that starts a workflow: an asynchronous run whose steps are
 executed by worker agents, with the result injected back into the conversation when it
@@ -119,7 +119,7 @@ flowchart LR
     L -->|run| W
 ```
 
-## 4. Every member gets its own execution environment — [NEW]
+## 4. Every teammate gets its own shell and settings — [NEW]
 
 Two members in one process used to share the process environment, so a `git` author, a proxy
 or a token leaked between them. `ExecutionEnvironment` now holds immutable `values` and
@@ -135,7 +135,7 @@ and the platform resolver reads the shared database on every tool call — if th
 unreachable it fails rather than silently falling back to an old value. Environment values
 are redacted in execution logs.
 
-## 5. Office becomes a workspace — [UPGRADE]
+## 5. Word, Excel and PowerPoint become a workspace — [UPGRADE]
 
 The add-in now serves PowerPoint, Word and Excel from one build, with a manifest per host.
 The pane attaches the open document to a conversation and runs that conversation's tools
@@ -167,7 +167,7 @@ accepted with until a new one is published. Colleagues live in web private chat,
 DingTalk, answer approvals, run scheduled tasks and use the CLI. The default colleague,
 小九 (Xiao Jiu), is created once and is not recreated after a user deletes it.
 
-## 7. The enterprise runtime moves into the database — [UPGRADE]
+## 7. Enterprise data moves to MySQL and PostgreSQL — [UPGRADE]
 
 Enterprise checkpoints now land in MySQL or PostgreSQL; the personal edition keeps SQLite.
 The enterprise team runtime library reads the deployment database, HTTP session materials
@@ -176,7 +176,7 @@ Shared team, expert and expert-team libraries install into tenant directories, w
 creation and publishing hidden for now. The E2A package layout was adapted after its move
 into `openjiuwen-protocol`.
 
-## 8. Enterprise features join the open platform — [NEW]
+## 8. One gateway for personal and enterprise editions — [NEW]
 
 The enterprise edition merged into the same gateway as the personal edition in late
 October. In the first week of November the couplings that merge introduced were cut:
@@ -193,7 +193,7 @@ October. In the first week of November the couplings that merge introduced were 
   manages sessions locally when the server is down.
 - The enterprise web opens the **connector marketplace** navigation.
 
-## 9. SkillPack — a workflow that becomes an installable skill — [NEW]
+## 9. A workflow you can install as a skill — [NEW]
 
 On 4 November `skillpack_distill` started taking a completed multi-skill workflow and
 distilling it into a SkillPack: a root `SKILL.md` that describes an ordered workflow over
@@ -230,7 +230,7 @@ A complete query match can offer the pack directly, bypassing Symphony's composi
 partial matches keep the old path. Routing has three modes — `off`, `shadow` (evaluate and
 log only) and `confirm` — and the product entry points are off by default.
 
-## 10. TTSE 2.0 — self-evolution ships as a plugin — [UPGRADE]
+## 10. The agent learns from its own runs, now as a plugin — [UPGRADE]
 
 TTSE (Two-Track Self-Evolution) induces environment facts (FACT) and capability-selection
 hints (TIP) from trajectories and injects the guidance into the system prompt. It is the
