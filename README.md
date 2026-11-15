@@ -54,6 +54,10 @@ The research process is in `industry/briefings/PROCESS.md`; the structure is in
 `industry/briefings/FORMAT.md`. Studies of other companies and projects that feed the briefing are
 in `industry/studies/`.
 
+Product what's-new editions live in `company/<product>/whats-new/` and are written to stand alone:
+each opens with what the product is and what runs underneath it. The format and process are in
+`company/digitalmate/whats-new/FORMAT.md` and `PROCESS.md`.
+
 ## History
 
 Split out of `jiuwenswarm/docs-michael` on 25 October 2026 (source commit `cbde92cfa`). File history

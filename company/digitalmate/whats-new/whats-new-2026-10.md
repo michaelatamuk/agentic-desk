@@ -1,54 +1,105 @@
 # What's New in DigitalMate — October 2026
 
-October is the month this repository appeared. It was seeded on 8 October and, by the end of
-the month, the app had become a bot with its own engine, tasks that keep running when you leave
-the app, and a first server. About 375 commits landed.
+October is the month this repository appeared, and the month DigitalMate changed engines twice. It
+started on WorkSwarm, the company's agent platform. On 20 October it gained a second engine, Orbit —
+a separate product from another team — and the 10.23 build (the app version released that week) ran
+on it. Ten days later, on 30 October, DigitalMate replaced Orbit with its own server, which runs the
+agent on WorkSwarm again. The rest of the month — tasks that keep running after you leave the app,
+merged follow-ups, a discovery feed, a test suite that runs on a real phone — happened alongside
+that change. About 375 commits landed.
 
-*Last updated: 2026-11-14.*
+*Last updated: 2026-11-15.*
 
-**Coverage** — read from `main`:
+## What DigitalMate is
+
+DigitalMate is an AI assistant for HarmonyOS phones. You type a task, attach files and pick skills; a
+cloud server runs the task and streams the answer back. A second tab is a personalised feed of
+videos, articles and posts. The repository holds both the phone app and the server.
+
+## What runs underneath
+
+Three layers, from top to bottom:
+
+1. **The phone app** — what the user sees and touches.
+2. **The engine** — the server that owns tasks, sessions, approvals, connected accounts and memory.
+   This is the layer that changed twice in October.
+3. **The agent platform** — the software that actually runs the agent: the loop, the tools, the model
+   calls. The company's platform is called **WorkSwarm** (also published as **JiuwenSwarm**). **Orbit**
+   was the engine of a different product, built by another team.
+
+At the start of October the phone talked to WorkSwarm directly. By the end it talked to DigitalMate's
+own server, which talks to WorkSwarm.
+
+**Coverage** — read from `main`; this is the first edition.
 
 | Repository | Commit | Merged | What it is |
 |---|---|---|---|
 | `DigitalMate` | `9eea155a` | 2026-10-31 22:46 +08:00 | merge of #435 (`fix-task-clear-force-type`) |
 | first commit | `4c256328` | 2026-10-08 | initial import of the project |
+| `Orbit` (local checkout) | no git history | — | the separate engine DigitalMate used for ten days |
+
+Not read this edition: `agent-dx`, the layer that runs one private container per user.
 
 Everything here is tagged:
 
 - **[NEW]** — a capability that did not exist before.
 - **[UPGRADE]** — an existing capability re-worked until it feels new.
+- **[REMOVED]** — something that was in the product and is now gone.
 
 ---
 
 # The big things
 
-## 1. The app gets an engine and remembers the conversation — [NEW]
+## 1. Orbit becomes a second engine — [NEW]
 
-The project was imported on 8 October. From there the app moved onto its own engine: the
-conversation gained attachments and file preview, account and room recovery, reconnect
-handling, device permissions, task controls, artifact versions and a startup connection path.
-By the end of the month the engine could carry a conversation across a cold start, not just a
-single turn.
+On 20 October the app could use either of two engines. Four commits that day did the work: "integrate
+Orbit conversation through cloud-adapter", "select Orbit or JiuwenSwarm as the main chat backend",
+"connect Orbit backend to built-in Orbit Agent through Home", and "share chat UI across WorkSwarm and
+Orbit backends".
+
+Orbit is a separate product built by another team: a desktop workspace where people put Claude Code,
+Codex and other agents in the same room, with a cloud engine behind it. On the phone it had no screen
+of its own — it proposed screens and DigitalMate drew them. The 10.23 build made Orbit the engine, so
+the phone sent its tasks in Orbit's message format to Orbit's address (`/orbit/ws`).
+
+## 2. DigitalMate replaces Orbit with its own server — [NEW]
+
+On 30 October the repository gained its own server: `server_engine`, with a single entry point, the
+service that runs the product side, and a connector to WorkSwarm (#323). The same commit renamed the
+client's Orbit files to DigitalMate and mapped the saved `orbit` setting to the new server. Its title
+is the point: "run DigitalMate on WorkSwarm".
+
+The new server keeps tasks, sessions, approvals, connected accounts and memory, and hands the actual
+agent work to WorkSwarm. That is the arrangement that still exists today. Orbit was not renamed into
+this server; it was replaced by it.
 
 ```mermaid
 flowchart LR
-    U["You send a message"] --> E["Engine session"]
-    E --> T["Task runs in the cloud"]
-    T --> R["Result and artifacts"]
-    R -->|"leave and come back"| E
+    A["Before 20 Oct<br/>Phone → WorkSwarm"] --> B["20–30 Oct<br/>Phone → Orbit"]
+    B --> C["From 30 Oct<br/>Phone → DigitalMate server → WorkSwarm"]
 ```
 
-The name it shipped under is the one that still appears in code and PR titles: `orbit`. It was
-later renamed to `digitalmate`; the workspace migration in `engine_rename.py` keeps old data.
+The old names stay on purpose. The `/orbit/ws` address, the `orbit.request` message name and the
+saved `orbit` value still work, and `engine_rename.py` moves old Orbit workspaces (and older `luna`
+ones) into the new `digitalmate/` layout, so nobody loses their history. That is why the repository
+is full of the word "orbit" even though Orbit is gone.
 
-## 2. Tasks keep running outside the app — [NEW]
+## 3. Your chat is still there when you come back — [NEW]
 
-Progress used to live only inside the conversation. On 30 October (#304) a task got an
-activity panel, a home-screen card and a notification, so leaving the app or changing topic no
-longer hid what was still running. The notification card can wake the app.
+Close the app, restart the phone, lose the network or switch accounts, then open the app again: the
+same chat is reloaded from the server, with its messages, attachments and the task's progress.
+Before this, the open chat could come back empty, and a running task could show no progress.
 
-This is the first time the product treated a task as something that exists outside the screen
-that started it.
+Attachments now show a preview before sending, and the app reconnects to the server on its own when
+the network returns. By the end of the month this worked for the whole chat, not just for a single
+reply.
+
+## 4. Tasks keep running after you leave the app — [NEW]
+
+Progress used to be visible only while you were in the chat. On 30 October (#304) a task got an
+activity panel, a home-screen card and a notification, so leaving the app or changing topic no longer
+hid what was still running. Tapping the notification opens the task. Before this, leaving the chat
+hid the task; now it stays visible.
 
 ```mermaid
 flowchart LR
@@ -59,35 +110,18 @@ flowchart LR
     N -->|tap| O[App opens on the task]
 ```
 
-## 3. Quick follow-ups join the request already running — [NEW]
+## 5. Sending a follow-up mid-task no longer starts a second task — [NEW]
 
-On 31 October (#390) messages sent close together stopped creating a second task. They merge
-into the turn already in flight, which makes follow-up corrections feel like one conversation
-instead of a queue of separate requests.
+On 31 October (#390) messages sent close together stopped creating a second task. They merge into
+the turn already in flight, which makes a correction feel like part of the same conversation instead
+of a queue of separate requests.
 
-```mermaid
-flowchart LR
-    A[First message] --> R[Running request]
-    B[Follow-up while it runs] --> R
-    R --> O[One answer]
-    C[Follow-up after it ends] --> N[New request]
-```
+## 6. A new feed tab gathers videos, articles and posts — [NEW]
 
-## 4. A server appears behind the app — [NEW]
-
-On 30 October (#323) `server_engine` entered the repository. It brought the Bridge and an
-engine service that the Personal Agent still runs today, plus a WorkSwarm adapter and the
-start of a proper streaming boundary. The same week, internal runtime text was kept out of the
-chat, so the user saw the answer rather than the machinery.
-
-This import is the seed of the v3.1 migration that dominates November.
-
-## 5. A discovery feed joins the app — [NEW]
-
-A second surface appeared: one feed over many sources. The client holds a candidate inventory,
-removes duplicates, ranks results, and changes what appears next based on reading and on topic
-statements. The feed has its own empty state and its own source caveats, such as a Bilibili
-webview cookie.
+A second surface appeared: one feed over many sources. The phone holds a pool of candidate items,
+removes duplicates, ranks them, and changes what appears next based on what you read and on topics
+you state, such as "show me more about robotics". The feed has its own empty state and its own source
+caveats, such as a Bilibili webview cookie.
 
 ```mermaid
 flowchart LR
@@ -98,11 +132,11 @@ flowchart LR
     F -->|reading and feedback| K
 ```
 
-## 6. Tests that run on a real phone — [NEW]
+## 7. Tests that run on a real phone — [NEW]
 
-The month ended with an end-to-end harness that runs on a simulator and on a device, plus
-Orbit telemetry, failure attribution and CI gates. This is what made the later nightly runs and
-the profiling dashboard possible.
+The month ended with an end-to-end test suite that runs on a simulator and on a device. When a case
+fails, the report says which step failed; automatic checks run on every change. This is what made
+the later nightly runs and the profiling dashboard possible.
 
 ---
 
@@ -110,46 +144,61 @@ the profiling dashboard possible.
 
 ## Chat and content
 
-- **Clarification in the stream [UPGRADE]**: a clarifying card arrives inside the reply and the
-  answer resumes the same task.
-- **Multi-question resume [UPGRADE]**: several questions can be answered before the task
+- **A question inside the reply [UPGRADE]**: the assistant can ask a clarifying question in the same
+  reply, and your answer continues the same task.
+- **Several questions at once [UPGRADE]**: you can answer more than one question before the task
   continues.
-- **Markdown and code [UPGRADE]**: code-block overflow, LaTeX rendering and autolinked source
-  URLs were fixed.
-- **Artifacts [UPGRADE]**: file preview, artifact versions and delete from the artifact centre.
-- **Drafts and stop [UPGRADE]**: the composer keeps a draft, and stopping gives feedback before
-  the first token.
-- **Task clear [NEW]**: a task can be cleared from the client, including the force path.
+- **Code and links [UPGRADE]**: long code blocks stay inside the bubble, maths renders, and bare
+  source links are clickable.
+- **File versions and delete [UPGRADE]**: files preview, keep their versions, and can be deleted
+  from the file list.
+- **Drafts and Stop [UPGRADE]**: the input box keeps what you typed, and Stop shows a message before
+  the first token arrives.
+- **Clearing a task [NEW]**: a task can be cleared from the phone, including one that will not
+  progress.
 
 ## Discovery
 
-- **Entry and empty state [UPGRADE]**: the discovery entry no longer flashes empty.
+- **Start screen [UPGRADE]**: the feed no longer flashes empty when it opens.
 - **Sources [UPGRADE]**: Bilibili webview cookies and source URLs were repaired.
 
 ## Server and runtime
 
-- **WorkSwarm streaming [UPGRADE]**: streamed output reaches the client instead of buffering
-  until the turn ends.
-- **Internal text stays internal [UPGRADE]**: runtime and routing text is filtered out of the
-  chat.
-- **Account and room recovery [NEW]**: reconnect, startup and account switching recover the
-  conversation instead of dropping it.
+- **Text arrives while it is written [UPGRADE]**: the phone shows text as the model produces it,
+  instead of waiting for the turn to end.
+- **No internal text in the chat [UPGRADE]**: messages meant for the system are filtered out, so the
+  chat shows the answer, not the machinery.
+- **Account and chat restore [NEW]**: when the connection drops, the app restarts or the account
+  changes, the app reloads the same chat instead of showing an empty screen.
 
 ## Topics
 
-- **Topics and threads [NEW]**: #280 laid out automatic topics, and parallel topics followed in
-  the engine. The client entry point was removed, then revived on 9 November (#942) alongside
-  queued busy turns. Segmentation (#311) remains the constraint.
+- **Automatic topics [NEW]**: #280 set out how a long conversation is split into topics on
+  27 October, and the engine later ran topics side by side. The phone's entry point was removed
+  again in the same month — see [What didn't ship](#what-didnt-ship).
+- **Where a topic ends [UPGRADE]**: #311 is still the open question of where one topic ends and the
+  next begins.
 
 ## Platform and delivery
 
-- **E2E nightly [NEW]**: simulator and real-device runs, with per-case profiling.
-- **Failure attribution [NEW]**: a failing nightly case reports where it failed.
-- **CI gates [NEW]**: unit tests and code checks run on Linux cloud runners, behind a switch.
-- **Release gate [UPGRADE]**: the test entries used by the release gate were fixed.
+- **Nightly tests on a phone [NEW]**: simulator and real-device runs, with per-case timing.
+- **Failures say where they broke [NEW]**: a failing nightly case reports the step that failed.
+- **Automatic checks on every change [NEW]**: unit tests and code checks run on Linux cloud runners,
+  behind a switch.
+- **Release checks [UPGRADE]**: the test entries used by the release gate were fixed.
+
+---
+
+# What didn't ship
+
+- **The topic entry point** was designed (#280), built into the engine, and then removed from the
+  phone in October. It returns on 9 November (#942), which is in the November edition.
+- **Direct WorkSwarm chat** stopped being the default when Orbit arrived, and remains only as the
+  legacy option kept for compatibility and rollback.
 
 ---
 
 # See also
 
 - [November 2026](whats-new-2026-11.md)
+- [DigitalMate, explained simply](../overview.md)

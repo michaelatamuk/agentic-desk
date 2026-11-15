@@ -1,8 +1,9 @@
 # DigitalMate, explained simply
 
-*As of 14 November 2026. Sources: the repository at `main@62278b8f` and its documentation.
-This replaces the 29 October note, which was written from the public board and had the
-architecture wrong in several places — see [What the October note got wrong](#what-the-october-note-got-wrong).*
+*As of 15 November 2026. Sources: the repository at `main@62278b8f`, its documentation, and the
+local `orbit` checkout. This replaces the 29 October note, which was written from the public board
+and had the architecture wrong in several places — see
+[What the October note got wrong](#what-the-october-note-got-wrong).*
 
 *DigitalMate is built by another team in the company. This note is context, not our roadmap.*
 
@@ -19,8 +20,10 @@ architecture wrong in several places — see [What the October note got wrong](#
   execution to WorkSwarm** (JiuwenSwarm) over a WebSocket gateway.
 - The server is **mid-migration to v3.1**: Agent Service, Router, Session Store, Model Gateway
   and Plugin Gateway are being assembled behind the current Bridge entry point.
-- The name has changed twice: `luna` → `orbit` → `digitalmate`. "Orbit" is the previous name
-  of this engine, not a separate product.
+- The engine's name has changed twice: `luna` → `orbit` → `digitalmate`. **Orbit is a separate
+  product**, and it was DigitalMate's engine from 20 to 30 October. The current server replaced
+  it on 30 October and runs the agent on WorkSwarm; the old name is still used in the message
+  format and in the workspace migration.
 
 ## The picture
 
@@ -42,7 +45,8 @@ runtime. The discovery feed is a separate on-device path.
 ## What the app does
 
 - **Home — cloud tasks.** Submit a task, attach files, choose skills, follow progress, answer
-  approvals, and return to the same conversation later. History and results survive.
+  approvals, and return to the same conversation later. History and results are still there when
+  you return.
 - **Skill centre.** Browse, install, enable, disable and uninstall skills. What is available
   is whatever the connected service returns.
 - **Custom MCP.** Remote HTTP, SSE and cloud-launched stdio services can be selected for a
@@ -94,26 +98,40 @@ existing run.
 
 ## Engines and names
 
-- Execution is **WorkSwarm** (the PyPI name of JiuwenSwarm). The Personal Agent wraps it rather
-  than running an agent SDK in-process.
-- The pinned WorkSwarm build and its own `agent-core` commit are recorded in
+The engine has been renamed twice — `luna` → Orbit → DigitalMate — and the middle name belongs to
+a different product.
+
+- **luna** was the first release name. Orbit's own client still copies `luna.*` browser keys to
+  `orbit.*`, and DigitalMate's migration still adopts `luna/` workspaces.
+- **Orbit** is a separate product built by another team: a desktop workspace that puts Claude Code,
+  Codex and other agents in one room, with a cloud engine behind it. DigitalMate used it as its
+  engine from 20 October, and the 10.23 build ran on it. The phone spoke `orbit.request` over
+  `/orbit/ws`, and Orbit proposed screens that the phone drew.
+- **DigitalMate** is the current engine: the in-repo server imported on 30 October (`server_engine`).
+  It replaced Orbit, keeps tasks, sessions, approvals, connected accounts and memory, and delegates
+  execution to **WorkSwarm** (the PyPI name of JiuwenSwarm) rather than running an agent SDK
+  in-process. The commit that did it is titled "run DigitalMate on WorkSwarm", and it renamed the
+  client's `Orbit*` files to `DigitalMate*`.
+- **The old names stay compatible.** `/orbit/ws`, `orbit.request`, the saved `cloudBackend: "orbit"`
+  value and the `orbit/` workspace directory are all still accepted. `engine_rename.py` adopts
+  `orbit/` and `luna/` directories, renames their SQLite tables and records, and moves them to
+  `digitalmate/`, so existing users keep their history.
+- **The pinned WorkSwarm build** and its own `agent-core` commit are recorded in
   `harness/personal-agent/README.md`; the production image is `digitalmate:v0.1.10`.
-- The workspace migration in `engine_rename.py` adopts directories named `orbit/` and `luna/`,
-  renames their SQLite tables and records, and moves them to `digitalmate/`. That is the
-  clearest evidence that **Orbit is the previous name of this engine**.
-- The older `workswarm` backend remains in the client for compatibility and rollback, which is
-  why the client has two backend settings rather than one.
+- **The older `workswarm` backend** remains in the client for compatibility and rollback. It is the
+  direct WorkSwarm chat path that existed before Orbit, which is why the client has two backend
+  settings rather than one.
 
 ## Connections
 
-Connections are their own subsystem, with one owner per fact: authorisation, connection state,
-credentials and task permission are kept separately.
+Connections are their own subsystem, with one place responsible for each fact: authorisation,
+connection state, credentials and task permission are kept separately.
 
 | Path | What it is |
 |---|---|
-| **Feishu** | Native account connection and group reading (landed 13 November) |
-| **Gmail / Outlook** | Composio-hosted authorisation with a bounded read path (landed 14 November) |
-| **Mail pipeline** | A proposed shared Signal pipeline for durable input, publication and outbox |
+| **Feishu** | Native account connection and group reading (merged 13 November) |
+| **Gmail / Outlook** | Composio-hosted authorisation with read-only access and limits (merged 14 November) |
+| **Mail pipeline** | A proposed shared pipeline (Signal) that takes mail in, processes it, and produces a result plus an outbox |
 | **MCP** | Per-conversation remote tools, plus custom cloud-launched services |
 | **IMAP** | QQ Mail in the on-device path |
 | **RSS and HTTP** | Discovery sources and public feeds |
@@ -144,7 +162,7 @@ not accepted and the scenarios have not been run.
 | October note said | The repository says |
 |---|---|
 | "DigitalMate is a HarmonyOS phone app." | It is a client **and** a server (`harness/personal-agent/`, `server/`) in one repository. |
-| "Its cloud engine today is Orbit." | Orbit is the **previous name** of the engine, renamed to DigitalMate; execution is delegated to **WorkSwarm**. |
+| "Its cloud engine today is Orbit." | Orbit was DigitalMate's engine from 20 to 30 October. It is a **separate product**, not a rename: the current engine is DigitalMate's own server, which replaced Orbit on 30 October and delegates execution to **WorkSwarm**. |
 | "The code is private; the GitHub repo returns 404." | Still true. We now have a local checkout, and the origin still returns 404 without access. |
 | The A2UI surface is the product's main screen. | A2UI components remain, but the historical multi-agent runtime files are absent; the default conversation is cloud-backed. |
 | The board snapshot was the best source. | The code, `docs/`, and the migration status are now the authoritative sources. |
@@ -161,13 +179,18 @@ has been overtaken by the Hive design.
 - **Client behaviour:** `docs/implementations/client/harmonyos-client-task-flow-v1.md`.
 - **Execution and deployment:** `harness/personal-agent/README.md`.
 - **Name history:** `harness/personal-agent/services/agent_bridge/src/server_engine/engine_rename.py`.
+- **The engine swap:** commit `9f419939` ("feat: run DigitalMate on WorkSwarm"), which renames the
+  client's `Orbit*` files to `DigitalMate*`; `CloudBackendConfig.ets`, which maps a saved `orbit`
+  value to `digitalmate`; and the `orbit` commits of 20 October that first selected Orbit
+  (`72356e36`, `55f286c6`, `b01627fd`).
 - **Connections:** `docs/architecture/server-connection-foundation-v1.md`.
 - **Hive:** `docs/implementations/contracts/beebou-bee-harness-design.md` and
   `beebou-hive-kickoff-plan.md`.
 - **Product copy:** `README.md`.
 
-The older [Orbit note](../orbit/overview.md) is still worth reading as the previous name's
-context, but its "Orbit is the engine today" framing is out of date.
+The older [Orbit note](../orbit/overview.md) is accurate for 29 October: Orbit was the engine then.
+Its "Orbit is the engine today" framing is out of date, but its account of what Orbit was and how
+the swap worked still holds.
 
 ## Open questions
 
