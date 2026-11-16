@@ -1,10 +1,11 @@
 # What's New in DigitalMate — November 2026
 
-November is the reconstruction month. The server that replaced Orbit on 30 October is two weeks old,
-and it is being split into named parts. Connections became their own subsystem, mail got a background
-pipeline design, and a new bot design arrived for review. About 1,396 commits landed in two weeks.
+November is the reconstruction month. The server that replaced Orbit on 30 October is two weeks old
+and is being split into named parts. Connections became their own subsystem, mail got a background
+pipeline design, and the Hive bot design moved from review into code: Hive2 and Hive3 merged, and the
+old Router package was deleted. About 2,500 commits landed in sixteen days.
 
-*Last updated: 2026-11-15.*
+*Last updated: 2026-11-16.*
 
 ## What DigitalMate is
 
@@ -14,7 +15,7 @@ videos, articles and posts. The repository holds both the phone app and the serv
 
 ## What runs underneath
 
-As of 14 November, the phone talks to **DigitalMate's own server** (written in Python). That server
+As of 16 November, the phone talks to **DigitalMate's own server** (written in Python). That server
 owns tasks, sessions, approvals, connected accounts and memory, and hands the actual agent work to
 **WorkSwarm** (also published as JiuwenSwarm), the company's agent platform, which runs the loop, the
 tools and the model calls. One execution of a task is called a **run**.
@@ -25,20 +26,23 @@ Two older paths still work and are kept for compatibility:
   message format are still accepted, and saved settings that say `orbit` still work.
 - **The direct WorkSwarm chat**, still selectable in the app as the legacy option.
 
-The server is in the middle of a planned split (called **v3.1**). Today one process still does the
-work; the target is a set of named parts. The repository says it plainly: a design, a merge and a
-deployment are three different facts, and the split is mostly still at the design and merge stages.
+The server is in the middle of a planned split (called **v3.1**). Today the bridge still assembles
+the parts in one process; the target is a set of named parts. On 16 November the old Router package
+was deleted as part of Hive3, and Home routing moved into the Hive path. The repository says it
+plainly: a design, a merge and a deployment are three different facts, and the split is not a
+deployment yet.
 
 **Coverage** — read from `main`:
 
 | Repository | Commit | Merged | What it is |
 |---|---|---|---|
-| `DigitalMate` | `62278b8f` | 2026-11-14 17:34 +08:00 | merge of #1411 (`issue-936-investigation`) |
+| `DigitalMate` | `2b9b721d7` | 2026-11-16 17:08 +08:00 | merge of #1603 (`hive3-bee-session-target`) |
 | `WorkSwarm` (vendored) | pinned build | — | the agent platform the server calls |
 | `Orbit` (local checkout) | no git history | — | the engine that was replaced on 30 October |
 
-The previous edition stopped at `9eea155a` (31 October). Not read this edition: `agent-dx`, the
-layer that runs one private container per user.
+The first version of this edition stopped at `62278b8f` (14 November); this update adds the 1,093
+commits merged after it. The previous edition stopped at `9eea155a` (31 October). Not read this
+edition: `agent-dx`, the layer that runs one private container per user.
 
 Everything here is tagged:
 
@@ -52,14 +56,15 @@ Everything here is tagged:
 
 ## 1. The two-week-old server is split into named parts — [UPGRADE]
 
-The server still does routing, sessions, models and tools in one process: the default entry point is
-the old bridge, and the split is the target, not the state. In November the target architecture was
-written down and work packages were opened to separate the jobs:
+The server still assembles the parts in one process through the bridge, and the split is not a
+deployment yet. In November the target architecture was written down; in the second half the old
+Router package was deleted as part of Hive3 (G6, #1313):
 
 - **Mobile Gateway** — checks who is calling, normalises the message, and keeps the phone's
   connection and push queue.
 - **Router** — decides whether this is a new conversation or a continuation, and whether to answer
-  with a model call or by running the agent.
+  with a model call or by running the agent. The old package is gone; the Hive path makes the
+  decision today.
 - **Agent Service** — owns each run: what it may do, when to ask the user, when to cancel, and when
   it is truly finished.
 - **Session Manager and Store** — decide whether a new run can start, and are the single writer
@@ -77,10 +82,9 @@ flowchart LR
     A --> PG[Plugin Gateway]
 ```
 
-Two pieces were merged as working paths rather than diagrams: hosted sessions and context (`#1021`,
-`#1087`) and a watcher that produces records without claiming the new path is live (`#1159`). The
-migration status page is explicit that the default entry point is still the bridge; a merge is not a
-deployment.
+By 16 November Hive2 (`#1421`) and Hive3 (`#1605`) were merged, `server/router` was deleted, and the
+Home entry runs through the Hive path. The production template still enables none of Hive's optional
+features; a merge is not a deployment.
 
 ## 2. Connect an account once: Feishu, Gmail and Outlook — [NEW]
 
@@ -148,10 +152,14 @@ or per tenant) and fairness between users to the owning teams and each deploymen
 Why it matters: the first answer arrives sooner, "what is happening?" can be answered while a long
 task runs, and long work gets its own worker instead of blocking the conversation.
 
-As of 14 November this is a **review proposal** (`#1228`, `#1316`), and none of its scenarios have
-been run. The design is in `docs/implementations/contracts/beebou-bee-harness-design.md`; the
-capacity rule is in `beebou-failure-handling.md` and `beebou-config/README.md`; the kickoff plan is
-`beebou-hive-kickoff-plan.md`; the draft implementation is PR `#1226`.
+As of 16 November the design is still marked a **review proposal** (`#1228`, `#1316`), but the code
+has merged in phases: Hive2 (`#1421`) on 15 November and Hive3 (`#1605`) on 16 November, including
+Bee session targets (`#1603`), attachments (`#1677`), input-copy erasure (`#1686`), orphan recovery
+(`#1681`) and busy routing (`#1680`). The production template enables no Hive option by default;
+turning on results, turns or Bees is a separate deployment step. The design is in
+`docs/implementations/contracts/beebou-bee-harness-design.md`; the capacity rule is in
+`beebou-failure-handling.md` and `beebou-config/README.md`; the kickoff plan is
+`beebou-hive-kickoff-plan.md`.
 
 ```mermaid
 flowchart LR
@@ -190,13 +198,40 @@ history archive and reset work (`#1112`, `#1160`, `#1170`).
 
 ---
 
+# The second half of November
+
+The first version of this edition stopped on 14 November. Between 14 and 16 November, 1,093 commits
+and 31 pull-request merges landed. Hive2 and Hive3 are the big ones (above); these are the rest:
+
+- **Bee session targets [UPGRADE]**: `hive.message.send` can name a target session, and the Host
+  routes it for Beebou. This is the server half of the client work in #1243.
+- **Bee attachments [UPGRADE]**: attachments addressed to a Bee go to the Bee's turn and workspace;
+  input copies are erased when the attachment is erased and after the task ends (#1677, #1686).
+- **Orphan recovery [UPGRADE]**: a Bee run left `RUNNING` by a restart is recovered instead of
+  staying stuck (#1681, #1655).
+- **Busy routing [UPGRADE]**: queue, preempt and steer controls are routed before the busy gateway,
+  so a message sent during a running task lands in the right path (#1680).
+- **Memory provider [NEW]**: the Hive memory provider merged, with load budgets and Global Memory
+  lookup (#1416).
+- **Calendar fixes [UPGRADE]**: phone edit and delete, privacy and weather fixes after the November
+  revert (#1460, #1556, #1342).
+- **Connections and mail [UPGRADE]**: unfinished connections are hidden, and the Signal v1 report
+  goals merged (#1483, #1454).
+- **Language [UPGRADE]**: task language and process-bubble language fixes (#1470, #1467).
+- **Release [NEW]**: v0.1.12 was tagged on 14 November (`709f4d39d`). Hive3 landed after it, so the
+  tag does not contain Hive3.
+- **CI [UPGRADE]**: Hive scenarios enrolled, per-suite capture, and non-blocking artifact upload
+  (#1448, #1636, #1656).
+
+---
+
 # The rest, by theme
 
 ## Server and migration
 
 - **New-conversation routing [NEW]**: the default Home path decides whether to continue a
-  conversation by reading the session table (`dm_sessions`), and the Router records the choice it
-  made.
+  conversation by reading the session table (`dm_sessions`), and the Hive routing step records the
+  choice it made.
 - **One entry point for model calls [NEW]**: embedding, judging and summarisation go through the
   public JSON entry point (`post_json`).
 - **One writer for session state [NEW]**: the default path for starting a new run goes through the
@@ -254,10 +289,13 @@ history archive and reset work (`#1112`, `#1160`, `#1170`).
 
 # What didn't ship
 
-- **The calendar** was merged on 10 November (`#983`) and reverted the same day (`#1082`). It is not
-  in the product.
-- **The mail pipeline and the Hive bots** are proposals. They are in the repository so they can be
-  reviewed, not because they run.
+- **Hive is not switched on.** The production template (`hive-deploy.prod.toml`) declares only the
+  per-user principal binding and enables no Hive option. Results, turns and Bees are separate
+  deployment flags; the packaged defaults are off.
+- **The mail pipeline** is still a candidate, not a production boundary.
+- **v0.1.12 predates Hive3.** The tag was cut on 14 November; Hive3 merged on 16 November.
+- **The migration status page is stale.** It still describes the old Router path and has not been
+  updated since 11 November.
 
 ---
 
