@@ -10,7 +10,7 @@ projects have built.
 
 ## Studies
 
-- `studies/2026-11-21-software-factories.md` — what a software factory is, what happened in the last six weeks, and what the evidence says
+- `studies/2026-11-21-software-factories.md` — what a software factory is, what happened in the last six weeks in the US and China, and what the evidence says
 - `studies/2026-10-06-competitor-mechanisms.md` - competitor agent mechanisms and demos
 - `studies/2026-08-harness-comparison.md` - DeepSeek harness compared with jiuwenswarm
 - `studies/deepseek-harness.md` — DeepSeek's plugin kernel, the model for the plugin proposal

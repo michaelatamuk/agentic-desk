@@ -1,6 +1,6 @@
 # Software Factories — Study Notes
 
-*Compiled 21 November 2026. Covers the wave of writing and product launches from late September to 21 November 2026, with earlier material where it explains the current claims. Vendor and self-reported numbers are marked, for example *(company claims)* or *(reported)*. A claim that is reported rather than confirmed is marked the same way.*
+*Compiled 21 November 2026. Covers the wave of writing and product launches from late September to 21 November 2026, plus the parallel Chinese wave from May 2026, with earlier material where it explains the current claims. Vendor and self-reported numbers are marked, for example *(company claims)* or *(reported)*. A claim that is reported rather than confirmed is marked the same way.*
 
 ## Contents
 
@@ -11,15 +11,16 @@
 5. [What a line looks like](#5-what-a-line-looks-like)
 6. [Timeline: the last six weeks](#6-timeline-the-last-six-weeks)
 7. [The evidence](#7-the-evidence)
-8. [Light versus dark](#8-light-versus-dark)
-9. [The product and money map](#9-the-product-and-money-map)
-10. [What a factory needs](#10-what-a-factory-needs)
-11. [What to measure](#11-what-to-measure)
-12. [Failure modes](#12-failure-modes)
-13. [How to start in 90 days](#13-how-to-start-in-90-days)
-14. [Open questions](#14-open-questions)
-15. [What to take from it](#15-what-to-take-from-it)
-16. [Sources](#16-sources)
+8. [Software factories in China](#8-software-factories-in-china)
+9. [Light versus dark](#9-light-versus-dark)
+10. [The product and money map](#10-the-product-and-money-map)
+11. [What a factory needs](#11-what-a-factory-needs)
+12. [What to measure](#12-what-to-measure)
+13. [Failure modes](#13-failure-modes)
+14. [How to start in 90 days](#14-how-to-start-in-90-days)
+15. [Open questions](#15-open-questions)
+16. [What to take from it](#16-what-to-take-from-it)
+17. [Sources](#17-sources)
 
 ---
 
@@ -30,6 +31,7 @@
 - **The bottleneck moved from writing code to verifying and approving it.** Generation, tests and scanning are now cheap at scale. Human judgment at the review gate is the expensive, non-scaling step.
 - **The credible version is a "light factory".** People own intent, architecture and the changes where a wrong answer is expensive. Agents do the rest. A "dark factory" ships code nobody reads; it looks fast and accumulates a debt that appears later.
 - **The evidence is promising but thin.** The best public case studies are single-company and self-reported. The best independent study says more code is written, not proportionally more software shipped. Treat productivity multiples from vendors and consultancies as claims to test, not facts.
+- **China is building them too, with a different shape.** Banks, energy groups and government agencies buy private-deployed lines from Huawei, Gientech, China Electronics Cloud, BoCloud and others; the MIIT plan targets 20,000 software firms using intelligent programming tools by 2028. The claims are mostly vendor-reported. See section 8.
 - **The main risk is comprehension debt:** the gap between how much code exists and how much any person still understands. Green tests do not close it.
 
 ---
@@ -150,7 +152,24 @@ Two design points matter more than the rest:
 | 20 November 2026 | Runway publishes "Building a Software Factory" with numbers from its own delivery line. Stack Overflow republishes Paul Iusztin's O'Reilly article on software factories as "Inside a software factory". | Case study; practitioner article |
 | 21 November 2026 | This note. | — |
 
-The density is the story. In six weeks the term moved from a few essays and vendor posts to product launches, a funding round, two detailed case studies and a mainstream practitioner article. That is what a category looks like while it is being formed.
+The density is the story. In six weeks the term moved from a few essays and vendor posts to product launches, a funding round, two detailed case studies and a mainstream practitioner article. China ran a parallel wave of policy targets, vendor launches and enterprise deployments. That is what a category looks like while it is being formed.
+
+### China, in parallel
+
+| Date | Item | Type |
+|---|---|---|
+| 29 May 2026 | China Electronics Cloud launches an "AI software factory". | Product |
+| 1 June 2026 | Gientech launches the GienCoder intelligent software factory. | Product |
+| 2 June 2026 | Wuhan announces more than 10 "super software factories" for 2026. | Policy target |
+| 26 June 2026 | BoCloud launches BoCoder Factory. | Product |
+| 2 July 2026 | Xunsu Intelligence presents its AI-Ready software factory. | Demo and talk |
+| 23 July 2026 | Tencent launches CodeBuddy NPC, a cloud agent that works from issue to pull request and CI. | Product |
+| 4–5 September 2026 | QECon Shanghai runs tracks on Harness Engineering and AI-native software factories. | Conference |
+| 2 and 11 September 2026 | MIIT issues and publishes the "AI + Software" special action plan. | Policy |
+| 17 September 2026 | Tencent WorkBuddy 5.5.6 adds full-stack app generation. | Product |
+| 4 November 2026 | Gientech and Huawei announce an Ascend-based AI-native software factory. | Product |
+| 5 November 2026 | Alibaba Cloud Yunxiao launches its AI workbench. | Product |
+| November 2026 | IDC publishes a Neusoft AI-native software engineering case. | Analyst report |
 
 ---
 
@@ -265,7 +284,75 @@ These are signals worth testing in your own environment. They are not evidence t
 
 ---
 
-## 8. Light versus dark
+## 8. Software factories in China
+
+China is not just watching this wave. It is building the same thing under the same name, with a different centre of gravity: banks, energy groups, government agencies and state-owned enterprises as buyers; private deployment; measurable acceptance rates; and a national policy target. Most of the public material is in Chinese, and most of the numbers are vendor-reported.
+
+### 8.1 The policy push
+
+The strongest signal is not a product launch. It is the MIIT "AI + Software" special action plan (工信部信发〔2026〕209号), issued on 2 September 2026 and published on 11 September. It sets targets:
+
+- by 2028: intelligent programming tools and platforms used by 20,000 above-scale software enterprises; 100 software-enterprise intelligent transformation projects; 100 benchmark agent-software applications in key industries; 5 high-quality open-source projects;
+- by 2030: key software fully intelligent, with intelligent programming and agent software as new growth areas.
+
+The plan explicitly calls for agent-driven intelligent programming tools with project-level, full-process autonomous development; intelligent transformation of software enterprises' development processes; security review of AI-generated code; agent software app stores and Skills libraries; and standards for intelligent programming capability maturity. It supports procurement with "compute vouchers" and local pilot programmes. This is a demand driver, not only a vendor story.
+
+Local governments have their own targets. Wuhan said in June 2026 that it would build more than 10 "super software factories" in 2026 and cover 1,000 above-scale software enterprises with AI-assisted development. Jinan talks about "agent factories" and one-person companies. The 15th Five-Year Plan names intelligent R&D tools as a priority.
+
+### 8.2 The vendors
+
+| Vendor or product | What it is | Date and status | Claim to note |
+|---|---|---|---|
+| **Huawei Cloud CodeArts / "intelligent R&D production line"** | A full lifecycle platform — requirements, code, build, test, release, operations — with Pangu and other models; CodeArts Agent ("码道") and an "intelligent software factory" scenario | On the market; Huawei Cloud Stack product page and a March 2026 engineering article | 30% end-to-end efficiency; CNOOC saved 30% of R&D hours; Postal Savings Bank has 4,000 developers, 30% code-generation acceptance, 60% unit-test acceptance and 290,000+ lines generated *(vendor claims)* |
+| **Gientech (中电金信) "源启·GienCoder 智能软件工厂"** | Spec-driven development plus harness engineering; requirements, design, development and quality; 20+ industry agents, 80+ skills, 90%+ RepoWiki coverage | Launched 1 June 2026; 300+ enterprises and institutions *(vendor claim)* | A state-owned big bank reached 49.1% code acceptance, 50.2% file acceptance and 100% unit-test generation coverage; testing cycle cut by more than a week *(vendor claims)* |
+| **Gientech + Huawei "AI-native software factory"** | Integrated hardware-software AI Coding solution on Ascend, with Gientech's factory process | Announced 4 November 2026 at a Huawei AI Coding summit | A state-owned big bank with 4,000 developers: code acceptance up 20%, core product R&D cycle down 40%; an energy group reached 93.6% AI-generated code acceptance *(vendor claims)* |
+| **China Electronics Cloud (中国电子云) "AI软件工厂"** | Requirements, design, development and operations; 30+ skills, 300+ business components; open model access; private deployment | Launched 29 May 2026 | 70+ key-industry customers, 10,000+ developers, 5B+ lines of software produced *(vendor claims)* |
+| **BoCloud (博云) "BoCoder Factory"** | Enterprise AI software-factory infrastructure: web cockpit, project hub, IDE and operations; cloud planning plus local execution; seven-step loop | Launched 26 June 2026 | SWE-bench 83.13% solve rate; token cost down 60–70% *(vendor claims)* |
+| **Xunsu Intelligence (迅速智能) "AI-Ready software factory"** | A requirements modeler that turns natural-language requirements into a domain model, plus a multi-agent factory that turns the model into tasks and code | Presented 2 July 2026 at the China AI Agent Conference | A campus visitor system ran end to end; six sub-agents, DeepSeek-V4-Pro and OpenAI's command-line agent; people only at the initial requirement and final acceptance *(demo, not a production case)* |
+| **Alibaba Cloud** | Yunxiao (云效) AI assistant and AI workbench across requirements, code review, testing, pipelines and release; Qoder CN (formerly Tongyi Lingma), Qoder Cloud Agents and QoderWake digital employees | AI workbench November 2026; Qoder CN rebranded May 2026 | A full DevOps plus agent stack, but not sold under the "software factory" name *(product documentation)* |
+| **Tencent** | CodeBuddy, the CNB research platform and CodeBuddy NPC (a cloud agent that takes an issue to a pull request, tests and CI fixes); WorkBuddy app generation on CloudBase | CodeBuddy NPC July 2026; WorkBuddy 5.5.6 September 2026 | CodeBuddy 4–5x code production and a two-week requirement cut to two days; a zero-human NPC Team built a small game; 10,000+ apps a day created by agents on CloudBase *(vendor claims)* |
+| **Neusoft** | AI-native software engineering: knowledge assetization, human-machine collaboration and continuous value operation | IDC Perspective, November 2026 | An IDC case study, not an independent productivity measurement |
+| **ByteDance** | Trae and SOLO desktop coding agent | On the market | A coding agent and workspace, not a full factory *(product positioning)* |
+
+The list is not exhaustive. It shows the shape: Huawei and the systems integrators sell a whole line to banks, energy companies and government; Alibaba and Tencent sell the platform, coding agent and cloud runtime; startups sell a narrower factory or a requirements-to-code pipeline.
+
+### 8.3 What is distinct about the Chinese version
+
+- **The buyer is often a bank, energy group, government or state-owned enterprise.** The sale is usually a private deployment, with data not leaving the customer's domain, domestic models and a domestic stack (信创). That is different from the US startup-led, cloud-first pattern.
+- **The unit sold is the whole line, not a coding agent.** Many vendors start with requirements and design, then code, test, release and operations. The pitch is "software industrialisation" (软件工业化) and "AI-native software engineering" (AI 原生软件工程), not just autocomplete.
+- **Measurable acceptance rates are the common metric.** Code acceptance rate, file acceptance rate, unit-test coverage and R&D cycle time are quoted in almost every case. They are useful, but they are vendor-reported and usually not independently audited.
+- **The "dark factory" debate is less prominent.** The emphasis is "controllable, traceable, measurable" (可控、可追溯、可度量), with a person at key gates and data staying on-premises. The American conversation is more about light versus dark and comprehension debt; the Chinese pitch is more about industrialisation, compliance and scale.
+- **Harness engineering is a shared vocabulary.** Tencent's leadership says AI has entered the "Harness era" (Harness 时代). Gientech uses "SDD + Harness Engineering"; the QECon Shanghai agenda runs a "Harness Engineering (驾驭工程)" track. Huawei describes the software factory as the automation of non-creative work, with people doing the creative work. This is the same idea as the US "harness", framed as engineering discipline.
+- **Policy is a demand driver.** The MIIT plan sets adoption targets, supports procurement and asks for standards. Local governments set "super software factory" targets. This is not only vendor marketing.
+
+### 8.4 What to be sceptical about
+
+- **Most numbers are vendor-reported.** 49.1% acceptance, 93.6% acceptance, 30% efficiency, 5B lines: none has an independent audit comparable to the NBER study. Treat them as signals to test, not benchmarks.
+- **"Software factory" is used loosely.** Some products are full lifecycle platforms; some are a coding agent with a dashboard; some are app generators. Ask what enters the line and what gates the merge.
+- **Demos are not production.** Xunsu's campus visitor system and Tencent's zero-human game show that a chain can run, not that a codebase stays maintainable for years.
+- **Private deployment can slow the improvement loop.** Data-not-out-of-domain and domestic-model requirements are real advantages for regulated buyers, but they can limit model choice, telemetry and the speed of feedback.
+- **Adoption targets are not quality targets.** Counting enterprises that use a tool is not the same as shipping more software. The NBER caution applies in China too: more code is not automatically more released software.
+
+### 8.5 Where to read the Chinese material
+
+- MIIT plan, official text: <https://www.miit.gov.cn/jgsj/xxjsfzs/wjfb/art/2026/art_91a26793271e4c77aca49ecde4472999.html>
+- MIIT explainer: <https://www.miit.gov.cn/zwgk/zcjd/art/2026/art_47ad799a4f9b4c00b34ae764438ffe2a.html>
+- Huawei Cloud Stack intelligent R&D production line: <https://www.huaweicloud.com/product/huaweicloudstack/ai-devcloud.html>
+- Huawei software engineering practice: <https://www.infoq.cn/article/IPk1UBNeqdj88ZlEWFsk>
+- Gientech GienCoder launch: <https://www.gientech.com/news-detail/1835.html>
+- Gientech + Huawei, November 2026: <https://www.sfia.org.cn/article/5791072571360816>
+- China Electronics Cloud AI software factory: <https://caijing.chinadaily.com.cn/a/202606/09/WS6a27814ea310942cc49b0b63.html>
+- BoCloud BoCoder Factory: <https://www.bocloud.com.cn/dynamic/show-2673.html>
+- Xunsu Intelligence AI software factory: <https://zhidx.com/p/575448.html>
+- Wuhan "super software factories": <https://www.wuhan.gov.cn/sy/whyw/202606/t20260602_2772342.shtml>
+- Tencent CodeBuddy NPC: <https://news.qq.com/rain/a/20260723A08OOM00>
+- Tencent "cloud software factory" interview: <https://news.dayoo.com/finance/202603/27/171077_54941279.htm>
+- Alibaba Cloud Yunxiao AI workbench: <https://help.aliyun.com/zh/yunxiao/getting-started/>
+- Qoder CN product family: <https://help.aliyun.com/zh/lingma/introduction-of-lingma>
+- QECon Shanghai 2026 agenda: <https://www.qecon.com.cn/Agenda-SH2026>
+- IDC and Neusoft report: <https://my.idc.com/getdoc.jsp?containerId=CHC55026426&pageType=PRINTFRIENDLY>
+
+## 9. Light versus dark
 
 The argument is not "agents versus people". It is where to put the lights.
 
@@ -292,7 +379,7 @@ The mistake to avoid is setting every loop to the same mode. All dark and the co
 
 ---
 
-## 9. The product and money map
+## 10. The product and money map
 
 The category is forming quickly. The useful split is by what the product actually does, not by the label.
 
@@ -308,9 +395,11 @@ The category is forming quickly. The useful split is by what the product actuall
 
 The money matters for two reasons. First, it shows buyers exist: Factory reached a $5B valuation before most enterprises had a factory. Second, it shows where the margin is moving: from the coding agent toward the orchestration, verification and governance around it. A coding agent is becoming a component; the line is the product.
 
+Chinese vendors are covered separately in section 8. Most of them sell a whole line to banks, energy groups and government rather than a coding agent to startups.
+
 ---
 
-## 10. What a factory needs
+## 11. What a factory needs
 
 A practical checklist, assembled from the sources above.
 
@@ -363,7 +452,7 @@ A practical checklist, assembled from the sources above.
 
 ---
 
-## 11. What to measure
+## 12. What to measure
 
 Generated lines, pull requests opened and agent tasks dispatched are inputs. They are easy to increase and do not tell you whether the factory works.
 
@@ -384,7 +473,7 @@ The most important measure is the pair **shipped changes and revert rate**. A li
 
 ---
 
-## 12. Failure modes
+## 13. Failure modes
 
 | Failure | What it looks like | What to do |
 |---|---|---|
@@ -401,7 +490,7 @@ The most important measure is the pair **shipped changes and revert rate**. A li
 
 ---
 
-## 13. How to start in 90 days
+## 14. How to start in 90 days
 
 1. **Pick one repository and one repeated job.** Dependency upgrades, test coverage, pull-request review or a single class of bug. Do not start with the whole lifecycle.
 2. **Write the acceptance criteria and the definition of done.** If a machine cannot check it, it is not ready for an agent.
@@ -416,7 +505,7 @@ The most important measure is the pair **shipped changes and revert rate**. A li
 
 ---
 
-## 14. Open questions
+## 15. Open questions
 
 - **Can maintainability be measured?** There is no fast, reliable benchmark for whether a codebase stays easy to change. Without one, agents are trained and judged on task success, not long-term quality.
 - **Does agent-to-agent review scale without collusion?** Two agents from the same model family may share the same blind spots. Independent checks and different methods matter more than another reviewer.
@@ -428,7 +517,7 @@ The most important measure is the pair **shipped changes and revert rate**. A li
 
 ---
 
-## 15. What to take from it
+## 16. What to take from it
 
 - **The factory is the process, not the tool.** A prompt chain is not a factory. The durable assets are the written intent, the context, the checks, the approval rules and the production feedback.
 - **Verification is the bottleneck.** Invest there first. A better coding agent does not fix a weak review gate; it fills the queue faster.
@@ -439,7 +528,7 @@ The most important measure is the pair **shipped changes and revert rate**. A li
 
 ---
 
-## 16. Sources
+## 17. Sources
 
 ### Primary case studies
 
@@ -472,6 +561,25 @@ The most important measure is the pair **shipped changes and revert rate**. A li
 - ContextQA, "How to Build an AI Software Factory with Claude Code", 12 November 2026: <https://contextqa.com/blog/how-to-build-a-verification-led-ai-software-factory/>
 - Opsera, "Software Factory vs Dark Factory: Human-in-the-Loop Wins", 11 November 2026: <https://opsera.ai/blog/software-factory-vs-dark-factory>
 
+### China
+
+- MIIT, "AI + Software" special action plan, official text, 2 September 2026: <https://www.miit.gov.cn/jgsj/xxjsfzs/wjfb/art/2026/art_91a26793271e4c77aca49ecde4472999.html>
+- MIIT explainer, 11 September 2026: <https://www.miit.gov.cn/zwgk/zcjd/art/2026/art_47ad799a4f9b4c00b34ae764438ffe2a.html>
+- Huawei Cloud Stack intelligent R&D production line: <https://www.huaweicloud.com/product/huaweicloudstack/ai-devcloud.html>
+- Huawei software engineering practice, 26 March 2026: <https://www.infoq.cn/article/IPk1UBNeqdj88ZlEWFsk>
+- Gientech, GienCoder launch, 1 June 2026: <https://www.gientech.com/news-detail/1835.html>
+- Gientech and Huawei, AI-native software factory, 4 November 2026: <https://www.sfia.org.cn/article/5791072571360816>
+- China Electronics Cloud, AI software factory, 9 June 2026: <https://caijing.chinadaily.com.cn/a/202606/09/WS6a27814ea310942cc49b0b63.html>
+- BoCloud, BoCoder Factory, 26 June 2026: <https://www.bocloud.com.cn/dynamic/show-2673.html>
+- Xunsu Intelligence, AI software factory, 15 July 2026: <https://zhidx.com/p/575448.html>
+- Wuhan, "super software factories", 2 June 2026: <https://www.wuhan.gov.cn/sy/whyw/202606/t20260602_2772342.shtml>
+- Tencent, CodeBuddy NPC, 23 July 2026: <https://news.qq.com/rain/a/20260723A08OOM00>
+- Tencent, "cloud software factory" interview, 27 March 2026: <https://news.dayoo.com/finance/202603/27/171077_54941279.htm>
+- Alibaba Cloud Yunxiao AI workbench, 5 November 2026: <https://help.aliyun.com/zh/yunxiao/getting-started/>
+- Qoder CN product family: <https://help.aliyun.com/zh/lingma/introduction-of-lingma>
+- QECon Shanghai 2026 agenda: <https://www.qecon.com.cn/Agenda-SH2026>
+- IDC and Neusoft, AI-native software engineering, November 2026: <https://my.idc.com/getdoc.jsp?containerId=CHC55026426&pageType=PRINTFRIENDLY>
+
 ### History
 
 - Michael Cusumano, *Japan's Software Factories* (1991), and the MIT-hosted historical overview of factory concepts in software: <http://hdl.handle.net/1721.1/47992>
@@ -479,4 +587,4 @@ The most important measure is the pair **shipped changes and revert rate**. A li
 
 ### Method note
 
-The timeline is built from publication dates on the linked pages. Funding dates are company announcements; valuations are not independently audited. Productivity numbers from Runway, OpenAI, Anthropic, Factory, Warp, Islo and Sonar are self-reported unless a study is cited. The NBER paper is a working paper, not a final peer-reviewed result.
+The timeline is built from publication dates on the linked pages. Funding dates are company announcements; valuations are not independently audited. Productivity numbers from Runway, OpenAI, Anthropic, Factory, Warp, Islo, Sonar, Huawei, Gientech, China Electronics Cloud, BoCloud and Tencent are self-reported unless a study is cited. The NBER paper is a working paper, not a final peer-reviewed result. Chinese policy targets are targets, not measured outcomes.
