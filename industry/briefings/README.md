@@ -50,10 +50,10 @@ One canonical file per month, plus the actor, China and — from November 2026 �
 - `2026-10.md` — October 2026, as of 31 October *(engineering edition; the default since this month)*
 - `2026-10-actors.md` — October 2026, as of 31 October *(actor-by-actor edition: every line is who did what)*
 - `2026-10-china.md` — October 2026, as of 31 October *(China-only edition: every line is who did what)*
-- `2026-11.md` — November 2026, as of 14 November *(engineering edition; month still running)*
-- `2026-11-actors.md` — November 2026, as of 14 November *(actor-by-actor edition: every line is who did what)*
-- `2026-11-china.md` — November 2026, as of 14 November *(China-only edition: every line is who did what)*
-- `2026-11-huawei.md` — November 2026, as of 14 November *(Huawei-only edition: brief plus actor ledger)*
+- `2026-11.md` — November 2026, as of 21 November *(engineering edition; month still running)*
+- `2026-11-actors.md` — November 2026, as of 21 November *(actor-by-actor edition: every line is who did what)*
+- `2026-11-china.md` — November 2026, as of 21 November *(China-only edition: every line is who did what)*
+- `2026-11-huawei.md` — November 2026, as of 21 November *(Huawei-only edition: brief plus actor ledger)*
 
 ### Drafts
 
