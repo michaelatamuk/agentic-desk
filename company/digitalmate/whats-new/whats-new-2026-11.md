@@ -1,11 +1,12 @@
 # What's New in DigitalMate — November 2026
 
-November is the reconstruction month. The server that replaced Orbit on 30 October is two weeks old
-and is being split into named parts. Connections became their own subsystem, mail got a background
-pipeline design, and the Hive bot design moved from review into code: Hive2 and Hive3 merged, and the
-old Router package was deleted. About 2,500 commits landed in sixteen days.
+November is the reconstruction month. The server that replaced Orbit on 30 October is being split
+into named parts. Connections became their own subsystem, mail got a background pipeline design, and
+Hive moved from design to a working assistant: Hive2 and Hive3 merged, the old Router was deleted, and
+the third week added streaming Bee replies, ten active slots and report delivery. About 3,400 commits
+landed in three weeks.
 
-*Last updated: 2026-11-16.*
+*Last updated: 2026-11-21.*
 
 ## What DigitalMate is
 
@@ -15,7 +16,7 @@ videos, articles and posts. The repository holds both the phone app and the serv
 
 ## What runs underneath
 
-As of 16 November, the phone talks to **DigitalMate's own server** (written in Python). That server
+As of 21 November, the phone talks to **DigitalMate's own server** (written in Python). That server
 owns tasks, sessions, approvals, connected accounts and memory, and hands the actual agent work to
 **WorkSwarm** (also published as JiuwenSwarm), the company's agent platform, which runs the loop, the
 tools and the model calls. One execution of a task is called a **run**.
@@ -28,7 +29,9 @@ Two older paths still work and are kept for compatibility:
 
 The server is in the middle of a planned split (called **v3.1**). Today the bridge still assembles
 the parts in one process; the target is a set of named parts. On 16 November the old Router package
-was deleted as part of Hive3, and Home routing moved into the Hive path. The repository says it
+was deleted as part of Hive3, and Home routing moved into the Hive path. By 20 November Agent Service
+had taken ownership of the Bridge process lifecycle and RPC registration — the first server-split
+milestone, HS1 — and the HS2 workspace Store owners were preregistered. The repository says it
 plainly: a design, a merge and a deployment are three different facts, and the split is not a
 deployment yet.
 
@@ -36,13 +39,14 @@ deployment yet.
 
 | Repository | Commit | Merged | What it is |
 |---|---|---|---|
-| `DigitalMate` | `2b9b721d7` | 2026-11-16 17:08 +08:00 | merge of #1603 (`hive3-bee-session-target`) |
+| `DigitalMate` | `c63eeaa35` | 2026-11-21 08:28 +08:00 | merge of #2251 (`ci: rehearse merge and freeze`) |
 | `WorkSwarm` (vendored) | pinned build | — | the agent platform the server calls |
 | `Orbit` (local checkout) | no git history | — | the engine that was replaced on 30 October |
 
-The first version of this edition stopped at `62278b8f` (14 November); this update adds the 1,093
-commits merged after it. The previous edition stopped at `9eea155a` (31 October). Not read this
-edition: `agent-dx`, the layer that runs one private container per user.
+The first version of this edition stopped at `62278b8f` (14 November) and the second at `2b9b721d7`
+(16 November); this update adds the 927 commits merged after the latter. The previous edition stopped
+at `9eea155a` (31 October). Not read this edition: `agent-dx`, the layer that runs one private
+container per user.
 
 Everything here is tagged:
 
@@ -54,7 +58,7 @@ Everything here is tagged:
 
 # The big things
 
-## 1. The two-week-old server is split into named parts — [UPGRADE]
+## 1. The server is being split into named parts — [UPGRADE]
 
 The server still assembles the parts in one process through the bridge, and the split is not a
 deployment yet. In November the target architecture was written down; in the second half the old
@@ -147,16 +151,16 @@ The proposal splits the job between two bots:
 
 **How many Bees.** The design does not fix a number. It reuses the existing session capacity as the
 number of Bee places — the default is 10 — and leaves the final cap, the scope of the pool (per user
-or per tenant) and fairness between users to the owning teams and each deployment.
+or per tenant) and fairness between users to the owning teams and each deployment. On 19 November the
+code raised the concurrent active Bee slots from 4 to 10 (`#2073`), matching that default.
 
 Why it matters: the first answer arrives sooner, "what is happening?" can be answered while a long
 task runs, and long work gets its own worker instead of blocking the conversation.
 
-As of 16 November the design is still marked a **review proposal** (`#1228`, `#1316`), but the code
-has merged in phases: Hive2 (`#1421`) on 15 November and Hive3 (`#1605`) on 16 November, including
-Bee session targets (`#1603`), attachments (`#1677`), input-copy erasure (`#1686`), orphan recovery
-(`#1681`) and busy routing (`#1680`). The production template enables no Hive option by default;
-turning on results, turns or Bees is a separate deployment step. The design is in
+As of 21 November the design is still marked a **review proposal** (`#1228`, `#1316`), but the code
+has merged in phases: Hive2 (`#1421`) on 15 November, Hive3 (`#1605`) on 16 November, and the behaviour
+work in the third week (below). The production template enables no Hive option by default; turning on
+results, turns or Bees is a separate deployment step. The design is in
 `docs/implementations/contracts/beebou-bee-harness-design.md`; the capacity rule is in
 `beebou-failure-handling.md` and `beebou-config/README.md`; the kickoff plan is
 `beebou-hive-kickoff-plan.md`.
@@ -198,7 +202,7 @@ history archive and reset work (`#1112`, `#1160`, `#1170`).
 
 ---
 
-# The second half of November
+# The Hive integration: 14–16 November
 
 The first version of this edition stopped on 14 November. Between 14 and 16 November, 1,093 commits
 and 31 pull-request merges landed. Hive2 and Hive3 are the big ones (above); these are the rest:
@@ -222,6 +226,42 @@ and 31 pull-request merges landed. Hive2 and Hive3 are the big ones (above); the
   tag does not contain Hive3.
 - **CI [UPGRADE]**: Hive scenarios enrolled, per-suite capture, and non-blocking artifact upload
   (#1448, #1636, #1656).
+
+---
+
+# The third week: 16–21 November
+
+Between 16 and 21 November, 927 commits and 192 pull-request merges landed. The week made Hive behave
+like a product, not just an integration:
+
+- **Hive works end to end [UPGRADE]**: Bee replies stream as they are written; Bee status reports are
+  consumed independently; a Bee keeps its exact Harness binding across an upgrade; orphaned runs are
+  settled when their runtime exits; the one-time history backfill runs at Bridge startup; the shared
+  Home history can be cleared by its owner; a Bee's question shows its options on the Home card; and a
+  headless client with no Home still gets Bee web tools.
+- **Ten active Bees, not four [UPGRADE]**: the concurrent active Bee slots were raised from 4 to 10
+  (`#2073`), matching the design's default capacity.
+- **Beebou answers "what can you do?" from facts [UPGRADE]**: capability questions are answered from
+  Host-derived facts instead of a model guess (`#1924`).
+- **Email reports become deliverables [NEW]**: report goals now deliver a report card to the phone
+  and a PPT through Hive, and Beebou can continue the conversation. The report runs in a Host-only,
+  slotless report Bee, so it does not enter the Home conversation or take one of the user's Bee slots
+  (`#1985`, `#2054`, `#2157`).
+- **HS1 and HS2 [UPGRADE]**: Agent Service now owns the Bridge process lifecycle and RPC registration
+  (HS1, `#1882`); the HS2 workspace Store owners are preregistered (`#2009`). These are source
+  milestones toward the v3.1 split, not a deployment.
+- **Page reads through an operator proxy are opt-in [UPGRADE]**: a Bee's page read can use the
+  operator's HTTP proxy only when the operator enables it (ADR-0036, `#2171`).
+- **Model configuration activates after prewarm [UPGRADE]**: the runtime can prewarm without
+  credentials, then activate the configured model, while keeping credential recovery and task
+  admission (`#1287`).
+- **Location and mail fixes [UPGRADE]**: a task can be sent to a named place such as home or office;
+  weather place lookups are cached; mail history pages; and a mail invite gets its own card.
+- **Observability [UPGRADE]**: Beebou's prefix-cache usage is recorded, so repeated prompt prefixes
+  show up in the trace (`#1873`).
+- **Docs [NEW]**: the Agent Service design moved to v0.4 with one design directory per component; a
+  contract template, a development SOP, and v3.1 CI merge gates were added (`#2179`, `#2189`, `#1998`,
+  `#2071`).
 
 ---
 
@@ -292,6 +332,10 @@ and 31 pull-request merges landed. Hive2 and Hive3 are the big ones (above); the
 - **Hive is not switched on.** The production template (`hive-deploy.prod.toml`) declares only the
   per-user principal binding and enables no Hive option. Results, turns and Bees are separate
   deployment flags; the packaged defaults are off.
+- **HS1 and HS2 are source milestones.** The default entry still assembles the Bridge; the new
+  ownership is not a deployment.
+- **Report delivery needs configuration.** Report goals are merged, but the Host-only report Bee and a
+  connected mail account must be configured before a report can be delivered.
 - **The mail pipeline** is still a candidate, not a production boundary.
 - **v0.1.12 predates Hive3.** The tag was cut on 14 November; Hive3 merged on 16 November.
 - **The migration status page is stale.** It still describes the old Router path and has not been
