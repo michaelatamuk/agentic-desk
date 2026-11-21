@@ -2,11 +2,12 @@
 
 November changed who does what in a team. A team can hold a goal, the leader can run on Claude Code or
 Codex, every member can start its own workflow and gets its own shell, and Word, Excel and PowerPoint
-became one workspace. The month also moved enterprise data to MySQL and PostgreSQL and put the
-personal and enterprise editions behind one server, the gateway. About 920 commits landed across the
-two repositories in two weeks.
+became one workspace. In the second half the platform added one search for skills, experts and MCP,
+coding memory, an app hub, WPS panes, and AI colleagues in group chats. The month also moved
+enterprise data to MySQL and PostgreSQL and put the personal and enterprise editions behind one
+server, the gateway. About 1,400 commits landed across the two repositories in three weeks.
 
-*Last updated: 2026-11-15.*
+*Last updated: 2026-11-21.*
 
 ## What JiuwenSwarm is
 
@@ -36,11 +37,13 @@ built-in harness is the one JiuwenSwarm ships; Claude Code and Codex are externa
 
 | Repository | Commit | Merged | What it is |
 |---|---|---|---|
-| `agent-core` | `279086272` | 2026-11-13 17:23 +08:00 | `fix(otel)`: guard LLM attribute writes and span finish |
-| `jiuwenswarm` | `efa6e5b3c` | 2026-11-14 16:50 +08:00 | `fix(history)`: stop duplicating LLM prompts in session events |
+| `agent-core` | `fbe93360f` | 2026-11-20 18:07 +08:00 | merge of `develop_skillrail` (SkillUseRail cache) |
+| `jiuwenswarm` | `e81838343` | 2026-11-21 15:04 +08:00 | merge of `feat/app-hub` |
 
-The previous edition stopped at `8ede5297c` (agent-core) and `5111fbffb` (jiuwenswarm). Not read this
-edition: the enterprise deployment environments and the cloud images.
+The first version of this edition stopped at `279086272` (agent-core) and `efa6e5b3c` (jiuwenswarm)
+on 13–14 November; this update adds the 476 commits merged after them. The previous edition stopped
+at `8ede5297c` (agent-core) and `5111fbffb` (jiuwenswarm). Not read this edition: the enterprise
+deployment environments and the cloud images.
 
 Everything here is tagged:
 
@@ -62,7 +65,9 @@ remaining work attached, and the member keeps working. If the goal reaches its a
 The leader has a goal of its own: it opens after the user's message is delivered, stays open until
 the other members are idle, and gates whether the team can finish. A second place that can hold a
 goal, `NativeHarness`, has its own rule for when to stop, and `spawn_teammate(goal=...)` opts a
-member in.
+member in. On 20 November the leader goal became a setting: scheduling mode has a leader sub-switch,
+the leader and member policies are validated together, and the leader's completion assessment runs in
+its own trace so it does not mix with the conversation.
 
 Why it matters: a team can no longer call a task finished just because a member says so. Nine
 end-to-end cases in `tests/system_tests/agent_swarm/goal/` cover a lazy member whose first
@@ -147,7 +152,8 @@ flowchart LR
     T --> U[Undo per turn: export, hash, restore]
 ```
 
-The three Office applications need PowerPointApi 1.8, WordApi 1.6 and ExcelApi 1.13. WPS is planned.
+The three Office applications need PowerPointApi 1.8, WordApi 1.6 and ExcelApi 1.13. WPS Writer and
+Spreadsheets arrived on 19 November; WPS Presentation is not covered.
 
 ## 6. An AI colleague for every employee — [NEW]
 
@@ -156,7 +162,8 @@ with a persona template, a chosen set of capabilities and published configuratio
 and publishing are separate: a request keeps the version it was accepted with until a new one is
 published.
 
-Colleagues are available in web private chat, WeLink and DingTalk. They answer approvals, run
+Colleagues are available in web private chat, WeLink and DingTalk, and since 20 November in SwarmChat
+group chats, where they can be added to a group and reply when mentioned. They answer approvals, run
 scheduled tasks and use the CLI. The default colleague, 小九 (Xiao Jiu), is created once and is not
 recreated after a user deletes it.
 
@@ -237,6 +244,42 @@ behind `react.ttse.enabled`, still off by default. Banks are kept per mode, unde
 `.ttse/code/`, never inside your project. Auto-dream keeps a bank tidy — it removes expired notes,
 merges near-duplicates and deletes low-quality ones — on fixed intervals. Installing the plugin does
 not switch tracing on: the plugin reserves the services it declares when it mounts.
+
+---
+
+# The second half of November
+
+The first version of this edition stopped on 14 November. Between 15 and 21 November, 476 commits
+landed. These are the ones that change what the platform can do:
+
+- **One search for skills, experts and MCP [NEW]**: Symphony now retrieves skills, experts and MCP
+  servers through one capability index, and Swarm uses that index for discovery. A directly
+  configured `ReActAgent` can also load skills on demand with `SkillUseRail`, without a `DeepAgent`,
+  and the rail caches its directory scans.
+- **Coding memory [NEW]**: Code mode can use native file memory or Jiuwen document memory. The
+  provider is selected in `config.yaml`, defaults to local hashing vectors so no embedding service is
+  needed, and reloads its configuration without a restart.
+- **Office reaches WPS [UPGRADE]**: WPS Writer and Spreadsheets task panes arrived, and both Office
+  and WPS add-ins can be installed from the plugin plaza. The pane gained turn control, host hints and
+  document attachments.
+- **App Hub [NEW]**: apps published to the Hub can be installed locally, with a run-consent prompt, a
+  bound project and an update that keeps `data/` and `.git`. The market panel handles install, update,
+  uninstall and local publish. Tests use a mocked Hub; the real Hub network and process start were not
+  covered.
+- **AI colleagues join group chats [NEW]**: a colleague can be added to a SwarmChat group and reply
+  when mentioned, with its own core identity and persistent @ requests. Message approval was relaxed
+  for group messages; file, document and tool approvals remain. No real model or Feishu, DingTalk or
+  WeLink end-to-end run yet.
+- **Connector Source SPI [NEW]**: connectors get a standard source interface, with the Hub as the
+  first source. This is plumbing for adding connector sources, not a new user surface.
+- **Host-managed group members and Git identities [NEW]**: a host can register an existing AI
+  colleague as a group member without starting another runtime, and each session can use its own Git
+  identity so parallel sessions do not share one author.
+- **Enterprise user plane split [UPGRADE]**: the enterprise user-facing backend is being separated
+  from the shared backend, with the deployment pieces that go with it.
+- **Tracing gets cost and time [UPGRADE]**: LLM spans now carry cost attributes, TPOT, the requested
+  model and the served model; retrieval events became spans, and scheduled traces are sized and
+  focused per task.
 
 ---
 
@@ -341,7 +384,12 @@ not switch tracing on: the plugin reserves the services it declares when it moun
   human members and bridge members are outside the scope.
 - **External-CLI members are not covered by the swarmflow end-to-end tests.** The contract they use
   cannot support a background run and later follow-ups.
-- **WPS is not supported by the Office add-in.** It is planned.
+- **WPS Presentation is not covered.** Writer and Spreadsheets panes exist; Presentation is not
+  mentioned.
+- **App Hub has not met the real Hub.** Its tests use a mocked Hub; the real network, download and
+  process start were not covered.
+- **AI colleagues in group chats have not run end to end.** No real model, Feishu, DingTalk or WeLink
+  test yet.
 - **SkillPack routing is off by default.** So is the shortcut that offers a complete query match
   directly to the user.
 - **TTSE is still off by default**; installing the plugin does not turn tracing on.
