@@ -2,7 +2,7 @@
 
 ## Workflow — run in this order
 
-1. [Run nine lenses in parallel](#1-research-lenses)
+1. [Run eleven lenses in parallel](#1-research-lenses)
 2. [Merge memos by theme](#2-merge)
 3. [Run importance review on merged pool](#3-importance-review)
 4. [Check coverage against recall table](#4-coverage-check) ← do not give this to discovery agents
@@ -20,10 +20,11 @@ Run each lens as a separate sub-agent with fresh context. No lens gets a list of
 frame is the only guidance. Each returns a broad memo of everything that might matter: date, what
 happened, why it matters, status, and sources. There is no fixed number of items at this stage.
 
-Ten lenses. If you must run fewer, merge **Models and methods** with **Agent engineering**, and
+Eleven lenses. If you must run fewer, merge **Models and methods** with **Agent engineering**, and
 **Enterprise deployment** with **Products and platforms** — but give the merged lens both sets of
 queries, or the second set will be skipped. Do not merge the **Huawei** lens away: it produces its
-own monthly file.
+own monthly file. Do not merge the **Apps and distribution** lens away: it is where distribution,
+review and payment happen.
 
 ### Models and methods
 
@@ -63,6 +64,20 @@ price of an agent step is decided. It is not a subdivision of money.
 
 Consumer and enterprise agents, devices, operating systems, commerce, distribution, pricing and
 availability. Platform access decisions: what was opened, gated or blocked. Adoption numbers.
+
+### Apps and distribution
+
+Consumer and enterprise apps built on agents: shopping, office suites, mini-programs, vertical
+workbenches, app stores, app builders and OS assistants. For each, record what the user opens, what
+task it completes, how it is distributed, what review or quality gate it passes, how it is priced,
+adoption and retention, and whether it can move across agent platforms.
+
+This is the third layer above models and agents. Do not count a model release, an agent framework or
+a coding-agent IDE as an app unless it ships a packaged workflow to end users. The app layer is where
+distribution, review and payment happen.
+
+**Hard requirement:** every edition includes at least one app-layer item; the China edition includes
+a dedicated section.
 
 ### Enterprise deployment
 
@@ -136,6 +151,7 @@ sub-agents while they search.
 For each item, ask:
 
 - Does it change what agents can do, who controls access, what it costs, or what is allowed?
+- Does it change the app surface — distribution, review, payment or packaging?
 - Is it real — shipped, deployed, confirmed — or only announced, preview, reported or rumoured?
 - Is it broad or local? A national rule or a platform launch is different from a regional pilot.
 - Is it new, or a follow-up to last month?
@@ -199,6 +215,7 @@ A missing known thread is a research failure, not an editorial choice.
 |---|---|
 | **Decision models** | TypeSafe/Jev, OpenAI Decisions API, Microsoft-Decision, Cloudflare Clef, Snowflake Decision, AWS Strands Decider, Liquid AI, any new entrant in the Jev Decision Index |
 | **Personal agents** | OpenAI Dots, Meta Muse, Anthropic Duet, Manus/Cue, Instinct; China: Xiaodou/Spell, Yuanbao Assistant, Qwen Go, Xiaowei/WeChat |
+| **Apps on top of agents** | Shopping agents (Taobao/Qianwen Go, Douyin/Doubao, JD), office suites (Qianwen Office, Doubao Work, WorkBuddy), mini-programs (WeChat AI mode), consumer agent apps (Xiaohongshu Dada, Claude Duet), vertical apps (ChatGPT Accounting, Kimi game bundle, Baidu Mate+), app stores and registries (WeChat review, AgentArts Koo Gallery, AWS Agent Registry), app builders (Yuanqi, Coze, OpenAI Agent Builder) |
 | **Agent hardware** | Agent phones, glasses, rings, keychains, pocket assistants, agent PCs; China: iFlytek, StepX, OPPO AI Mind, Qwen hardware |
 | **Protocols and identity** | MCP (spec version), A2A (version, signed Agent Cards), KYA, UCP, WebMCP; new W3C or IETF drafts |
 | **Agent payments** | AP2 mandate spec, Visa TAP, Mastercard Agent Pay, ACP (OpenAI/Stripe), Stripe MPP; any payment-network agent update |

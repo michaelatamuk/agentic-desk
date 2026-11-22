@@ -1,5 +1,15 @@
 # Brief Format
 
+## The three layers
+
+Every edition separates three layers, even when one of them dominates the month:
+
+1. **Models** — the raw capability: weights, context, price.
+2. **Agents** — the runtime around a model: harness, tools, memory, permissions, protocols, evaluation.
+3. **Apps on top of agents** — the surface a person or company actually opens: a consumer app, office suite, mini-program, vertical workbench, app store, or app builder.
+
+The app layer is a distribution and permission boundary, not a product category. Every edition needs at least one app-layer item; the China edition needs a dedicated section. `PROCESS.md` has the app lens and the recall row.
+
 ## Two formats
 
 ### Engineering edition — the default since October 2026
@@ -12,8 +22,9 @@ Its structure:
 1. **The six things that mattered** — numbered, one or two sentences each, ordered by dependency:
    what blocked us, then what retreated, then what shipped, then what it costs.
 2. **Numbered sections, one per decision area** — always-on architecture, models, protocols, runtime
-   and sandboxes, access, liability and insurance, compute and China, money. Each section uses the
-   same three blocks: *What shipped*, *What broke* or *What changed*, *What to do*.
+   and sandboxes, access, liability and insurance, compute and China, money, and **apps on top of
+   agents**. Each section uses the same three blocks: *What shipped*, *What broke* or *What changed*,
+   *What to do*.
 3. **A table when the information is tabular** — the layers of an architecture, a price comparison,
    a set of insurance forms. Prose for cause and effect, tables for facts that repeat.
 4. **Decisions for the next 90 days** — numbered actions, one sentence each, doable by one team.
@@ -105,6 +116,23 @@ Geography appears only in **Also in October** and in the **short version table**
 "Also in October" you may group by region if the items are genuinely region-specific and have no
 natural counterpart in another region. Do not group by region if the items are the same kind of
 story (a Chinese funding round belongs next to a US funding round, not in a separate block).
+
+---
+
+## Apps on top of agents — what to cover
+
+An app-layer item is the surface where a person or company uses an agent, not the model or the agent framework itself. For each item, establish:
+
+- **What the user opens** — consumer app, office suite, mini-program, vertical workbench, app store, OS assistant.
+- **What task it completes** and where the agent sits in the flow.
+- **How it is distributed** — app store, mini-program review, office/IM suite, OS assistant, enterprise marketplace.
+- **What gate it passes** — review score, grey-release ladder, live problem-rate ceiling, human approval.
+- **How it is paid for** — subscription, credits, per-task, token bundle, revenue share.
+- **What it depends on** — model, agent platform, app builder, identity and payment rails.
+- **What the evidence is** — adoption, retention, paid conversion, failure rate; mark vendor figures.
+- **What is new** — a new surface, a new gate or a new price, not an existing app with a chat box.
+
+Do not count a model release, an agent framework, or a coding-agent IDE as an app unless it ships a packaged workflow to end users.
 
 ---
 
