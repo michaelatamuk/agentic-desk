@@ -8,6 +8,8 @@ One distinction matters: openJiuwen is a company platform we **contribute to**, 
 folder holds its product context; our issues, designs and release notes are in
 `../projects/openjiuwen/`.
 
+**Deck:** [`company-products.pptx`](company-products.pptx) — all 12 one-pagers and their product images, one per slide, grouped by field.
+
 | Folder | Product | What it is |
 |---|---|---|
 | `openjiuwen/` | openJiuwen | Platform context, code studies and release notes; our contribution work is in `../projects/openjiuwen/` |
