@@ -19,7 +19,7 @@ projects build on.
 - **Code studies:** [`notes/`](notes/) explains how the platform works inside, one folder per
   subsystem. That is product knowledge, not our contribution log.
 - **Why it matters to this folder:** it is the platform behind our projects, and the default backend
-  for company siblings such as ScienceDiscovery. DigitalMate is the exception: it currently runs on
-  Orbit, with a plan to move onto JiuwenSwarm.
+  for company siblings such as ScienceDiscovery. DigitalMate is the exception: it runs on its own
+  server, with a plan to move onto JiuwenSwarm.
 
 The boundary is: **the product's home is the company; our contribution's home is `projects/`**.

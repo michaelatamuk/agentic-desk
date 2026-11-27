@@ -188,9 +188,9 @@ has been overtaken by the Hive design.
   `beebou-hive-kickoff-plan.md`.
 - **Product copy:** `README.md`.
 
-The older [Orbit note](../orbit/overview.md) is accurate for 29 October: Orbit was the engine then.
-Its "Orbit is the engine today" framing is out of date, but its account of what Orbit was and how
-the swap worked still holds.
+The [Orbit note](../orbit/overview.md) now covers the current public product: a desktop workspace
+where a team and its AI agents work in shared rooms. For the internal cloud engine DigitalMate used
+for ten days, and the swap, see [`whats-new-2026-10.md`](whats-new/whats-new-2026-10.md).
 
 ## Open questions
 

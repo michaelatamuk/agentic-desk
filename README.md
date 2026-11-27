@@ -41,7 +41,7 @@ for the boundary.
 | `company/belle/` | Belle, an AI coworker for team chat, built primarily on JiuwenSwarm |
 | `company/mobilegym/` | MobileGym, a browser-hosted mobile GUI agent simulator and benchmark |
 | `company/hopa/` | HOPA, a phone-operating personal assistant with a hard payment gate |
-| `company/orbit/` | Orbit, the per-user cloud engine behind DigitalMate |
+| `company/orbit/` | Orbit, a desktop workspace where a team and its AI agents work in shared rooms |
 | `company/sciencediscovery/` | ScienceDiscovery, a local research workspace built on JiuwenSwarm |
 
 ## Conventions

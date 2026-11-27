@@ -141,7 +141,7 @@ That makes Belle a concrete example of an app on top of our platform: the platfo
 | **DigitalMate** | Both are agent assistants for people, but the surfaces differ: DigitalMate is a HarmonyOS phone app with a cloud server and a feed; Belle is a participant in team chat, shared by a whole team. DigitalMate runs on WorkSwarm; Belle primarily on JiuwenSwarm. |
 | **FlyBot** | Both are team-facing AI products. FlyBot is a self-hosted workspace with its own UI and a DS-Bot per account; Belle is a bot inside existing chat platforms with one harness behind it. FlyBot owns the room; Belle joins the room. |
 | **PPMA** | Both have memory. Belle’s Second Brain is a shared document corpus for a team; PPMA is a personal, memory-first manager across apps. Different scope, different privacy model. |
-| **Orbit** | No direct relation. Orbit is a per-user cloud engine; Belle is a chat participant. |
+| **Orbit** | No direct relation. Orbit is a desktop workspace where a team and its AI agents work in shared rooms; Belle is a chat participant. |
 | **OpenDirector** | Same public repository owner (ThinkFlowLab), different layer. OpenDirector is a local video app; Belle is a team-chat agent. |
 | **AgentDescent** | Same owner. AgentDescent improves prompts/skills from examples; Belle’s skills are exactly the kind of artifact it could evolve offline. No wired integration. |
 | **Nullius** | Same owner. Nullius evaluates agents; Belle is an agent product. Belle is not in Nullius’s catalogue; its Second Brain and ambient-mode tests are its own evaluations. |

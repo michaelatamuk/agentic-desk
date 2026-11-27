@@ -20,7 +20,7 @@ folder holds its product context; our issues, designs and release notes are in
 | `belle/` | Belle | An AI coworker for team chat, built primarily on JiuwenSwarm |
 | `mobilegym/` | MobileGym | A browser-hosted mobile GUI agent simulator and benchmark |
 | `hopa/` | HOPA | A phone-operating personal assistant with a hard payment gate |
-| `orbit/` | Orbit | The per-user cloud engine behind DigitalMate; today a harness, planned as a JiuwenSwarm plugin |
+| `orbit/` | Orbit | A desktop workspace where a team and its AI agents work in shared project rooms |
 | `sciencediscovery/` | ScienceDiscovery | A local research workspace built on JiuwenSwarm |
 
 Two boundaries keep this folder useful:

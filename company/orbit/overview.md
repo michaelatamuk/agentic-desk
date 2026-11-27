@@ -1,288 +1,178 @@
 # Orbit, explained simply
 
-*As of 29 October 2026. Sources: gateway code, a merged pull request, the [public status board](https://haowenz001.github.io/digitalmate-board/#issues), bug
-reports and the jiuwenswarm repository.*
+*As of 28 November 2026. Sources: the public checkout `ThinkFlowLab/orbit@d53837a` (initial commit 27 November 2026), its README, `core_functionalities.md`, `docs/orbit/shell.md`, `docs/glossary.md`, `docs/orbit/architecture.md` and `docs/readiness-audit.md`. Orbit is built by another team in the company. This note is context, not our roadmap.*
 
-*Orbit is built by another team in the company. This note is context, not our roadmap. The app it serves,
-DigitalMate, has [its own note](../digitalmate/overview.md).*
+> **Name note.** The desk’s 29 October note described an internal cloud service also called Orbit, which ran DigitalMate’s assistant for about ten days. That service and this public product are not the same thing. This note replaces the old one and covers the desktop workspace in the public repository.
 
 ## The short version
 
-- **Orbit** is the cloud engine behind DigitalMate today. It runs the loop, calls the tools and keeps the
-  memory.
-- Each user gets a **container and a private workspace**. A desktop version also exists; some features
-  work only there.
-- **agent-dx** is the gateway and substrate: login, per-user routing, container lifecycle and isolation.
-- In the **10.23 build**, DigitalMate moved its engine from **WorkSwarm** (jiuwenswarm) to Orbit.
-- A **[27 October RFC](https://haowenz001.github.io/digitalmate-board/#issues)** proposes the next step: Orbit as a plugin inside JiuwenSwarm.
-- The app, its screens and its roadmap are in the [DigitalMate note](../digitalmate/overview.md).
+- **Orbit is a desktop workspace where a team and its AI agents work in one shared project room.** You ask in plain words; the room does the work; the result stays in one place.
+- **It uses the agents you already have.** Claude Code, Codex, Orbit’s own helper, Jiuwen Swarm teams, or a person reached through a connected chat.
+- **It connects the chats you already use.** Slack, Feishu, WeChat, Telegram, WhatsApp, GitHub, Linear and more, so people can take part without opening Orbit.
+- **It remembers the project.** Decisions, preferences and earlier agent work are saved and reused.
+- **It can follow up on its own.** A schedule, a watched page or a new message can start a check and bring back an update.
+- **Messages wait for you.** Anything sent to a real person needs approval, unless you set a standing rule.
+- **It runs from source on macOS and Linux.** There is no public installer yet. Windows is limited, and always-on cloud work is a pilot.
 
-## What Orbit is
+## What it looks like
 
-The details come from
-[the merged gateway PR](https://github.com/openJiuwen-ai/agent-dx/pull/94) and
-[the Orbit template](https://github.com/openJiuwen-ai/agent-dx/blob/master/agent/activator/examples/orbit-sfs-template.json).
+![Orbit at a glance](assets/orbit-at-a-glance.png)
 
-```mermaid
-flowchart TD
-  subgraph PR["Private to one user"]
-    A["Their own assistant<br/>the same one every visit"]
-    D[("Files, tasks and history<br/>kept between visits")]
-    A --> D
-  end
-  S["Sign in"] --> R["Find this user's assistant"]
-  R --> A
-  A --> M["A capped number of steps<br/>per request, so cost is predictable"]
-  A --> T["Long tasks keep running<br/>while the phone is closed"]
+*The repository’s own one-image summary: work scattered across chats, agents and files on the left; one room with the same chats, agents and shared memory on the right.*
+
+## What it is
+
+Orbit 0.2.0 is a desktop app with two parts: an Electron window and a local Python process called the bridge. The bridge holds the project records, talks to the agents and apps, and runs the work. The window only shows what the bridge knows.
+
+It is **local-first**. The workspace, its database and its files live on your computer. Only the material a task needs is sent to the model provider you configured. There is no Orbit account and no shared cloud workspace in the normal setup.
+
+The product is built around a **room**:
+
+- **Home** is your private conversation with Orbit. Nothing is shared from it unless you choose to.
+- **A Space** is your view of one project room: its purpose in your words, your private notes, the room’s story and its people.
+- **A room** holds the people, the agents, the linked outside chats and the work. Messages from a linked chat appear in the room with the person’s name.
+- **A task** is one ask given to one agent. It carries the objective, the evidence it cited, the files it made and where it came from.
+- **A conversation** is a thread of asks. A second ask in the same room usually resumes the same agent session, so the agent keeps its context.
+
+Agents are named workers, not one model with a prompt. Orbit’s own helper is one; Claude Code, Codex, Computer, Jiuwen Swarm and imported specialists are others. A person in a linked chat can also be the worker: Orbit sends the question and waits for the reply.
+
+## What it does
+
+### 1. Brings people and agents into the same room
+
+You make a room, invite teammates and agents, and link the project’s chats. A question asked in Slack can reach an agent in Orbit; the answer can go back to Slack. A Feishu thread, a WeChat group and a GitHub issue can all feed the same task.
+
+The point is not another chat app. The point is that the discussion, the files, the agent work and the decision end up in one place instead of five tabs.
+
+### 2. Gives the work to the right agent
+
+When you ask, Orbit decides who should take it. An explicit `@mention` always wins. Otherwise it looks at what the task needs: coding goes to a coding agent, a plain question to Orbit’s own helper, a named team to a Jiuwen Swarm team. It records why it chose.
+
+Agents can ask each other bounded questions, up to two levels deep, and the asking task waits for the answer. Two coding agents can work on the same folder in turn: while one waits for an answer, the other borrows its working copy.
+
+Each coding run leaves evidence: the files changed, the lines added and removed, and the test result. That evidence can be attached to the answer or cited in a screen.
+
+### 3. Keeps project memory
+
+Orbit saves what the project decided and what you prefer. A fact becomes shared memory only after you accept it; until then it is a candidate. Memory keeps the source it came from, so a later reader can see whether they are allowed to use it.
+
+You can import selected histories from Claude Code or Codex, inspect what Orbit remembers, correct a fact, or forget it. A correction is treated as a new version of the source: tasks that relied on the old version turn stale, and drafts that repeat the old value are held.
+
+### 4. Works across apps and files
+
+Orbit can open a web page, a PDF or an Office document beside the conversation. You can capture a region of the screen, mark a paragraph and ask an agent to revise it, or speak the ask. It can build a task-specific view, such as a checklist, a comparison or a board, and keep it for the room.
+
+Office editing needs a separate ONLYOFFICE server. Web apps open in a window with an owner: **You**, **Observe** or **Agent**. Messaging apps never let an agent type; only you operate those.
+
+### 5. Follows up without being asked
+
+A schedule, a watched page or an event from a connected app can start or continue a task. Home collects running work and decisions that need you, so you can review an update and carry on. Local schedules need Orbit running on an awake computer; work that continues after you close the laptop belongs to the cloud pilot.
+
+### 6. Asks before anything leaves
+
+A message to a real person is a delivery. It waits in a queue for your approval, unless a grant you gave covers that task, destination and identity. Every send gets a receipt with the app’s message id. If a fact in the draft changed, the draft is held and shows the old and new value.
+
+There is also a check for secrets in outgoing text, a limit on how often a bot may start work in one conversation, and a rule that an agent cannot change what an approval card looks like.
+
+## One task, from ask to answer
+
+```text
+ask in a room
+  → Orbit picks an agent and records why
+  → the agent reads the room, the cited sources and the memories it may see
+  → it works, asks another agent or a person if needed
+  → it returns a result with its evidence and files
+  → Orbit lays the result out as a screen or a status line
+  → any message to a person waits for approval
+  → the decision and the sources stay in the room
 ```
 
-One user, one assistant, one private space. The phone stays light; the work happens in the cloud. Today
-Orbit does that work: it runs the loop, calls the tools and keeps the memory.
+## Screens from the product
 
-- **Isolation:** one container per user, inside **gVisor** (`runsc`), a sandbox that checks system calls
-  before they reach the host. Each gets 2 CPU and 4 GB.
-- **Storage:** the workspace at `/data/state` sits on **SFS** (Huawei Cloud's Scalable File Service,
-  mountable network storage), owned by user `10001` with mode `0700`.
-- **Model:** GLM-5.2 through an OpenAI-compatible API, a 1M-token context and 8 model-and-tool round trips
-  per turn.
-- **Protocol:** `orbit.request` with an `action` field over `/orbit/ws`; the phone sends its language and
-  device with each message ([#270](https://github.com/openJiuwen-ai/DigitalMate/issues/270)).
-- **Binding:** the same user always gets the same container, different users are isolated, and the
-  template (`orbit`, version `v1-workspace`) and binding are fixed by the server, so a client cannot pick
-  another user's container.
+These are UI captures from the repository, using its sample launch project. They show the product’s shape; they are not a live customer run.
 
-**Where it lives**
+### One workspace, two chats, one approval
 
-- **Runs on:** Huawei Cloud. A desktop version also exists; some features work only there.
-- **Code:** private. [`ThinkFlowLab/orbit`](https://github.com/ThinkFlowLab/orbit) returns 404.
-- **Artifacts:**
-  - A container image in Huawei Cloud **SWR** (its image registry),
-    `cn-north-1/openjiuwen-online-test/orbit`, private and returning 401 without credentials
-    ([manifest](https://swr.cn-north-1.myhuaweicloud.com/v2/openjiuwen-online-test/orbit/manifests/sha256:e6fe614ff389ab021e855c1516fe9c44b4916ff66fffba5ad825282c0195f917)).
-  - A public
-    [template](https://github.com/openJiuwen-ai/agent-dx/blob/master/agent/activator/examples/orbit-sfs-template.json)
-    inside `agent-dx`.
-- **Public trace:** issue numbers cited on the status board, including [#2282](https://github.com/openJiuwen-ai/DigitalMate/issues/2282).
+![A Slack thread and a Telegram group side by side, with an approval draft](assets/approve-a-cross-app-send.png)
 
-## What agent-dx is
+A Slack thread and a Telegram group sit in the same workspace. Orbit has adapted Priya’s Slack message for the Telegram launch crew. The draft names its source and waits for **Approve and send**.
 
-[`agent-dx`](https://github.com/openJiuwen-ai/agent-dx) (Agent Distributed eXecutor) is the **substrate**:
-the layer that runs the containers and routes traffic between them. It handles identity, containers,
-routing and storage; prompts, tools and model calls stay inside the engine. It is written in Rust.
+### An ask that shows its sources
 
-[The example config](https://github.com/openJiuwen-ai/agent-dx/blob/master/gateway/examples/digitalmategateway.json)
-contains both engines:
+![A private ask in Home with pinned Slack messages and a sourced answer](assets/ask-and-cite-sources.png)
 
-```json
-"jiuwen": { "template": "jiuwen", "version": "1" },
-"orbit":  { "template": "orbit", "version": "v1-workspace",
-            "backend_path": "/ws", "service_port": 18092 }
-```
+A private ask in Home. Orbit searched the linked Slack channel, pinned the two messages it used, and answered with the sources and two next actions.
 
-The Orbit entry was built as a transparent WebSocket route: it authenticates the session, picks the user's
-instance from the fixed template, and forwards frames without converting them to Jiuwen's protocol
-([#99](https://github.com/openJiuwen-ai/agent-dx/issues/99)). That is what "peer targets" means in practice.
+### Capture a corner of an app, then send it somewhere
 
-The traffic is no longer only one way. On 26–27 October, JiuwenSwarm's gateway gained an `adx_router`
-backend: it creates an ADX Environment from a template, mounts the workspace, and routes Jiuwen's own agent
-runtime through the same ingress and Environment APIs (`gateway/extensions/adx/`). So agent-dx now runs
-Jiuwen's runtime as well as Orbit's, and the two engines are symmetric tenants of the substrate.
+![A captured spreadsheet region and a Give to menu](assets/capture-and-share.png)
 
-**Where it lives**
+A captured region of a spreadsheet can go to Orbit, a Telegram group, a Slack channel, a running Codex task or the clipboard.
 
-- **Runs on:** Huawei Cloud **CCE** (Cloud Container Engine, its managed Kubernetes), with SFS for
-  workspaces.
-- **Code:** public on GitHub at [`openJiuwen-ai/agent-dx`](https://github.com/openJiuwen-ai/agent-dx).
-- **Artifacts:**
-  - Release images built from that source.
-  - The merge that added Orbit is [PR #94](https://github.com/openJiuwen-ai/agent-dx/pull/94).
-- **Public trace:** the repository, its pull requests, and its releases.
+### What Orbit keeps from apps without an API
 
-## The roles, not the brands
+![App memory settings for WhatsApp, Telegram, Discord and WeChat](assets/local-app-memory.png)
 
-The same three words get mixed up, so by role:
+Some apps can be searched directly; others cannot. For those, Orbit can keep what it saw, on this computer, with a retention period and a Forget control.
 
-| Role | What it owns | Today | In the plan |
-|---|---|---|---|
-| **Substrate** | containers, routing, identity, storage | agent-dx | agent-dx |
-| **Harness** | one agent's loop: prompt, model calls, tools, memory | Orbit | JiuwenSwarm |
-| **Plugin** | product capabilities loaded into a harness | — | Orbit |
-| **Product surface** | what the user sees and touches | DigitalMate app; Orbit desktop client | DigitalMate app |
+## What works today
 
-Orbit is a harness today, not the substrate. It also ships a desktop client with its own interface; on the
-phone it has no interface of its own — it proposes screens, and DigitalMate draws them.
+**Working in this repository**
 
-In the plan Orbit is no longer a harness or a substrate. It is a plugin: a set of capabilities that runs
-inside JiuwenSwarm's harness.
+- Desktop rooms, Home, Spaces, linked chats and the shared story.
+- Claude Code, Codex, Orbit’s own helper and Jiuwen Swarm teams as runtimes.
+- Connectors for Slack, Feishu, Telegram, WhatsApp, WeChat, GitHub, Linear, Google, Microsoft, IMAP and several Apple apps; WeCom, DingTalk and Discord through Jiuwen Swarm channels.
+- Task routing, questions between agents, approvals, grants and send receipts.
+- Memory candidates, accepted memory, imports and corrections.
+- Captures, comments, generated views and published screens.
+- Schedules, watches and connected-app triggers.
+- Computer sessions on this Mac through a driver; remote machines cannot start one.
 
-"Peer" therefore means interchangeable to the gateway, not equal in scope. JiuwenSwarm is a general
-platform; Orbit is the engine for one product. The plan then makes them unequal by design.
+**Not there yet**
 
-## Why the gateway exists
+- No public installer. The route is a source install on macOS or Linux.
+- Windows has no one-command source install; native packages are unsigned.
+- Always-on cloud work is a pilot. Local schedules need the app awake.
+- App access varies by provider and by the permissions you granted. Several integrations are recorded as not yet tested against live accounts.
+- Remote computers cannot start a session.
+- The repository itself says many example workflows are illustrations, not proof of a live connector or model run.
 
-Six jobs happen outside the phone:
+## Limits to keep in mind
 
-1. **Identity** — verify the Huawei account token (AGC, Huawei's app services platform); the container
-   receives only authenticated requests.
-2. **Assignment** — map the user to a fixed binding and sandbox.
-3. **Lifecycle** — start the container if asleep, wait for readiness, close on revoke or expiry.
-4. **Storage** — mount the workspace with the right owner and permissions.
-5. **Transport** — upgrade to WebSocket and forward frames both ways.
-6. **Protection** — keep containers off the public internet and return HTTP 401, 502 or 504 instead of
-   leaking internals.
+- **It is a desktop app, not a service.** Close the laptop and local work stops; only the cloud pilot continues.
+- **It uses your accounts and your model keys.** Setup is part of the product, not a footnote.
+- **Connected apps keep their own rules.** WhatsApp Web drafts must be sent by you; Telegram needs participant consent; some providers keep no history to read.
+- **Approval is the safety line.** A grant can remove the per-message pause, so grants deserve the same care as the task itself.
+- **The product is early.** Version 0.2.0, an initial public commit, and a long list of acceptance work still open.
 
-One request:
+## How it relates to our products
 
-```
-phone → /orbit/ws with a business token
-      → gateway verifies the token and gets the user id
-      → gateway computes the user's binding
-      → finds or starts the Orbit container
-      → waits for readiness, mounts the workspace
-      → upgrades to WebSocket, proxies frames
-```
+- **DigitalMate:** a different product and a different layer. DigitalMate is a phone assistant with a cloud task server and a feed; Orbit is a desktop team workspace that coordinates agents and apps. The old internal cloud engine also called Orbit is not this product.
+- **Jiuwen / JiuwenSwarm:** Orbit can use Jiuwen Swarm agents and teams as one runtime, and can reach WeCom, DingTalk and Discord through Swarm channels. Orbit is not built on JiuwenSwarm.
+- **Claude Code and Codex:** first-class runtimes. Orbit keeps their sessions, settings and histories, and gates their tool calls.
+- **MobileGym / HOPA:** no direct relation. Those are phone GUI agents; Orbit is a desktop workspace for project work.
 
-Those jobs need cloud credentials, placement knowledge, container control and cross-user isolation — all
-of which belong in the cloud, not on a phone.
+## Why it matters
 
-**Orbit is the worker; the gateway is the building manager.** One worker still needs a building manager.
-
-## What Orbit can do, from its tool list ([#256](https://github.com/openJiuwen-ai/DigitalMate/issues/256))
-
-The assistant once printed its own tool list:
-
-- Todos: `orbit_todos`, `orbit_todo_add`, `orbit_todo_update`.
-- Schedules: `orbit_schedule`, `orbit_list_schedules`, `orbit_update_schedule`,
-  `orbit_schedule_observe`.
-- Other: `orbit_weather`, `orbit_search_memory`, `orbit_propose_view`, `orbit_propose_screen`.
-- Generic: `read_file`, `browser_open`, `web_search`, `skill_tool`.
-
-Read together, Orbit owns tasks, schedules, memory and search; the phone only draws the screens it
-proposes. That is the A2UI split in practice: data from the cloud, rendering on the phone.
-
-Recent work adds two pieces. The notification centre now shows a running task's stage, reusing the
-sanitized task title and Beebou avatar ([PR #304](https://github.com/openJiuwen-ai/DigitalMate/pull/304)).
-Final text now follows the same `final_mode` / `segment_id` protocol as WorkSwarm on both adapters, so a
-final cannot overwrite the wrong bubble or duplicate the reply
-([PR #287](https://github.com/openJiuwen-ai/DigitalMate/pull/287)).
-
-## What comes next: Orbit as a plugin
-
-The [board](https://haowenz001.github.io/digitalmate-board/#issues) carries **[RFC #271](https://haowenz001.github.io/digitalmate-board/#issues)** (a request for comments — a design proposal), opened by **changzherui** on
-27 October: *"DM 与 Orbit 插件的端云协作、接口兼容及分阶段接入计划"*. The title's "DM" means DigitalMate. The issue page is private; its body is public on the board. It proposes this chain:
-
-```mermaid
-flowchart TD
-  subgraph L["JiuwenSwarm plugin layer"]
-    D["Orbit plugin<br/>user business capabilities"]
-    E["Other plugins"]
-  end
-  A["DigitalMate<br/>phone interaction"] <--> B["DigitalMate cloud<br/>sign-in, user instances, routing"]
-  B <--> L
-  D <--> F["JiuwenSwarm<br/>agent execution and team collaboration"]
-  E <--> F
-```
-
-The phone keeps talking to the DigitalMate cloud. The cloud loads plugins. **Orbit becomes a plugin inside
-JiuwenSwarm**, and JiuwenSwarm handles agent execution. The phone stays on the business interface and does
-not touch JiuwenSwarm internals.
-
-Read it as a sequence, not a contradiction:
-
-- **Today, build 10.23:** Orbit is the engine. It plans, calls tools and holds memory. JiuwenSwarm is not
-  in the path for new clients; it stays for old clients and rollback.
-- **Planned:** JiuwenSwarm is the engine. Orbit becomes a plugin that supplies the user-facing business
-  capabilities, while JiuwenSwarm runs the loop and the team collaboration.
-
-In short: today DigitalMate runs on Orbit. In the plan it runs on JiuwenSwarm, and JiuwenSwarm runs on
-openJiuwen.
-
-So "Orbit inside JiuwenSwarm" does not mean the gateway put one engine inside another. It means Orbit's job
-gets narrower: from running the assistant to providing the parts the assistant uses.
-
-Most of those parts already exist on the Jiuwen side. The `jiuwenswarm` repository lists cross-session
-memory (general, task and coding memory), scheduled tasks, skills and skill self-evolution, channels from
-Xiaoyi and Feishu to Telegram and Slack, browser control, multi-agent clusters and tool approval. Orbit's
-memory and schedules therefore overlap with what Jiuwen already ships. What Orbit adds is the multi-tenant
-phone packaging: one isolated workspace per user, the `/orbit/ws` contract, proposed screens and the
-phone's task flow. Which side keeps memory and schedules is not settled in public.
-
-Another product already sits on the Jiuwen side.
-[ScienceDiscovery](https://github.com/openJiuwen-ai/sciencediscovery), a research workspace for
-literature, code and experiments, is built on JiuwenSwarm and uses it as the default backend in every
-deployment; jiuwenswarm's
-[artifact-provider stub](https://github.com/openJiuwen-ai/jiuwenswarm/blob/develop/jiuwenswarm/agents/harness/common/rsi/mock_artifact_provider.py)
-names it as an implementation owned elsewhere. Its
-[issue #582](https://github.com/openJiuwen-ai/sciencediscovery/issues/582) compares its own
-time-to-first-token with DigitalMate's and notes that DigitalMate has no matching issue. No Orbit
-integration appears in its code. So JiuwenSwarm is not only a fallback kept for rollback: it is the active
-backend for a sibling product, while Orbit is specific to DigitalMate.
-
-Think of the plugin as a toolbox, not an engine swap. JiuwenSwarm keeps the workshop — planning, teams,
-tool calls, memory, scheduling. The Orbit plugin brings the DigitalMate-specific tools and the phone
-contract, and plugs into that workshop. Where Jiuwen already has a tool, the plugin can call Jiuwen's version
-or ship its own and override the built-in; [the RFC](https://haowenz001.github.io/digitalmate-board/#issues) does not say which.
-
-The plugin slot itself already exists. JiuwenSwarm loads extension packages that can register channels,
-Gateway methods and agent plugin mounts; a package that replaces a built-in element must declare it, and
-the operator must list it for override ([#7832](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7832), [#7833](https://github.com/openJiuwen-ai/jiuwenswarm/pull/7833)). Another proposal adds agent templates and plugin
-packages with install, uninstall and per-session MCP mounting ([#7931](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7931)). Permission and confirmation rails
-stay protected either way. That is the machinery an Orbit plugin would use.
-
-What that machinery cannot do today is host another agent runtime. An application plugin is an in-process
-Python class that adds a workspace page, Gateway RPC methods and WebSocket routes, and may call Jiuwen's
-own agent client (`docs/zh/application-plugins.md` in the repository). It shares Jiuwen's process; there is
-no interface for "run this other harness here". The agent-plugin mounts in [#7832](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7832) add hooks to Jiuwen's own
-agent — turn fields, filters, input transforms, skill inventory — not a second loop. So an Orbit plugin is
-either a bridge that forwards to an Orbit service, or a port of Orbit's behaviour onto Jiuwen's harness.
-[The RFC](https://haowenz001.github.io/digitalmate-board/#issues) does not say which.
-
-[The RFC](https://haowenz001.github.io/digitalmate-board/#issues) keeps `/orbit/ws` and `orbit.request` and stages the work:
-
-- **P0** tasks and artifacts — progress, files, reconnect.
-- **P1** apps and confirmations — mail/calendar queries, confirmation, no double execution.
-- **P2** personal memory — read, correct, forget.
-- **P3** follow-ups — schedule, deduplicate, resume after restart.
-
-The RFC is a proposal; its dates remain open. It links Orbit's own issue **[#2282](https://github.com/openJiuwen-ai/DigitalMate/issues/2282)** for deployment
-evidence.
-
-Build 10.23 runs Orbit standalone. The public plan after that is Orbit inside JiuwenSwarm.
-
-The arc so far:
-
-- **Before 10.23:** JiuwenSwarm underneath; DigitalMate was a thin client of it.
-- **10.23:** Orbit underneath; JiuwenSwarm kept for old clients and rollback.
-- **Planned:** JiuwenSwarm underneath again, with Orbit as a plugin inside it.
-
-The third stage is not a plain revert. The phone keeps the same contract and Orbit's tools; only the loop
-changes hands.
-
-## How we know
-
-- **Orbit's packaging, isolation and protocol:** the public template, gateway config and `orbit_ws.rs`.
-- **The engine swap:** the internal note for build 10.23, plus the [board's](https://haowenz001.github.io/digitalmate-board/#issues) issue and PR titles.
-- **The old architecture:** DigitalMate bug reports [#8522](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8522) and [#8265](https://github.com/openJiuwen-ai/jiuwenswarm/issues/8265) on GitHub.
-- **The next architecture:** [RFC #271](https://haowenz001.github.io/digitalmate-board/#issues) on the [board](https://haowenz001.github.io/digitalmate-board/#issues), quoting `/orbit/ws` and `orbit.request`.
-- **The double path today:** agent-dx #99, the transparent WebSocket entry for Orbit with no Jiuwen protocol
-  conversion.
-- **Jiuwen on the same substrate:** jiuwenswarm commits `8dbce3539` (26 October) and `5f0232ddb`
-  (27 October), `gateway/extensions/adx/`.
-- **The plugin mechanism:** jiuwenswarm issues [#7832](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7832) and [#7931](https://github.com/openJiuwen-ai/jiuwenswarm/issues/7931), plus PR [#7833](https://github.com/openJiuwen-ai/jiuwenswarm/pull/7833).
-- **The plugin boundary:** `docs/zh/application-plugins.md` and the extension registry, read in a local
-  checkout at commit `cbde92c` (25 October).
-- **What Jiuwen already does:** the `jiuwenswarm` README on its default branch, read 27 October.
-- **The sibling product:** the ScienceDiscovery README and its [issue #582](https://github.com/openJiuwen-ai/sciencediscovery/issues/582), read 28 October.
-- **The product and its releases:** the [DigitalMate note](../digitalmate/overview.md).
+- **It treats agents as coworkers, not a chat feature.** They have names, sessions, inboxes, questions, permissions and evidence.
+- **It meets people where they are.** A teammate can stay in Slack or Feishu and still take part in the room.
+- **It takes evidence seriously.** Sources have versions, results cite them, and a changed fact stops the work instead of quietly producing an old answer.
+- **It makes the human the gate.** Sends, high-risk tool calls and computer control pass a visible approval card.
+- **It is honest about being early.** The README separates what is implemented, what is unverified and what is still a pilot.
 
 ## Open questions
 
-- Orbit's internals: language, loop, parallel-task and memory implementation.
-- The code inside Orbit.
-- Performance and cost per user. The [board](https://haowenz001.github.io/digitalmate-board/#issues) shows time-to-first-token (TTFT) complaints around 5 seconds.
-- Approval and dates for the plugin plan.
-- Which path wins: the plugin layer in [RFC #271](https://haowenz001.github.io/digitalmate-board/#issues), or Jiuwen's runtime as another ADX environment. Both are
-  now technically possible.
+- **Will the room model click with teams?** It asks people to change where they discuss work, even if their chats stay connected.
+- **Can setup become ordinary?** Model keys, agent sign-ins, app permissions and Office server are a lot for a first run.
+- **How far can approvals scale?** Too many cards and people approve without reading; too few grants and the work stalls.
+- **Will the desktop-only bet hold?** Always-on work is a pilot; the product is strongest when the laptop is open.
+- **What happens when an agent is wrong?** The evidence trail helps, but a person still has to notice.
 
-**Unrelated projects with similar names:**
-[`mananbharti/Orbit`](https://github.com/mananbharti/Orbit) (a local-first app).
+## Sources
+
+- README and `core_functionalities.md`
+- `docs/orbit/shell.md` (user guide)
+- `docs/glossary.md` (terms)
+- `docs/orbit/architecture.md` (how it is built)
+- `docs/readiness-audit.md` (what is verified)
+- Repository: `https://github.com/ThinkFlowLab/orbit`
