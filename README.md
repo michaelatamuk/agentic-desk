@@ -34,6 +34,8 @@ for the boundary.
 | `company/openjiuwen/` | openJiuwen, the company platform we contribute to: product context, code studies and release notes; our work is under `projects/openjiuwen/` |
 | `company/ppma/` | PPMA, a memory-first agent that manages ongoing projects: the four directions, the loop and everyday scenarios |
 | `company/digitalmate/` | DigitalMate, the HarmonyOS task app |
+| `company/opendirector/` | OpenDirector, a local AI video creation workspace |
+| `company/agentdescent/` | AgentDescent, a research framework for evolving prompts, skills, agent directories and code |
 | `company/orbit/` | Orbit, the per-user cloud engine behind DigitalMate |
 | `company/sciencediscovery/` | ScienceDiscovery, a local research workspace built on JiuwenSwarm |
 

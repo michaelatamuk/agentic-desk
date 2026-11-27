@@ -14,6 +14,7 @@ folder holds its product context; our issues, designs and release notes are in
 | `ppma/` | PPMA | A memory-first manager for long-running projects |
 | `digitalmate/` | DigitalMate | A HarmonyOS task app: task screens, bot chat and the product roadmap |
 | `opendirector/` | OpenDirector | A local AI video creation workspace: chat, canvas, media editing and timeline export |
+| `agentdescent/` | AgentDescent | A research framework for evolving prompts, skills, agent directories and code from examples |
 | `orbit/` | Orbit | The per-user cloud engine behind DigitalMate; today a harness, planned as a JiuwenSwarm plugin |
 | `sciencediscovery/` | ScienceDiscovery | A local research workspace built on JiuwenSwarm |
 
