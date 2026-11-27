@@ -4,6 +4,8 @@
 
 > **Name note.** The desk’s 29 October note described an internal cloud service also called Orbit, which ran DigitalMate’s assistant for about ten days. That service and this public product are not the same thing. This note replaces the old one and covers the desktop workspace in the public repository.
 
+**One-page summary:** [`orbit-onepages.svg`](orbit-onepages.svg).
+
 ## The short version
 
 - **Orbit is a desktop workspace where a team and its AI agents work in one shared project room.** You ask in plain words; the room does the work; the result stays in one place.
