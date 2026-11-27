@@ -633,6 +633,12 @@ This is one real setup, on one Windows machine:
 The shortest description of this setup: **PPMA is the hub; JiuwenSwarm is its East agent and its
 current thinker; memory is local; the apps are still to come.**
 
+## What it looks like
+
+![The PPMA home screen: PPMA is listening, with a button to link apps](assets/ppma-home.webp)
+
+*The home screen before any app is linked. The feed line at the bottom is a preview-build notice; once an app reports, its notices, suggestions and questions appear here.*
+
 ## 13. Glossary
 
 | Word | Meaning |

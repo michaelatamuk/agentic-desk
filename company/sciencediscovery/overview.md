@@ -26,6 +26,16 @@ covers what the product is, how it runs, and the JiuwenSwarm engine it depends o
   On 29 October it had about **179 stars, 36 forks and 141 open issues and pull requests**, with
   roughly **1,785 commits** in eleven weeks.
 
+## What it looks like
+
+![A report artifact with its source dataset, version and the script that produced it](assets/sciencediscovery-trace.jpg)
+
+*Every delivered file keeps its dataset, its version and the code behind it.*
+
+![The Evolve panel: a score chart, a candidate list and a graph of attempts](assets/sciencediscovery-evolve.png)
+
+*Evolve tries candidates, scores them and keeps the ones that improve.*
+
 ## The picture
 
 For a product reader, ScienceDiscovery is the workbench and JiuwenSwarm is the engine it uses. The

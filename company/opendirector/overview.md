@@ -13,6 +13,12 @@
 - It is **early and moving fast**: v0.1.0 on 6 November 2026, v0.1.6 tagged on 26 November, seven public tags in three weeks, Apache 2.0, installers for Apple Silicon Mac and Windows x64.
 - It is an **app on top of agents**, not another agent platform. JiuwenSwarm is one supported runtime, not the only one.
 
+## What it looks like
+
+![The OpenDirector canvas: a storyboard of six shots, connected to a timeline, with a chat button](assets/opendirector-canvas.webp)
+
+*A project on the canvas: generated shots, a timeline and the assistant in one window.*
+
 ## What it is
 
 OpenDirector is for a person who wants to make a short video with AI but keep the project, the assets and the editing on their own machine. The workflow is:

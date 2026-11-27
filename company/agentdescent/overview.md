@@ -13,6 +13,12 @@
 - It is a **research reference implementation, not a production system**. Version 0.11.0 was released on 20 November 2026; the repository is active daily. It is MIT-licensed, with one Apache-2.0 algorithm port.
 - It ships **23 algorithm ports** (8 benchmark-faithful, 15 mechanism microports) and a **zero-key offline demo** that runs in about ten seconds.
 
+## What it looks like
+
+![A round: workers propose changes, one aggregator merges them, and a held-out test decides](assets/agentdescent-loop.png)
+
+*One round: several workers try a change, one aggregator merges them, and a test on unseen tasks decides what is kept.*
+
 ## What it is
 
 The project’s one-line description is “gradient descent, but the parameters are agents.” That is an analogy, not literal training.

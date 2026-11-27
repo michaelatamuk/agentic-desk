@@ -13,6 +13,16 @@
 - It is **version 1.0.0**, Apache-2.0, Python 3.11+. The primary harness is **JiuwenSwarm**; OpenCode v2, Docker Agent and ACP are experimental.
 - It is a concrete **app on top of JiuwenSwarm**, not a new agent platform.
 
+## What it looks like
+
+![Two planning rooms: five separate assistants flood the chat; one shared Belle answers once](assets/belle-one-belle.svg)
+
+*The core argument, drawn by the Belle team: one shared assistant instead of five competing ones. The drawing is animated when opened in a browser.*
+
+![Two rooms where Belle asks before posting wider, and only the named approver can act](assets/belle-boundaries.svg)
+
+*Audience and approval rules in practice: a wider audience needs a person's yes, and a named approver can be required.*
+
 ## What it is
 
 Belle is a participant in a team’s chat, not a separate chat app. People talk in a channel; Belle reads along, decides whether it can help, and either answers once or says nothing. The same team can have many people and many rooms without many competing assistants.

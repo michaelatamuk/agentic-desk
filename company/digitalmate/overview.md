@@ -27,6 +27,12 @@ and had the architecture wrong in several places — see
   it on 30 October and runs the agent on WorkSwarm; the old name is still used in the message
   format and in the workspace migration.
 
+## What it looks like
+
+![A phone screen: the assistant has read Google Calendar and shows the month's events](assets/digitalmate-calendar.jpg)
+
+*A result on the phone: the assistant used a connected calendar and returned a summary and a day view.*
+
 ## The picture
 
 ```mermaid

@@ -13,6 +13,12 @@
 - It is **version 0.3.0**, active daily, MIT for new FlyBot code, with imported DS-Bot and Bot Social trees under their own licences.
 - It is **not** a JiuwenSwarm product. It is a separate stack built on DS-Bot/DSH, and a useful comparison for DigitalMate, Orbit and the other workspace products.
 
+## What it looks like
+
+![FlyBot on desktop and phone: a release assistant answers with a table and a flow](assets/flybot-overview.webp)
+
+*The same workspace on desktop and phone. The assistant can return a table and a diagram, not only text.*
+
 ## What it is
 
 FlyBot is for a small team or a self-hosting operator who wants an AI workspace they control. A user signs in, gets a personal space, a Personal Agent and ten built-in assistants. They can chat, create more agents, save outputs, schedule work, keep meeting notes, and join shared teams where people and agents talk in the same group.

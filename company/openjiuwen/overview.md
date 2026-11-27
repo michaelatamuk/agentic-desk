@@ -25,3 +25,13 @@ projects build on.
   server, with a plan to move onto JiuwenSwarm.
 
 The boundary is: **the product's home is the company; our contribution's home is `projects/`**.
+
+## What it looks like
+
+![The openJiuwen Studio agent list, with a travel assistant and a finance assistant](assets/openjiuwen-studio.png)
+
+*The studio where a team builds and tests an agent.*
+
+![The openJiuwen stack: Studio, Core and Ops](assets/openjiuwen-architecture.png)
+
+*The three layers: the builder, the agent engine and the operations layer.*

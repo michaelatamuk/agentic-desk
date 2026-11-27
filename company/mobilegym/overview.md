@@ -13,6 +13,12 @@
 - It has been used for **online RL**: a GRPO run on Qwen3-VL-4B gained **+42.8 points in simulation** and kept **95.1%** of that gain on a real phone (**+40.7 points**).
 - It is a **research benchmark and training environment**, not a product app. Code is Apache-2.0; the companion dataset is CC BY-NC 4.0.
 
+## What it looks like
+
+![The MobileGym poster: 28 apps, 416 tasks, exact judging and parallel runs](assets/mobilegym-teaser.jpg)
+
+*The project's own summary of the simulator: its apps, its tasks, its judges, its results and the sim-to-real test.*
+
 ## What it is
 
 MobileGym is a browser-hosted, Android-like mobile environment. An agent sees screenshots, chooses from 16 actions (tap, type, swipe, back, home, wait, drag, complete, and so on), and tries to finish a task. The environment is made of simulated versions of everyday apps: WeChat, RedNote, X, Reddit, Alipay, eBay, Bilibili, Spotify, WeChat Reading, 12306, Maps, Tencent Meeting, plus system apps such as Contacts, SMS, Notes, Calendar, Files, Gallery, Settings and a browser.

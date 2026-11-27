@@ -13,6 +13,12 @@
 - It runs on this machine, an SSH host, several machines, containers or Harbor, and reads Nullius/Harbor jobs plus ATIF and OpenTelemetry exports.
 - It is **Beta, version 0.2.0**, Apache-2.0, Python 3.12+, with a local web UI at `127.0.0.1:5057`. It is not a model or an agent; it is the evaluation layer around them.
 
+## What it looks like
+
+![The Nullius run page: one finished run, its score, cost, tokens and a link to results](assets/nullius-run-overview.png)
+
+*A finished run keeps the score, the cost, the token count, the agent and the path to the evidence together.*
+
 ## What it is
 
 The Latin tag is **Nullius in verba** — “take nobody’s word for it.” That is the product idea.

@@ -13,6 +13,16 @@
 - **The current work has moved to Android.** The status page (13 November) says Android is the active client, Windows is next, and Harmony is frozen. The Harmony app is the shipped prototype; the Android app is the active one.
 - It is a **working prototype**, Apache-2.0; this note does not rely on a release number. The bridge suite has 121 tests.
 
+## What it looks like
+
+![Three phone frames: say it, HOPA does it in WhatsApp, you see the receipt](assets/hopa-say-it-done.png)
+
+*The product's own three-step explanation: say it, HOPA does it inside your apps, you see it done.*
+
+![HOPA on a laptop and a phone, sharing one conversation](assets/hopa-phone-and-laptop.png)
+
+*The laptop app and the phone show the same thread and the same run.*
+
 ## What it is
 
 HOPA stands for **HarmonyOS Personal Assistant**. The idea is simple: you have better things to do than tap through menus. You ask in your own words, and HOPA uses the app or website: it opens the app, reads the screen, taps, types, scrolls, goes back, and tells you what happened.
