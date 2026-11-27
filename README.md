@@ -40,6 +40,7 @@ for the boundary.
 | `company/flybot/` | FlyBot, a self-hosted workspace for AI agents, conversations and teamwork |
 | `company/belle/` | Belle, an AI coworker for team chat, built primarily on JiuwenSwarm |
 | `company/mobilegym/` | MobileGym, a browser-hosted mobile GUI agent simulator and benchmark |
+| `company/hopa/` | HOPA, a phone-operating personal assistant with a hard payment gate |
 | `company/orbit/` | Orbit, the per-user cloud engine behind DigitalMate |
 | `company/sciencediscovery/` | ScienceDiscovery, a local research workspace built on JiuwenSwarm |
 
