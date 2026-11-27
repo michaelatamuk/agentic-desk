@@ -39,6 +39,7 @@ for the boundary.
 | `company/nullius/` | Nullius, a local AI evaluation workbench for benchmarks, agents and evidence |
 | `company/flybot/` | FlyBot, a self-hosted workspace for AI agents, conversations and teamwork |
 | `company/belle/` | Belle, an AI coworker for team chat, built primarily on JiuwenSwarm |
+| `company/mobilegym/` | MobileGym, a browser-hosted mobile GUI agent simulator and benchmark |
 | `company/orbit/` | Orbit, the per-user cloud engine behind DigitalMate |
 | `company/sciencediscovery/` | ScienceDiscovery, a local research workspace built on JiuwenSwarm |
 

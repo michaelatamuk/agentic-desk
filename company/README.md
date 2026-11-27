@@ -18,6 +18,7 @@ folder holds its product context; our issues, designs and release notes are in
 | `nullius/` | Nullius | A local AI evaluation workbench: run benchmarks, inspect evidence and compare agents |
 | `flybot/` | FlyBot | A self-hosted workspace for AI agents, conversations and teamwork |
 | `belle/` | Belle | An AI coworker for team chat, built primarily on JiuwenSwarm |
+| `mobilegym/` | MobileGym | A browser-hosted mobile GUI agent simulator and benchmark |
 | `orbit/` | Orbit | The per-user cloud engine behind DigitalMate; today a harness, planned as a JiuwenSwarm plugin |
 | `sciencediscovery/` | ScienceDiscovery | A local research workspace built on JiuwenSwarm |
 
