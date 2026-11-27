@@ -1,5 +1,7 @@
 # DigitalMate, explained simply
 
+**One-page summary:** [`digitalmate-onepages.svg`](digitalmate-onepages.svg).
+
 *As of 15 November 2026. Sources: the repository at `main@62278b8f`, its documentation, and the
 local `orbit` checkout. This replaces the 29 October note, which was written from the public board
 and had the architecture wrong in several places — see

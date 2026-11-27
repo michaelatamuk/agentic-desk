@@ -1,5 +1,7 @@
 # AgentDescent, explained simply
 
+**One-page summary:** [`agentdescent-onepages.svg`](agentdescent-onepages.svg).
+
 *As of 28 November 2026. Sources: the repository at `main@a52a2470`, version 0.11.0, its README, architecture, concepts, evolution, MCP, plugin, algorithm and results documentation. AgentDescent is built by another team in the company. This note is context, not our roadmap.*
 
 ## The short version

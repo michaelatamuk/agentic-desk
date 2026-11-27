@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="titleB descB">
+  <title id="titleB">HOPA one-pager</title>
+  <desc id="descB">Say what you want. HOPA opens the app, taps, types, reads the screen and tells you what happened.</desc>
+  <defs>
+    <marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#111111"/>
+    </marker>
+    <style>
+      .sans { font-family: "Segoe UI", Arial, Helvetica, sans-serif; }
+      .kicker { font-size: 13px; font-weight: 700; letter-spacing: 2.4px; fill: #E33A2E; }
+      .body { font-size: 24px; fill: #111111; }
+      .small { font-size: 15px; fill: #4E4E4A; }
+      .boxTitle { font-size: 13px; font-weight: 700; letter-spacing: 1.2px; fill: #111111; }
+      .boxSub { font-size: 12px; fill: #4E4E4A; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1100" fill="#F7F5EF"/>
+  <line x1="60" y1="56" x2="1540" y2="56" stroke="#111111" stroke-width="2"/>
+
+  <text class="sans" x="58" y="200" font-size="150" font-weight="700" fill="#111111" letter-spacing="-5">HOPA</text>
+  <text class="sans" x="1520" y="96" text-anchor="end" font-size="13" font-weight="700" letter-spacing="2" fill="#E33A2E">COMPANY PRODUCT</text>
+  <text class="sans" x="1520" y="124" text-anchor="end" font-size="22" font-weight="600" fill="#111111">28 NOV 2026</text>
+  <text class="sans" x="60" y="258" font-size="30" fill="#111111">A phone assistant that uses your apps for you.</text>
+  <text class="sans" x="60" y="292" font-size="17" fill="#4E4E4A">Say what you want. HOPA opens the app, taps, types, reads the screen and tells you what happened.</text>
+  <line x1="60" y1="318" x2="1540" y2="318" stroke="#111111" stroke-width="2"/>
+  <line x1="940" y1="318" x2="940" y2="1012" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans kicker" x="60" y="368">WHAT IT IS</text>
+  <text class="body" x="60" y="416">HOPA is an assistant that operates a phone.</text>
+  <text class="body" x="60" y="454">You ask in your own words. It opens an app or a</text>
+  <text class="body" x="60" y="492">website, reads the screen, taps and types, checks</text>
+  <text class="body" x="60" y="530">the result, and reports back what it did.</text>
+
+  <text class="sans kicker" x="60" y="606">WHAT IT DOES</text>
+  <line x1="60" y1="628" x2="900" y2="628" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans" x="60" y="662" font-size="18" font-weight="700" fill="#111111">Uses real apps</text>
+  <text class="sans small" x="60" y="686">WeChat, Feishu, Xianyu and websites such as Bilibili.</text>
+  <text class="sans" x="60" y="724" font-size="18" font-weight="700" fill="#111111">Asks before money</text>
+  <text class="sans small" x="60" y="748">Item, total and seller, then Deny or Allow. Never remembered.</text>
+  <text class="sans" x="60" y="786" font-size="18" font-weight="700" fill="#111111">Keeps a record</text>
+  <text class="sans small" x="60" y="810">Each run lists the steps, the checks and the result.</text>
+
+  <text class="sans kicker" x="60" y="870">WHY IT MATTERS</text>
+  <line x1="60" y1="892" x2="900" y2="892" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans" x="60" y="922" font-size="15" fill="#111111"><tspan font-weight="700">It has hands.</tspan> It acts on the screen instead of describing what you could do.</text>
+  <text class="sans" x="60" y="950" font-size="15" fill="#111111"><tspan font-weight="700">Money is a decision.</tspan> A payment always stops for a clear yes or no.</text>
+  <text class="sans" x="60" y="978" font-size="15" fill="#111111"><tspan font-weight="700">A failed step is named.</tspan> You see where it stopped, not a vague reply.</text>
+
+  <text class="sans small" x="60" y="1022">Today: a HarmonyOS prototype; the team is building Android now.</text>
+
+  <text class="sans kicker" x="980" y="368">HOW IT WORKS</text>
+
+  <rect x="1110" y="400" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="427">YOU ASK</text>
+  <text class="boxSub" x="1130" y="447">in your own words</text>
+  <path d="M1265 462 L1265 496" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="500" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="527">IT READS THE SCREEN</text>
+  <text class="boxSub" x="1130" y="547">what is visible right now</text>
+  <path d="M1265 562 L1265 596" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="600" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="627" fill="#E33A2E">IT ACTS</text>
+  <text class="boxSub" x="1130" y="647">open, tap, type, scroll, back</text>
+  <path d="M1265 662 L1265 696" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="700" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="727">IT CHECKS AND TELLS</text>
+  <text class="boxSub" x="1130" y="747">did the screen change? what happened?</text>
+
+
+  <text class="sans small" x="980" y="800">Every action is checked before it runs,</text>
+  <text class="sans small" x="980" y="822">then checked again after it lands.</text>
+
+  <line x1="980" y1="880" x2="1520" y2="880" stroke="#111111" stroke-width="2"/>
+  <text class="sans" x="980" y="936" font-size="33" font-weight="700" fill="#111111">It does not describe the tap.</text>
+  <text class="sans" x="980" y="976" font-size="33" font-weight="700" fill="#E33A2E">It makes the tap.</text>
+
+  <text class="sans" x="60" y="1074" font-size="13" fill="#4E4E4A">Source: company/hopa/overview.md  ·  Built by another team in the company.  ·  Context, not our roadmap.</text>
+  <text class="sans" x="1520" y="1074" text-anchor="end" font-size="13" fill="#4E4E4A">agentic-desk · one-pager</text>
+</svg>

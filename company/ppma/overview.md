@@ -1,5 +1,7 @@
 # PPMA, explained simply
 
+**One-page summary:** [`ppma-onepages.svg`](ppma-onepages.svg).
+
 *One document. No other reading needed. Written 28 October 2026.*
 
 *PPMA is built by another team in the company. This note is context, not our roadmap.*

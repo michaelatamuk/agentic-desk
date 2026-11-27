@@ -1,5 +1,7 @@
 # OpenDirector, explained simply
 
+**One-page summary:** [`opendirector-onepages.svg`](opendirector-onepages.svg).
+
 *As of 27 November 2026. Sources: the repository at `main@368eb3d3`, version 0.1.6, its README, architecture docs, user guide, CLI guide and release notes. OpenDirector is built by another team in the company. This note is context, not our roadmap.*
 
 ## The short version

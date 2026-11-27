@@ -1,5 +1,7 @@
 # Belle, explained simply
 
+**One-page summary:** [`belle-onepages.svg`](belle-onepages.svg).
+
 *As of 28 November 2026. Sources: the repository at `main@6499441`, version 1.0.0, its README, configuration, scopes, Second Brain, skills, feature-matrix and JiuwenSwarm integration documentation. Belle is built by another team in the company. This note is context, not our roadmap.*
 
 ## The short version

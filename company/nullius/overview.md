@@ -1,5 +1,7 @@
 # Nullius, explained simply
 
+**One-page summary:** [`nullius-onepages.svg`](nullius-onepages.svg).
+
 *As of 28 November 2026. Sources: the repository at `main@d0c6777`, version 0.2.0, its README, concepts, standard, architecture, builder, results and supported-agent documentation. Nullius is built by another team in the company. This note is context, not our roadmap.*
 
 ## The short version

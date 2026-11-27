@@ -1,5 +1,7 @@
 # MobileGym, explained simply
 
+**One-page summary:** [`mobilegym-onepages.svg`](mobilegym-onepages.svg).
+
 *As of 28 November 2026. Sources: the repository `Purewhiter/mobilegym` at `main@5fbd3f3`, version 0.1.0, its README, AGENTS, changelog and platform documentation. MobileGym is another team's research project. This note is context, not our roadmap.*
 
 ## The short version

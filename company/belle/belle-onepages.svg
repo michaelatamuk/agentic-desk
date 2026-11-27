@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="titleB descB">
+  <title id="titleB">BELLE one-pager</title>
+  <desc id="descB">It reads the conversation and the team's shared documents, answers when it can help, and stays quiet when it cannot.</desc>
+  <defs>
+    <marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#111111"/>
+    </marker>
+    <style>
+      .sans { font-family: "Segoe UI", Arial, Helvetica, sans-serif; }
+      .kicker { font-size: 13px; font-weight: 700; letter-spacing: 2.4px; fill: #E33A2E; }
+      .body { font-size: 24px; fill: #111111; }
+      .small { font-size: 15px; fill: #4E4E4A; }
+      .boxTitle { font-size: 13px; font-weight: 700; letter-spacing: 1.2px; fill: #111111; }
+      .boxSub { font-size: 12px; fill: #4E4E4A; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1100" fill="#F7F5EF"/>
+  <line x1="60" y1="56" x2="1540" y2="56" stroke="#111111" stroke-width="2"/>
+
+  <text class="sans" x="58" y="200" font-size="150" font-weight="700" fill="#111111" letter-spacing="-5">BELLE</text>
+  <text class="sans" x="1520" y="96" text-anchor="end" font-size="13" font-weight="700" letter-spacing="2" fill="#E33A2E">COMPANY PRODUCT</text>
+  <text class="sans" x="1520" y="124" text-anchor="end" font-size="22" font-weight="600" fill="#111111">28 NOV 2026</text>
+  <text class="sans" x="60" y="258" font-size="30" fill="#111111">An AI coworker that lives in your team chat.</text>
+  <text class="sans" x="60" y="292" font-size="17" fill="#4E4E4A">It reads the conversation and the team's shared documents, answers when it can help, and stays quiet when it cannot.</text>
+  <line x1="60" y1="318" x2="1540" y2="318" stroke="#111111" stroke-width="2"/>
+  <line x1="940" y1="318" x2="940" y2="1012" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans kicker" x="60" y="368">WHAT IT IS</text>
+  <text class="body" x="60" y="416">Belle is a participant in a team chat, not a</text>
+  <text class="body" x="60" y="454">separate app. It sits in Slack, Mattermost, Matrix</text>
+  <text class="body" x="60" y="492">or Discord, follows the conversation, and answers</text>
+  <text class="body" x="60" y="530">once for the whole room.</text>
+
+  <text class="sans kicker" x="60" y="606">WHAT IT DOES</text>
+  <line x1="60" y1="628" x2="900" y2="628" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans" x="60" y="662" font-size="18" font-weight="700" fill="#111111">Answers from team knowledge</text>
+  <text class="sans small" x="60" y="686">It reads documents and links shared in selected channels.</text>
+  <text class="sans" x="60" y="724" font-size="18" font-weight="700" fill="#111111">Knows who is in the room</text>
+  <text class="sans small" x="60" y="748">Rules per channel and person decide what it may read or say.</text>
+  <text class="sans" x="60" y="786" font-size="18" font-weight="700" fill="#111111">Stays quiet by default</text>
+  <text class="sans small" x="60" y="810">Silence is a choice; it speaks only when it can add something.</text>
+
+  <text class="sans kicker" x="60" y="870">WHY IT MATTERS</text>
+  <line x1="60" y1="892" x2="900" y2="892" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans" x="60" y="922" font-size="15" fill="#111111"><tspan font-weight="700">One Belle, not one per person.</tspan> Five people do not get five competing assistants.</text>
+  <text class="sans" x="60" y="950" font-size="15" fill="#111111"><tspan font-weight="700">Quiet is the default.</tspan> A team channel should not fill with chatter.</text>
+  <text class="sans" x="60" y="978" font-size="15" fill="#111111"><tspan font-weight="700">The room sets the rules.</tspan> A wider audience needs a person's approval.</text>
+
+  <text class="sans small" x="60" y="1022">Today: version 1.0.0; it runs on JiuwenSwarm.</text>
+
+  <text class="sans kicker" x="980" y="368">HOW IT WORKS</text>
+
+  <rect x="1110" y="400" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="427">A MESSAGE ARRIVES</text>
+  <text class="boxSub" x="1130" y="447">in a channel Belle can see</text>
+  <path d="M1265 462 L1265 496" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="500" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="527">BELLE CHECKS</text>
+  <text class="boxSub" x="1130" y="547">channel, person, and what it may use</text>
+  <path d="M1265 562 L1265 596" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="600" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="627" fill="#E33A2E">IT DECIDES</text>
+  <text class="boxSub" x="1130" y="647">answer, ask, wait, or stay silent</text>
+  <path d="M1265 662 L1265 696" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="700" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="727">IT POSTS ONCE</text>
+  <text class="boxSub" x="1130" y="747">or asks a person before going wider</text>
+
+
+  <text class="sans small" x="980" y="800">It can also post a scheduled digest</text>
+  <text class="sans small" x="980" y="822">or finish a long task in the background.</text>
+
+  <line x1="980" y1="880" x2="1520" y2="880" stroke="#111111" stroke-width="2"/>
+  <text class="sans" x="980" y="936" font-size="36" font-weight="700" fill="#111111">It joins the conversation.</text>
+  <text class="sans" x="980" y="976" font-size="36" font-weight="700" fill="#E33A2E">It does not take it over.</text>
+
+  <text class="sans" x="60" y="1074" font-size="13" fill="#4E4E4A">Source: company/belle/overview.md  ·  Built by another team in the company.  ·  Context, not our roadmap.</text>
+  <text class="sans" x="1520" y="1074" text-anchor="end" font-size="13" fill="#4E4E4A">agentic-desk · one-pager</text>
+</svg>

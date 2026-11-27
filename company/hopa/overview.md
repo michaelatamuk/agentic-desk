@@ -1,5 +1,7 @@
 # HOPA, explained simply
 
+**One-page summary:** [`hopa-onepages.svg`](hopa-onepages.svg).
+
 *As of 28 November 2026. Sources: the local checkout at `agents-demo/hopa@b0b3f217`, its README, status page, architecture, turn-flow, coverage and changelog. HOPA is built by another team in the company. This note is context, not our roadmap.*
 
 ## The short version

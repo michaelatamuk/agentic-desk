@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="titleB descB">
+  <title id="titleB">OPENJIUWEN one-pager</title>
+  <desc id="descB">A framework, an agent system and a service that runs each agent in its own space.</desc>
+  <defs>
+    <marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#111111"/>
+    </marker>
+    <style>
+      .sans { font-family: "Segoe UI", Arial, Helvetica, sans-serif; }
+      .kicker { font-size: 13px; font-weight: 700; letter-spacing: 2.4px; fill: #E33A2E; }
+      .body { font-size: 24px; fill: #111111; }
+      .small { font-size: 15px; fill: #4E4E4A; }
+      .boxTitle { font-size: 13px; font-weight: 700; letter-spacing: 1.2px; fill: #111111; }
+      .boxSub { font-size: 12px; fill: #4E4E4A; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1100" fill="#F7F5EF"/>
+  <line x1="60" y1="56" x2="1540" y2="56" stroke="#111111" stroke-width="2"/>
+
+  <text class="sans" x="58" y="200" font-size="150" font-weight="700" fill="#111111" letter-spacing="-5">OPENJIUWEN</text>
+  <text class="sans" x="1520" y="96" text-anchor="end" font-size="13" font-weight="700" letter-spacing="2" fill="#E33A2E">COMPANY PRODUCT</text>
+  <text class="sans" x="1520" y="124" text-anchor="end" font-size="22" font-weight="600" fill="#111111">29 OCT 2026</text>
+  <text class="sans" x="60" y="258" font-size="30" fill="#111111">The open platform our agents are built on.</text>
+  <text class="sans" x="60" y="292" font-size="17" fill="#4E4E4A">A framework, an agent system and a service that runs each agent in its own space.</text>
+  <line x1="60" y1="318" x2="1540" y2="318" stroke="#111111" stroke-width="2"/>
+  <line x1="940" y1="318" x2="940" y2="1012" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans kicker" x="60" y="368">WHAT IT IS</text>
+  <text class="body" x="60" y="416">openJiuwen is the company's open agent platform.</text>
+  <text class="body" x="60" y="454">It gives teams the base pieces: a way to build an</text>
+  <text class="body" x="60" y="492">agent, a way to run several as a team, and a way</text>
+  <text class="body" x="60" y="530">to run them safely on a server.</text>
+
+  <text class="sans kicker" x="60" y="606">WHAT IT DOES</text>
+  <line x1="60" y1="628" x2="900" y2="628" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans" x="60" y="662" font-size="18" font-weight="700" fill="#111111">Build an agent</text>
+  <text class="sans small" x="60" y="686">The base for tools, memory and models.</text>
+  <text class="sans" x="60" y="724" font-size="18" font-weight="700" fill="#111111">Run a team</text>
+  <text class="sans small" x="60" y="748">JiuwenSwarm coordinates several agents on one job.</text>
+  <text class="sans" x="60" y="786" font-size="18" font-weight="700" fill="#111111">Run it at scale</text>
+  <text class="sans small" x="60" y="810">agent-dx starts each workspace and keeps it apart.</text>
+
+  <text class="sans kicker" x="60" y="870">WHY IT MATTERS</text>
+  <line x1="60" y1="892" x2="900" y2="892" stroke="#111111" stroke-width="1"/>
+
+  <text class="sans" x="60" y="922" font-size="15" fill="#111111"><tspan font-weight="700">One base for many products.</tspan> Teams do not rebuild the same parts.</text>
+  <text class="sans" x="60" y="950" font-size="15" fill="#111111"><tspan font-weight="700">Open source.</tspan> The code, issues and designs are public.</text>
+  <text class="sans" x="60" y="978" font-size="15" fill="#111111"><tspan font-weight="700">Built to share.</tspan> Products share models, tools and memory.</text>
+
+  <text class="sans small" x="60" y="1022">Today: open source and active; our team contributes.</text>
+
+  <text class="sans kicker" x="980" y="368">HOW IT WORKS</text>
+
+  <rect x="1110" y="400" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="427">YOUR PRODUCT</text>
+  <text class="boxSub" x="1130" y="447">a phone app, a workspace, a bench</text>
+  <path d="M1265 462 L1265 496" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="500" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="527">JIUWENSWARM</text>
+  <text class="boxSub" x="1130" y="547">several agents work as a team</text>
+  <path d="M1265 562 L1265 596" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="600" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="627" fill="#E33A2E">AGENT CORE</text>
+  <text class="boxSub" x="1130" y="647">the loop, tools and memory</text>
+  <path d="M1265 662 L1265 696" stroke="#111111" stroke-width="2" marker-end="url(#arrowB)"/>
+  <rect x="1110" y="700" width="310" height="62" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <text class="boxTitle" x="1130" y="727">AGENT-DX</text>
+  <text class="boxSub" x="1130" y="747">runs each workspace in its own space</text>
+
+
+  <text class="sans small" x="980" y="800">Company products build on it.</text>
+  <text class="sans small" x="980" y="822">Our team sends fixes and designs back.</text>
+
+  <line x1="980" y1="880" x2="1520" y2="880" stroke="#111111" stroke-width="2"/>
+  <text class="sans" x="980" y="936" font-size="36" font-weight="700" fill="#111111">A shared base.</text>
+  <text class="sans" x="980" y="976" font-size="36" font-weight="700" fill="#E33A2E">Many products on top.</text>
+
+  <text class="sans" x="60" y="1074" font-size="13" fill="#4E4E4A">Source: company/openjiuwen/overview.md  ·  The company's open platform; our team contributes.  ·  Context, not our roadmap.</text>
+  <text class="sans" x="1520" y="1074" text-anchor="end" font-size="13" fill="#4E4E4A">agentic-desk · one-pager</text>
+</svg>

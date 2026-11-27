@@ -1,5 +1,7 @@
 # ScienceDiscovery, explained simply
 
+**One-page summary:** [`sciencediscovery-onepages.svg`](sciencediscovery-onepages.svg).
+
 *As of 29 October 2026. Sources: a checkout of `main` at `2abe8af2`, the README, the 0.3.0
 release notes, [issue #582](https://github.com/openJiuwen-ai/sciencediscovery/issues/582), and the
 jiuwenswarm repository.*

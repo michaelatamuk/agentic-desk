@@ -1,5 +1,7 @@
 # openJiuwen, explained simply
 
+**One-page summary:** [`openjiuwen-onepages.svg`](openjiuwen-onepages.svg).
+
 *As of 29 October 2026.*
 
 openJiuwen is the company's agent platform and open-source community. It is the layer our own

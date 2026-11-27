@@ -1,5 +1,7 @@
 # FlyBot, explained simply
 
+**One-page summary:** [`flybot-onepages.svg`](flybot-onepages.svg).
+
 *As of 28 November 2026. Sources: the repository at `main@31c1a7d9`, version 0.3.0, its README, architecture, DS-Bot plugin, Bot Social, runtime, acceptance and feature documentation. FlyBot is built by another team in the company. This note is context, not our roadmap.*
 
 ## The short version

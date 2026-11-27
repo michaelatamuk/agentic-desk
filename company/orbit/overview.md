@@ -1,10 +1,10 @@
 # Orbit, explained simply
 
+**One-page summary:** [`orbit-onepages.svg`](orbit-onepages.svg).
+
 *As of 28 November 2026. Sources: the public checkout `ThinkFlowLab/orbit@d53837a` (initial commit 27 November 2026), its README, `core_functionalities.md`, `docs/orbit/shell.md`, `docs/glossary.md`, `docs/orbit/architecture.md` and `docs/readiness-audit.md`. Orbit is built by another team in the company. This note is context, not our roadmap.*
 
 > **Name note.** The desk’s 29 October note described an internal cloud service also called Orbit, which ran DigitalMate’s assistant for about ten days. That service and this public product are not the same thing. This note replaces the old one and covers the desktop workspace in the public repository.
-
-**One-page summary:** [`orbit-onepages.svg`](orbit-onepages.svg).
 
 ## The short version
 
