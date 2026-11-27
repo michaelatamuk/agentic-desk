@@ -16,6 +16,7 @@ folder holds its product context; our issues, designs and release notes are in
 | `opendirector/` | OpenDirector | A local AI video creation workspace: chat, canvas, media editing and timeline export |
 | `agentdescent/` | AgentDescent | A research framework for evolving prompts, skills, agent directories and code from examples |
 | `nullius/` | Nullius | A local AI evaluation workbench: run benchmarks, inspect evidence and compare agents |
+| `flybot/` | FlyBot | A self-hosted workspace for AI agents, conversations and teamwork |
 | `orbit/` | Orbit | The per-user cloud engine behind DigitalMate; today a harness, planned as a JiuwenSwarm plugin |
 | `sciencediscovery/` | ScienceDiscovery | A local research workspace built on JiuwenSwarm |
 

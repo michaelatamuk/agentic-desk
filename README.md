@@ -37,6 +37,7 @@ for the boundary.
 | `company/opendirector/` | OpenDirector, a local AI video creation workspace |
 | `company/agentdescent/` | AgentDescent, a research framework for evolving prompts, skills, agent directories and code |
 | `company/nullius/` | Nullius, a local AI evaluation workbench for benchmarks, agents and evidence |
+| `company/flybot/` | FlyBot, a self-hosted workspace for AI agents, conversations and teamwork |
 | `company/orbit/` | Orbit, the per-user cloud engine behind DigitalMate |
 | `company/sciencediscovery/` | ScienceDiscovery, a local research workspace built on JiuwenSwarm |
 
