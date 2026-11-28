@@ -3,11 +3,13 @@
 November changed who does what in a team. A team can hold a goal, the leader can run on Claude Code or
 Codex, every member can start its own workflow and gets its own shell, and Word, Excel and PowerPoint
 became one workspace. In the second half the platform added one search for skills, experts and MCP,
-coding memory, an app hub, WPS panes, and AI colleagues in group chats. The month also moved
-enterprise data to MySQL and PostgreSQL and put the personal and enterprise editions behind one
-server, the gateway. About 1,400 commits landed across the two repositories in three weeks.
+coding memory, an app hub, WPS panes, and AI colleagues in group chats. The final week added a Memory
+page, a guided setup for reverse engineering, system-level plugins, floating app surfaces for team
+companions, and a stricter enterprise configuration chain. The month also moved enterprise data to
+MySQL and PostgreSQL and put the personal and enterprise editions behind one server, the gateway.
+More than 2,000 commits landed across the two repositories in four weeks.
 
-*Last updated: 2026-11-21.*
+*Last updated: 2026-11-28.*
 
 ## What JiuwenSwarm is
 
@@ -37,12 +39,13 @@ built-in harness is the one JiuwenSwarm ships; Claude Code and Codex are externa
 
 | Repository | Commit | Merged | What it is |
 |---|---|---|---|
-| `agent-core` | `fbe93360f` | 2026-11-20 18:07 +08:00 | merge of `develop_skillrail` (SkillUseRail cache) |
-| `jiuwenswarm` | `e81838343` | 2026-11-21 15:04 +08:00 | merge of `feat/app-hub` |
+| `agent-core` | `e60add22a` | 2026-11-28 15:38 +08:00 | MCP `call_tool` timeout forwarding |
+| `jiuwenswarm` | `1586ff3e7` | 2026-11-28 15:38 +08:00 | thinking language follows the match rule |
 
 The first version of this edition stopped at `279086272` (agent-core) and `efa6e5b3c` (jiuwenswarm)
-on 13–14 November; this update adds the 476 commits merged after them. The previous edition stopped
-at `8ede5297c` (agent-core) and `5111fbffb` (jiuwenswarm). Not read this edition: the enterprise
+on 13–14 November; the 15–21 update added 476 commits. This update adds the 328 commits merged after
+21 November — 88 in `agent-core` and 240 in `jiuwenswarm`. The previous edition stopped at
+`8ede5297c` (agent-core) and `5111fbffb` (jiuwenswarm). Not read this edition: the enterprise
 deployment environments and the cloud images.
 
 Everything here is tagged:
@@ -285,6 +288,8 @@ landed. These are the ones that change what the platform can do:
 
 # The rest, by theme
 
+*The remaining 15–21 November changes, grouped by area.*
+
 ## Teams and orchestration
 
 - **SwarmChat rounds [NEW]**: collaboration-space sessions run as explicit rounds, each with its own
@@ -376,6 +381,57 @@ landed. These are the ones that change what the platform can do:
 
 ---
 
+# The last week of November
+
+The 328 commits merged after 21 November are where the month ends. These are the ones that change what
+the platform can do.
+
+- **A Memory page [NEW]**: Memory gets an entry in the left navigation and a switch under Settings →
+  Memory → Memory management, off by default. The page shows the personal memories the Memory service
+  permits, with its own model settings; the Swarm chat model stays separate. The page is a view and a
+  control, not a new memory engine: closing it does not stop recall, extraction or tools. It needs a
+  Memory build that supports the Portal; the locked JiuwenMemory 0.2.1 does not.
+- **A reverse-engineering workbench [NEW]**: a new Reverse area has a guided setup page for Node.js,
+  the REA runtime and the REA MCP server, with capability cards for Ghidra, IDA, Kuna, Hopper, Frida,
+  GDB, JADX, apktool, browser and Electron analysis. The inventory in this checkout lists 229 tools in
+  77 groups. The page reports per-card states (available, installing, needs configuration, partial,
+  failed) and one remaining-time estimate for the whole install.
+- **System plugins [NEW]**: a system plugin can now ship as a bundle package, with a system-plugin
+  market page, install/update/uninstall/recovery states and a token-weather example. A development
+  skill and a DeepSeek Harness plugin converter turn an existing plugin into a JiuwenSwarm system
+  plugin. This changes what a system plugin can carry; it does not replace the existing plugin API.
+- **Floating app surfaces [NEW]**: an app can publish a surface in desktop mode (a separate native
+  window) or overlay mode (a floating surface inside the app, with the workspace still visible). Team
+  sessions get member child windows and the leader's public replies; only the desktop client can open
+  child windows. Overlay mode relies on the plugin's own visibility switch and the host's geometry.
+- **A stricter enterprise chain [UPGRADE]**: the execution guard is now its own template slot
+  instead of being driven by a model row's retry count. Per-agent Keycloak credentials can be selected
+  for MCP calls, the agent identity is carried in the user context, workspace quotas and a usage bar
+  arrived, and the Swarmflow policy can come from the expert package template. Enterprise email
+  reading adds `.eml` and Outlook `.msg` (up to 20 MiB) through the same `read_email` tool.
+- **Teams recover from a stopped approval [UPGRADE]**: when a native member stops with an unread
+  approval card, the leader can restart that member from its original checkpoint instead of leaving
+  the whole team blocked. Interrupt admission and permission-answer binding keep an answer attached to
+  the interrupt that asked for it; targeted group notifications reach the member they name. External
+  harness members also receive the member execution environment, so their Git identity no longer falls
+  back to the host's.
+- **Personal context has a size and a lifetime [NEW]**: the coding agent can cap its personal context,
+  merge and retire entries, and count tokens per run. Local Markdown and Office workbook fetch feed the
+  same store. This is the machinery for long sessions that should not grow without bound, not a new
+  memory product.
+- **Native ACP and Multica [NEW]**: a native ACP provider, thinking options, remote MCP transports and
+  a Multica runtime entry point let an external agent connect through ACP without a bespoke adapter.
+- **Sandbox and shell hardening [UPGRADE]**: the `yuanrong` sandbox provider became `adx`; the AIO
+  provider gets a written contract; JiuwenBox kills a Windows process group; shell commands gain
+  process ownership, output directories and a registry; MCP `call_tool` timeouts now reach the stdio
+  and Playwright clients. These are the failure paths behind long runs, not new buttons.
+- **Observability and orchestration [UPGRADE]**: an export gate separates "collect a trace" from
+  "export it"; a sequence store shares repeated trajectory prefixes; Symphony gains expert task
+  planning and task-tier routing; the React agent records a structured termination reason on every
+  finish. The visible effect is smaller traces, clearer routing and a reason for why a turn ended.
+
+---
+
 # What didn't ship
 
 - **An external leader cannot fork a team**, and it does not get team memory or the failure-reliability
@@ -393,6 +449,20 @@ landed. These are the ones that change what the platform can do:
 - **SkillPack routing is off by default.** So is the shortcut that offers a complete query match
   directly to the user.
 - **TTSE is still off by default**; installing the plugin does not turn tracing on.
+- **The Memory page needs a newer Memory build.** It is off by default; the locked JiuwenMemory 0.2.1
+  supports reads and writes, but not the Portal or its model settings. The switch changes the entry,
+  not recall or extraction.
+- **The REA setup has no recorded cross-platform install run.** The page, its states and the runtime
+  handoff are in the repository; a full install on Windows, macOS and Linux is not recorded here.
+- **Team approval recovery is narrow.** It covers same-process native members with a known
+  checkpoint. External-CLI, human and bridge members are outside it.
+- **The enterprise chain is only partly proven.** Execution-guard binding has one cluster log;
+  Swarmflow policy and per-agent Keycloak credentials are covered by unit tests and a simulated
+  Gateway, not a full enterprise run. An execution-guard template can stay cached for up to an hour.
+- **Floating surfaces have a desktop limit.** Member child windows need the desktop client; overlay
+  mode does not support screenshot transitions or hit testing, and the real desktop E2E was not run.
+- **Microsoft email is read-only.** `.eml` and `.msg` are read up to 20 MiB; encrypted or RTF-only
+  messages, and Outlook contacts, calendar items and tasks, are not read.
 
 ---
 
