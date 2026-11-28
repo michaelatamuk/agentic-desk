@@ -1,8 +1,11 @@
-# openjiuwen image sources
+# JiuwenSwarm and agent-core image sources
 
-All images come from the openJiuwen agent-studio repository and use the project's own sample or product data.
+All images come from the local `jiuwenswarm` and `agent-core` checkouts. They show the product UI or its internal execution model, not marketing renders.
 
 | File | Original path | What it shows |
 |---|---|---|
-| `openjiuwen-studio.png` | `docs/en/images/agentDevelopment.png` | The studio where a team builds and tests an agent. |
-| `openjiuwen-architecture.png` | `docs/en/images/architecture.png` | The three layers: the builder, the agent engine and the operations layer. |
+| `jiuwenswarm-system-plugins.jpg` | `jiuwenswarm/docs/assets/images/system-plugin-guide/01-system-plugin-market.jpg` | The WorkSwarm web UI at `localhost:5173`, on Extensions → System plugins. This is the system-plugin market added in November. |
+| `jiuwenswarm-team-chat.png` | `jiuwenswarm/docs/assets/images/团队成员接收任务.png` | The JiuwenClaw desktop client, from the JiuwenSwarm docs: a team leader, five members and their task board in one conversation. |
+| `agentcore-execution-engine.png` | `agent-core/docs/en/images/high_performance_execution_engine.png` | The agent-core execution engine: asynchronous graph execution, component streaming, interruption and recovery, and state persistence. |
+
+The screenshots use sample data. The diagram describes the runtime, not a running customer workload.

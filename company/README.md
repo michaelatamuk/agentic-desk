@@ -12,7 +12,7 @@ folder holds its product context; our issues, designs and release notes are in
 
 | Folder | Product | What it is |
 |---|---|---|
-| `openjiuwen/` | openJiuwen | Platform context, code studies and release notes; our contribution work is in `../projects/openjiuwen/` |
+| `openjiuwen/` | JiuwenSwarm and agent-core | The open platform's server and runtime: context, release notes and code studies; our contribution work is in `../projects/openjiuwen/` |
 | `ppma/` | PPMA | A memory-first manager for long-running projects |
 | `digitalmate/` | DigitalMate | A HarmonyOS task app: task screens, bot chat and the product roadmap |
 | `opendirector/` | OpenDirector | A local AI video creation workspace: chat, canvas, media editing and timeline export |

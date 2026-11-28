@@ -31,7 +31,7 @@ for the boundary.
 
 | Folder | Contents |
 |---|---|
-| `company/openjiuwen/` | openJiuwen, the company platform we contribute to: product context, code studies and release notes; our work is under `projects/openjiuwen/` |
+| `company/openjiuwen/` | JiuwenSwarm and agent-core, the open platform we contribute to: product context, code studies and release notes; our work is under `projects/openjiuwen/` |
 | `company/ppma/` | PPMA, a memory-first agent that manages ongoing projects: the four directions, the loop and everyday scenarios |
 | `company/digitalmate/` | DigitalMate, the HarmonyOS task app |
 | `company/opendirector/` | OpenDirector, a local AI video creation workspace |
