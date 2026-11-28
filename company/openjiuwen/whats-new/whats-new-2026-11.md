@@ -1,13 +1,11 @@
 # What's New in JiuwenSwarm — November 2026
 
-November changed who does what in a team. A team can hold a goal, the leader can run on Claude Code or
-Codex, every member can start its own workflow and gets its own shell, and Word, Excel and PowerPoint
-became one workspace. In the second half the platform added one search for skills, experts and MCP,
-coding memory, an app hub, WPS panes, and AI colleagues in group chats. The final week added a Memory
-page, a guided setup for reverse engineering, system-level plugins, floating app surfaces for team
-companions, and a stricter enterprise configuration chain. The month also moved enterprise data to
-MySQL and PostgreSQL and put the personal and enterprise editions behind one server, the gateway.
-More than 2,000 commits landed across the two repositories in four weeks.
+November changed the unit of work from a task to a team. A team can hold a goal, its leader can run on
+Claude Code or Codex, each member can start its own workflow and carry its own shell and settings, and
+Word, Excel and PowerPoint became one workspace. The month also added the surfaces around that work: a
+Memory page, a reverse-engineering workbench, system-level plugins, floating app companions and a
+stricter enterprise configuration chain. About 2,200 commits landed across the two repositories in
+four weeks.
 
 *Last updated: 2026-11-28.*
 
@@ -35,18 +33,14 @@ Products sit on top of both and call them through the gateway or the Python API.
 A **harness** is the code that runs one agent: its prompt, its model calls and its tool loop. The
 built-in harness is the one JiuwenSwarm ships; Claude Code and Codex are external harnesses.
 
-**Coverage** — read from the newest `origin/develop` in both repositories:
+**Coverage** — read from the newest `origin/develop` in both repositories on 28 November:
 
 | Repository | Commit | Merged | What it is |
 |---|---|---|---|
 | `agent-core` | `e60add22a` | 2026-11-28 15:38 +08:00 | MCP `call_tool` timeout forwarding |
 | `jiuwenswarm` | `1586ff3e7` | 2026-11-28 15:38 +08:00 | thinking language follows the match rule |
 
-The first version of this edition stopped at `279086272` (agent-core) and `efa6e5b3c` (jiuwenswarm)
-on 13–14 November; the 15–21 update added 476 commits. This update adds the 328 commits merged after
-21 November — 88 in `agent-core` and 240 in `jiuwenswarm`. The previous edition stopped at
-`8ede5297c` (agent-core) and `5111fbffb` (jiuwenswarm). Not read this edition: the enterprise
-deployment environments and the cloud images.
+Not read this edition: the enterprise deployment environments and the cloud images.
 
 Everything here is tagged:
 
@@ -60,23 +54,21 @@ Everything here is tagged:
 ## 1. A team can hold a goal, not just a task list — [NEW]
 
 A team is one leader agent plus member agents working from a shared task board. The board says what
-is done; a goal says what the task must achieve. Now a member opens a goal when it claims a task, and
+is done; a goal says what the task must achieve. A member opens a goal when it claims a task, and
 before it can mark the task done, its completion claim is checked. A refusal comes back with the
 remaining work attached, and the member keeps working. If the goal reaches its attempt limit it turns
 **BLOCKED** and reports to the leader, who can take over.
 
 The leader has a goal of its own: it opens after the user's message is delivered, stays open until
-the other members are idle, and gates whether the team can finish. A second place that can hold a
-goal, `NativeHarness`, has its own rule for when to stop, and `spawn_teammate(goal=...)` opts a
-member in. On 20 November the leader goal became a setting: scheduling mode has a leader sub-switch,
-the leader and member policies are validated together, and the leader's completion assessment runs in
-its own trace so it does not mix with the conversation.
+the other members are idle, and gates whether the team can finish. `NativeHarness` has its own stop
+rule, and `spawn_teammate(goal=...)` opts a member in. On 20 November the leader goal became a
+setting: scheduling mode has a leader sub-switch, the leader and member policies are validated
+together, and the leader's completion assessment runs in its own trace.
 
 Why it matters: a team can no longer call a task finished just because a member says so. Nine
-end-to-end cases in `tests/system_tests/agent_swarm/goal/` cover a lazy member whose first
-submission is refused, a reviewer round that re-opens the goal, a mid-run reassignment, and a member
-whose goal blocks at its limit. Members that run on someone else's harness, human members, and
-members connected through a bridge (an adapter to another chat system) are outside this scope.
+end-to-end cases cover a lazy member whose first submission is refused, a reviewer round that re-opens
+the goal, a mid-run reassignment, and a member whose goal blocks at its limit. Members on someone
+else's harness, human members and bridge members are outside this scope.
 
 ## 2. The team leader can run on Claude Code or Codex — [NEW]
 
@@ -84,39 +76,32 @@ members connected through a bridge (an adapter to another chat system) are outsi
 Claude or Codex SDK harness instead of the built-in one. It keeps the leader tools — `build_team`,
 `create_task`, `view_task`, `spawn_teammate`, `shutdown_member` — and the leader prompts, and it
 continues across runs inside the same session. When the team enables swarmflow, the external leader
-holds `swarmflow` and the asynchronous task tools, so it can start and collect workflows like the
-built-in leader.
+holds `swarmflow` and the asynchronous task tools, so it can start and collect workflows.
 
 Forking the team is refused with an external leader. The path was exercised with real Claude Code
 2.1.305 and `codex-cli`, including a Claude leader with a Claude teammate and a Codex leader with a
-Codex teammate. Pause on a provider that can abort but cannot pause now degrades to a graceful abort
-instead of raising. One operational catch: the Codex SDK can prefer its bundled CLI over the one on
-`PATH`, so point `cli_path` at the current binary.
-
-Not included: an external leader's fork, team memory, and a failure-reliability channel.
+Codex teammate. Pause on a provider that can abort but cannot pause now degrades to a graceful abort.
+One operational catch: the Codex SDK can prefer its bundled CLI over the one on `PATH`, so point
+`cli_path` at the current binary. An external leader still does not get a fork, team memory or the
+failure-reliability channel.
 
 ## 3. Every teammate can start its own workflow — [NEW]
 
-`swarmflow` is the tool that starts a workflow: an asynchronous run whose steps are executed by
-worker agents, with the result injected back into the conversation when it finishes. Until now only
-the leader could call it; a member that needed a workflow had to ask the leader, which put every
-run's narration, result and pause inside the leader's context.
+`swarmflow` starts a workflow: an asynchronous run whose steps are executed by worker agents, with the
+result injected back into the conversation. Until now only the leader could call it; a member that
+needed a workflow had to ask the leader, which put every run's narration, result and pause inside the
+leader's context.
 
-On 2–3 November the tool opened to in-process teammates. A teammate starts its own run, pauses and
-resumes it, and consumes its own result. The shared machinery — worker model resolution, the
-concurrency governor and the budget ledger — is built once by the leader and shared by reference, so
-every run draws on one pool with one set of limits.
+The tool now opens to in-process teammates. A teammate starts its own run, pauses and resumes it, and
+consumes its own result. The shared machinery — worker model resolution, the concurrency governor and
+the budget ledger — is built once by the leader and shared by reference, so every run draws on one
+pool with one set of limits.
 
-Two details define it:
-
-- Every progress event names its **executor**. Narration and result injection follow that field, and
-  the leader is named too, so nothing special-cases it.
-- Resume follows the work: a paused run goes back to the member that last executed it, if it is
-  online.
-
-Shutting down a member stops and seals the runs it owns and leaves its neighbours alone. A Claude
-Code or Codex member can be given the same tool through its host; this edition's end-to-end tests
-covered in-process members.
+Two details define it: every progress event names its **executor**, and narration and result injection
+follow that field; and resume follows the work, so a paused run goes back to the member that last
+executed it if it is online. Shutting down a member stops and seals the runs it owns and leaves its
+neighbours alone. A Claude Code or Codex member can be given the same tool through its host; the
+end-to-end tests covered in-process members.
 
 ## 4. Every teammate gets its own shell and settings — [NEW]
 
@@ -128,10 +113,9 @@ restores the previous scope on error or cancel. The order is: the host's base en
 the sandbox receives only the differences, so a host environment is never copied in.
 
 Settings live per session in `team_session_settings`, a JSON blob with a version, written with an
-atomic check-and-set (compare-and-swap). They are still there after member rebuilds, cold recovery
-and cross-process calls. The platform resolver reads the shared database on every tool call; if the
-database is unreachable it fails rather than silently falling back to an old value. Environment
-values are redacted in execution logs.
+atomic check-and-set. They survive member rebuilds, cold recovery and cross-process calls. The platform
+resolver reads the shared database on every tool call; if the database is unreachable it fails rather
+than silently falling back to an old value. Environment values are redacted in execution logs.
 
 ## 5. Word, Excel and PowerPoint become one workspace — [UPGRADE]
 
@@ -145,15 +129,6 @@ and edits slides as native objects with `presentation_apply_patch`. Each turn th
 icon: new slides are deleted, changed and deleted slides are re-inserted from exports, and the deck's
 order is restored. Code the model writes against a slide's XML runs in a sandbox worker, and a patch
 that fails part way rolls itself back.
-
-```mermaid
-flowchart LR
-    D[Open document] --> P[Task pane]
-    P -->|attach| C[Conversation]
-    C --> T[The document's tools]
-    T --> D
-    T --> U[Undo per turn: export, hash, restore]
-```
 
 The three Office applications need PowerPointApi 1.8, WordApi 1.6 and ExcelApi 1.13. WPS Writer and
 Spreadsheets arrived on 19 November; WPS Presentation is not covered.
@@ -170,265 +145,206 @@ group chats, where they can be added to a group and reply when mentioned. They a
 scheduled tasks and use the CLI. The default colleague, 小九 (Xiao Jiu), is created once and is not
 recreated after a user deletes it.
 
-## 7. Enterprise data moves to MySQL and PostgreSQL — [UPGRADE]
+## 7. Memory becomes a page you can manage — [NEW]
 
-Enterprise checkpoints (the saved state a run resumes from) now land in MySQL or PostgreSQL; the
-personal edition keeps SQLite. The enterprise team runtime reads the deployment database, HTTP
-session materials are registered through it, and the admin and user planes have separate login entry
-points.
+Memory gets an entry in the left navigation and a switch under Settings → Memory → Memory management,
+off by default. The page shows the personal memories the Memory service permits, with its own model
+settings; the Swarm chat model stays separate. It is a view and a control, not a new memory engine:
+closing it does not stop recall, extraction or tools.
 
-Shared team, expert and expert-team libraries install into tenant directories, with expert creation
-and publishing hidden for now. The E2A package layout was adapted after its move into
-`openjiuwen-protocol`.
+The month also added team document memory and a bundled memory plugin, so Work, Code and Team modes
+can share one document runtime while keeping their access boundaries. The page needs a Memory build
+that supports the Portal; the locked JiuwenMemory 0.2.1 supports reads and writes, but not the Portal
+or its model settings.
 
-## 8. One gateway for the personal and enterprise editions — [NEW]
+## 8. A reverse-engineering workbench — [NEW]
 
-The gateway is the same server for both editions. The enterprise edition merged into it in late
-October. In the first week of November the places where the two were tied together were separated:
+A new **Reverse** area has a guided setup page for Node.js, the REA runtime and the REA MCP server.
+MCP is the standard way the platform connects external tools to an agent. The page installs and detects
+capability cards for Ghidra, IDA, Kuna, Hopper, Frida, GDB, JADX, apktool, browser and Electron
+analysis, and reports each card as available, installing, needs configuration, partial or failed, with
+one remaining-time estimate for the whole task.
 
-- The gateway no longer depends on jiuwenswarm; memory and task-memory configuration updates no
-  longer depend on the agent implementation; skill source and telemetry audit are separate; the
-  gateway does its own log-level hot update.
-- A **team control store** adds a stable `team_id`, owner identity, lifecycle status and human
-  memberships on top of the existing team binding and metadata files, behind a pluggable protocol
-  with SQLite as the default.
-- **Team quota and route binding** arrive with their own stores.
-- **E2A (Everything-to-Agent)** moved into `openjiuwen-protocol`. Web session list, rename and pin
-  now go through E2A to the server in both editions, so the gateway no longer manages sessions
-  locally when the server is down.
-- The enterprise web opens the **connector marketplace** navigation.
+The inventory in this checkout lists **229 tools in 77 groups**: decompiling, function analysis,
+Frida and GDB sessions, APK and firmware inspection, SQLite, PCAP and WASM inspection, browser and
+Electron capture, evidence bundles and reconstruction-coverage checks. It is a workbench around the
+existing agent, not a new model or a new agent platform. Commercial tools such as IDA still need their
+own licence and upstream MCP setup.
 
-## 9. A workflow you can install as a skill — [NEW]
+## 9. System plugins become packages — [NEW]
 
-On 4 November `skillpack_distill` started taking a completed multi-skill workflow and distilling it
-into a SkillPack: a root `SKILL.md` that describes an ordered workflow over ordinary skills. Nested
-packs and swarm-style skills are refused as members, so a pack stays a plain composition of
-single-agent skills.
+A system plugin can now ship as a bundle package, with a system-plugin market page, install, update,
+uninstall and recovery states, and a token-weather example. A development skill and a DeepSeek Harness
+plugin converter turn an existing plugin into a JiuwenSwarm system plugin.
 
-```mermaid
-flowchart LR
-    A[Completed workflow] --> B[skillpack_distill]
-    B --> C[Root SKILL.md and skillpack.lock.json]
-    C --> D{Inspect the plan and confirm}
-    D -->|cancel| X[Stop]
-    D -->|confirm| E[Install the thin ZIP]
-    E --> F[Fetch missing members from the Hub]
-    F --> G{Provenance and digest match}
-    G -->|no| X
-    G -->|yes| H[Commit the inventory]
-```
+This changes what a system plugin can carry — multiple components, their assets and their lifecycle —
+without replacing the existing plugin API. It also gives the platform a place to publish and recover
+system-level capabilities that are not tied to one agent.
 
-Installation is confirmed and transactional:
+## 10. Floating app surfaces and team companions — [NEW]
 
-- You inspect the plan — members and instructions — and confirm.
-- The ZIP is thin: a plugin wrapper, the root instructions and `skillpack.lock.json`, with no member
-  sources inside. The lock records Hub asset IDs, exact versions and SHA-256 digests; missing members
-  are fetched from the same Hub.
-- Reuse requires matching provenance, version, digest and unchanged local content. Name conflicts and
-  local edits block the install.
-- Everything is validated before the inventory is committed; a failure restores directories and
-  registration, and startup recovers an interrupted commit.
-- Uninstalling a pack keeps its members; uninstalling a skill that a pack uses is blocked and lists
-  the packs that refer to it.
+An app can publish a surface in **desktop** mode (a separate native window) or **overlay** mode (a
+floating surface inside the app, with the workspace still visible). In overlay mode the plugin
+receives input inside the surface rectangle, the host keeps it inside the app viewport, and closing it
+destroys the container and reports `ui.closed` back to the plugin.
 
-A complete query match can offer the pack directly, bypassing the workflow composer (Symphony);
-partial matches keep the old path. Routing has three modes — `off`, `shadow` (evaluate and log only)
-and `confirm` — and the product entry points are off by default.
+Team sessions gain member child windows and the leader's public replies. Only the desktop client can
+open child windows; overlay mode has no child-window path. Overlay mode also does not support native
+screenshot transitions or hit testing.
 
-## 10. The agent learns from its own runs, now as a plugin — [UPGRADE]
+## 11. Enterprise data and policy move behind one gateway — [UPGRADE]
+
+Enterprise checkpoints now land in MySQL or PostgreSQL; the personal edition keeps SQLite. The same
+gateway serves both editions, with a team control store (stable `team_id`, owner, lifecycle, human
+memberships), team quota and route binding, and E2A (Everything-to-Agent) in `openjiuwen-protocol`.
+Web session list, rename and pin go through E2A in both editions.
+
+Policy became explicit. The execution guard is its own template slot instead of being driven by a
+model row's retry count. Per-agent Keycloak credentials can be selected for MCP calls, the agent
+identity is carried in the user context, workspace quotas and a usage bar arrived, and the Swarmflow
+policy can come from the expert package template.
+
+## 12. A workflow you can install as a skill — [NEW]
+
+`skillpack_distill` takes a completed multi-skill workflow and distils it into a SkillPack: a root
+`SKILL.md` that describes an ordered workflow over ordinary skills. Nested packs and swarm-style skills
+are refused as members, so a pack stays a plain composition of single-agent skills.
+
+Installation is confirmed and transactional. You inspect the plan — members and instructions — and
+confirm. The ZIP is thin: a plugin wrapper, the root instructions and `skillpack.lock.json`, with no
+member sources inside. The lock records Hub asset IDs, exact versions and SHA-256 digests; missing
+members are fetched from the same Hub. Reuse requires matching provenance, version, digest and
+unchanged local content. A failure restores directories and registration, and startup recovers an
+interrupted commit. Uninstalling a pack keeps its members; uninstalling a skill that a pack uses is
+blocked.
+
+A complete query match can offer the pack directly, bypassing the workflow composer. Routing has three
+modes — `off`, `shadow` (evaluate and log only) and `confirm` — and the product entry points are off by
+default.
+
+## 13. The agent learns from its own runs, now as a plugin — [UPGRADE]
 
 TTSE (Two-Track Self-Evolution) reads past runs and writes two kinds of notes: facts about the
-environment (FACT) and hints about which capability to use (TIP). Later prompts include the notes.
-It never rewrites `SKILL.md` and never asks for approval. It is the sibling of skill-body evolution.
+environment (FACT) and hints about which capability to use (TIP). Later prompts include the notes. It
+never rewrites `SKILL.md` and never asks for approval. It is the sibling of skill-body evolution.
 
-On 3 November it became a native plugin for the main coding agent, built on the generic plugin
-runtime (contract v1). Code mode gets TTSE only that way; agent and work modes keep the built-in rail
-behind `react.ttse.enabled`, still off by default. Banks are kept per mode, under `.ttse/work/` and
-`.ttse/code/`, never inside your project. Auto-dream keeps a bank tidy — it removes expired notes,
-merges near-duplicates and deletes low-quality ones — on fixed intervals. Installing the plugin does
-not switch tracing on: the plugin reserves the services it declares when it mounts.
-
----
-
-# The second half of November
-
-The first version of this edition stopped on 14 November. Between 15 and 21 November, 476 commits
-landed. These are the ones that change what the platform can do:
-
-- **One search for skills, experts and MCP [NEW]**: Symphony now retrieves skills, experts and MCP
-  servers through one capability index, and Swarm uses that index for discovery. A directly
-  configured `ReActAgent` can also load skills on demand with `SkillUseRail`, without a `DeepAgent`,
-  and the rail caches its directory scans.
-- **Coding memory [NEW]**: Code mode can use native file memory or Jiuwen document memory. The
-  provider is selected in `config.yaml`, defaults to local hashing vectors so no embedding service is
-  needed, and reloads its configuration without a restart.
-- **Office reaches WPS [UPGRADE]**: WPS Writer and Spreadsheets task panes arrived, and both Office
-  and WPS add-ins can be installed from the plugin plaza. The pane gained turn control, host hints and
-  document attachments.
-- **App Hub [NEW]**: apps published to the Hub can be installed locally, with a run-consent prompt, a
-  bound project and an update that keeps `data/` and `.git`. The market panel handles install, update,
-  uninstall and local publish. Tests use a mocked Hub; the real Hub network and process start were not
-  covered.
-- **AI colleagues join group chats [NEW]**: a colleague can be added to a SwarmChat group and reply
-  when mentioned, with its own core identity and persistent @ requests. Message approval was relaxed
-  for group messages; file, document and tool approvals remain. No real model or Feishu, DingTalk or
-  WeLink end-to-end run yet.
-- **Connector Source SPI [NEW]**: connectors get a standard source interface, with the Hub as the
-  first source. This is plumbing for adding connector sources, not a new user surface.
-- **Host-managed group members and Git identities [NEW]**: a host can register an existing AI
-  colleague as a group member without starting another runtime, and each session can use its own Git
-  identity so parallel sessions do not share one author.
-- **Enterprise user plane split [UPGRADE]**: the enterprise user-facing backend is being separated
-  from the shared backend, with the deployment pieces that go with it.
-- **Tracing gets cost and time [UPGRADE]**: LLM spans now carry cost attributes, TPOT, the requested
-  model and the served model; retrieval events became spans, and scheduled traces are sized and
-  focused per task.
+On 3 November it became a native plugin for the main coding agent, built on the generic plugin runtime
+(contract v1). Code mode gets TTSE only that way; agent and work modes keep the built-in rail behind
+`react.ttse.enabled`, still off by default. Banks are kept per mode, under `.ttse/work/` and
+`.ttse/code/`, never inside your project. Auto-dream removes expired notes, merges near-duplicates and
+deletes low-quality ones on fixed intervals. Installing the plugin does not switch tracing on.
 
 ---
 
 # The rest, by theme
 
-*The remaining 15–21 November changes, grouped by area.*
+These are the remaining changes that matter to a product reader. The list is not exhaustive.
 
 ## Teams and orchestration
 
-- **SwarmChat rounds [NEW]**: collaboration-space sessions run as explicit rounds, each with its own
-  saved state and its own lifetime for background model tasks, so a round resumes after a restart and
-  background model tasks belong to the round that started them.
-- **Compression events [NEW]**: `[CompressionApplied]` events record time, session, processor,
-  strategy, reason, and characters and tokens before and after, at six points across the rule and
-  summary compressors.
-- **Verify vote contract [UPGRADE]**: `VerifyVote` gains a display-only `label`, and the tool
-  description now spells out the fields and an input→output example, so generated scripts stop
-  guessing at `v.label`.
-- **Task attribution [UPGRADE]**: `view_task` names the assignee and its member status.
-- **Swarmflow traces [UPGRADE]**: workflow runs are grouped in the viewer with operator details;
-  scheduled-dispatch traces get their own analysis and live feedback.
-- **Routed model is visible [UPGRADE]**: model-group calls name the model that actually answered.
-- **Expert catalog [UPGRADE]**: category tabs come from loaded data, so empty categories stop
-  appearing.
-- **Organization UI [UPGRADE]**: the org front end was fixed for owner-team display and layout.
-- **Group chat routing [UPGRADE]**: plain conversation and substantive work are separated; task
-  cards fold inside the group; workers clean up after an abnormal exit; a process identity
-  fingerprint still matches after a clock change.
+- **SwarmChat rounds**: collaboration-space sessions run as explicit rounds, each with saved state and
+  its own lifetime for background model tasks, so a round resumes after a restart.
+- **Group routing**: plain conversation and substantive work are separated; task cards fold inside the
+  group; workers clean up after an abnormal exit; a process identity fingerprint still matches after a
+  clock change.
+- **Group auto-reply**: an unmentioned request can be routed to an expert, and a group can coordinate a
+  team instead of waiting for a mention.
+- **Stopped approvals**: a native member that stops with an unread approval card can be restarted from
+  its original checkpoint instead of blocking the team's completion.
+- **Interrupts**: clients echo the `interrupt_id`; interrupts are told apart by kind; a permission
+  answer is bound to the interrupt that asked for it.
+- **Notifications**: targeted group notifications reach the member they name.
+- **External members**: an external harness member now gets the team's execution environment, so its
+  Git identity no longer falls back to the host's.
+- **Team memory**: document memory and a team memory rail share one runtime while keeping per-member
+  access boundaries.
+- **Host-managed members**: a host can register an existing AI colleague as a group member without
+  starting another runtime; each session can use its own Git identity.
+- **Smaller fixes**: SwarmChat compression events; a display-only `label` on `VerifyVote`; task
+  attribution in `view_task`; grouped swarmflow traces; the routed model named in model-group calls;
+  expert category tabs from loaded data; members can be removed dynamically; human-member deliveries;
+  batch expert-team invitations.
 
 ## Clients and channels
 
-- **Client attachments [NEW]**: a client attaches to one conversation, binds a stable resource key
-  that still matches after save-as and renaming, runs that conversation's tools, and renews a lease.
-  One resource belongs to one conversation; a conflict starts a new conversation. Attached clients
-  can find each other and read each other's latest messages.
-- **Interrupts [UPGRADE]**: clients echo the `interrupt_id` they answer; interrupts are told apart by
-  kind; answers are counted per interrupt.
-- **HarmonyOS [NEW]**: Huawei login sessions and a local connection between processes on the phone.
-- **WeLink [UPGRADE]**: several assistants share a reader with a confirmed handoff, and the channel
-  gains mail and calendar capabilities.
-- **DingTalk [NEW]**: employee authorization, group collaboration and employee CLI capabilities.
-- **Appearance [NEW]**: a settings module for interface font, interface size and code font.
-- **Voice [UPGRADE]**: full-duplex ships its speech-recognition bundle, and the lost
-  voice-transcription configuration and empty recording results are fixed.
+- **Client attachments**: a client attaches to one conversation, binds a stable resource key, runs that
+  conversation's tools and renews a lease. One resource belongs to one conversation.
+- **HarmonyOS**: Huawei login sessions and a local connection between processes on the phone.
+- **WeLink**: several assistants share a reader with a confirmed handoff; the channel gains mail and
+  calendar capabilities.
+- **DingTalk**: employee authorization, group collaboration and employee CLI capabilities.
+- **Appearance**: a settings module for interface font, interface size and code font.
+- **Voice**: full-duplex ships its speech-recognition bundle; the lost voice-transcription
+  configuration and empty recording results are fixed.
+- **Workspace panel**: a file viewer, a usage bar and a quota banner in the web workspace.
+- **Session restart recovery**: large histories restore without the memory amplification, and
+  in-flight streams resume after reconnecting to the local process.
 
 ## Platform
 
-- **Gateway request tracing [NEW]**: end-to-end tracing across routing and message handling.
-- **One tracing config [UPGRADE]**: team and agent tracing read the same configuration.
-- **Compatibility as a contract [UPGRADE]**: a runtime-data compatibility spec, session and stream
-  boundary compatibility, explicit message-queue wire settings, and escaping in version-control state
-  paths — with regression evidence recorded next to the contract.
-- **A2A streaming [UPGRADE]**: terminal streaming artifacts are marked as a last chunk so consumers
-  can close cleanly.
-- **jiuwenbox for team members [UPGRADE]**: member command execution in team mode goes through the
-  jiuwenbox sandbox, and nested bwrap binds are emitted after their read-write ancestors.
-- **Session recovery [UPGRADE]**: large histories restore without the memory amplification, and
-  in-flight streams resume after reconnecting to the local process.
-- **MCP (Model Context Protocol) [UPGRADE]**: entry-level `ssl_verify` for dynamic token requests,
-  and an end-to-end check of the enterprise two-token flow. MCP is the standard way to plug external
-  tools into an agent.
-- **Packaging [UPGRADE]**: the build pins `agent-core` by commit, dependencies flow through the
-  gateway, and the updater recognises `uv` editable installs and normalises mirror URLs.
+- **ACP and Multica**: a native ACP provider, thinking options, remote MCP transports and a Multica
+  runtime entry point let an external agent connect through ACP without a bespoke adapter.
+- **Sandbox**: the `yuanrong` sandbox provider became `adx`; the AIO provider gets a written contract;
+  JiuwenBox kills a Windows process group; shell commands gain process ownership, output directories
+  and a registry.
+- **MCP**: `call_tool` timeouts now reach the stdio and Playwright clients; entry-level `ssl_verify` for
+  dynamic token requests; an end-to-end check of the enterprise two-token flow.
+- **Models**: an OpenAI Responses request-parameter fallback; Anthropic disabled-thinking and output
+  limit handling; reasoning profiles; GLM-5.3-Flash reasoning levels.
+- **Capability index**: one search for skills, experts and MCP servers; a directly configured
+  `ReActAgent` can load skills on demand with `SkillUseRail`, without a `DeepAgent`.
+- **Coding memory**: native file memory or Jiuwen document memory, selected in `config.yaml`, local
+  hashing vectors by default, reloads without a restart.
+- **Connector sources**: a standard source interface, with the App Hub as the first source.
+- **Symphony**: expert task planning and task-tier routing; dynamic sub-agents.
+- **React agent**: a structured termination reason on every finish; cancel context and empty-response
+  handling.
+- **Observability**: an export gate separates "collect a trace" from "export it"; a sequence store
+  shares repeated trajectory prefixes; cost, TPOT and served-model attributes reach LLM spans.
+- **Personal context**: the coding agent can cap its personal context, merge and retire entries, and
+  count tokens per run; local Markdown and Office workbook fetch feed the same store.
+- **Gateway**: request tracing across routing and message handling; team and agent tracing read one
+  configuration; compatibility specs for runtime data and stream boundaries; explicit message-queue
+  wire settings.
+- **Packaging and deployment**: the Dockerfiles consolidate under `jiuwenswarm-ee`; an i18n catalog
+  covers common messages; an edition gate separates personal and enterprise behavior; the updater
+  recognises `uv` editable installs.
+- **Compatibility**: A2A terminal streaming marks the last chunk; jiuwenbox handles team members; the
+  runtime-data compatibility spec records the regression evidence next to the contract.
 
 ## Self-evolution
 
-- **PromptSearchOptimizer [NEW]**: a multi-candidate prompt search loop that generates N candidates
-  per round, scores them on correctness, completeness, latency, tokens and cost, penalises drift from
-  the objective, and detects overfitting on held-out cases. It runs standalone or bound to a trainer.
-- **Recursive self-improvement (RSI) promotion [UPGRADE]**: new Harness tasks score continuously
-  from 0 to 1. Each target case must first beat its frozen baseline by more than 0.05; one independent
-  full evaluation then requires every target to stay improved, no non-target to regress by more than
-  0.05, and the mean to rise. Tool and skill usage plus machine verification still have to pass, and
-  resumed tasks keep their saved policy.
-- **Harness package preview [NEW]**: a package can be inspected before promotion, and a
-  worker-shutdown bug is fixed.
+- **PromptSearchOptimizer**: a multi-candidate prompt search loop scores candidates on correctness,
+  completeness, latency, tokens and cost, penalises drift from the objective, and detects overfitting
+  on held-out cases.
+- **RSI promotion**: Harness tasks score from 0 to 1; a target must beat its frozen baseline by more
+  than 0.05, every target must stay improved and no non-target may regress by more than 0.05 before a
+  promotion.
+- **Harness package preview**: a package can be inspected before promotion; a worker-shutdown bug is
+  fixed.
 
 ## Content and plugins
 
-- **Google provider [UPGRADE]**: on top of the Sheets and Slides formats already added, the
-  cloud-document module gains the Google provider, Docs, comments and discovery.
-- **Background music (BGM) generation [NEW]**: Design generates background music through vLLM-Omni
-  or OpenRouter Lyria.
-- **Designer continuity [UPGRADE]**: crowd presence is decided by the agent and exits are declared by
-  the storyboard, so a crowd no longer disappears between shots.
-- **SkillPack hardening [UPGRADE]**: parallel validation no longer times out, an explicit selection
-  does not double-confirm, packs are reusable across sessions, Windows long paths work, a Hub install
-  compares versions before declaring itself done, and a duplicate plugin install prompts instead of
-  silently replacing.
-- **Medical knowledge base [NEW]**: a DeepSearch plugin for clinical guidelines — hybrid retrieval,
-  citations, and a 2024-versus-2020 guideline comparison.
-- **Topic recommendations before the session [UPGRADE]**: suggestions appear before you start, not
-  only mid-conversation.
-- **Office files [UPGRADE]**: personal context collects `.docx`, and file reading handles
-  GBK-encoded text plus `.docx` and `.xlsx`.
-
----
-
-# The last week of November
-
-The 328 commits merged after 21 November are where the month ends. These are the ones that change what
-the platform can do.
-
-- **A Memory page [NEW]**: Memory gets an entry in the left navigation and a switch under Settings →
-  Memory → Memory management, off by default. The page shows the personal memories the Memory service
-  permits, with its own model settings; the Swarm chat model stays separate. The page is a view and a
-  control, not a new memory engine: closing it does not stop recall, extraction or tools. It needs a
-  Memory build that supports the Portal; the locked JiuwenMemory 0.2.1 does not.
-- **A reverse-engineering workbench [NEW]**: a new Reverse area has a guided setup page for Node.js,
-  the REA runtime and the REA MCP server, with capability cards for Ghidra, IDA, Kuna, Hopper, Frida,
-  GDB, JADX, apktool, browser and Electron analysis. The inventory in this checkout lists 229 tools in
-  77 groups. The page reports per-card states (available, installing, needs configuration, partial,
-  failed) and one remaining-time estimate for the whole install.
-- **System plugins [NEW]**: a system plugin can now ship as a bundle package, with a system-plugin
-  market page, install/update/uninstall/recovery states and a token-weather example. A development
-  skill and a DeepSeek Harness plugin converter turn an existing plugin into a JiuwenSwarm system
-  plugin. This changes what a system plugin can carry; it does not replace the existing plugin API.
-- **Floating app surfaces [NEW]**: an app can publish a surface in desktop mode (a separate native
-  window) or overlay mode (a floating surface inside the app, with the workspace still visible). Team
-  sessions get member child windows and the leader's public replies; only the desktop client can open
-  child windows. Overlay mode relies on the plugin's own visibility switch and the host's geometry.
-- **A stricter enterprise chain [UPGRADE]**: the execution guard is now its own template slot
-  instead of being driven by a model row's retry count. Per-agent Keycloak credentials can be selected
-  for MCP calls, the agent identity is carried in the user context, workspace quotas and a usage bar
-  arrived, and the Swarmflow policy can come from the expert package template. Enterprise email
-  reading adds `.eml` and Outlook `.msg` (up to 20 MiB) through the same `read_email` tool.
-- **Teams recover from a stopped approval [UPGRADE]**: when a native member stops with an unread
-  approval card, the leader can restart that member from its original checkpoint instead of leaving
-  the whole team blocked. Interrupt admission and permission-answer binding keep an answer attached to
-  the interrupt that asked for it; targeted group notifications reach the member they name. External
-  harness members also receive the member execution environment, so their Git identity no longer falls
-  back to the host's.
-- **Personal context has a size and a lifetime [NEW]**: the coding agent can cap its personal context,
-  merge and retire entries, and count tokens per run. Local Markdown and Office workbook fetch feed the
-  same store. This is the machinery for long sessions that should not grow without bound, not a new
-  memory product.
-- **Native ACP and Multica [NEW]**: a native ACP provider, thinking options, remote MCP transports and
-  a Multica runtime entry point let an external agent connect through ACP without a bespoke adapter.
-- **Sandbox and shell hardening [UPGRADE]**: the `yuanrong` sandbox provider became `adx`; the AIO
-  provider gets a written contract; JiuwenBox kills a Windows process group; shell commands gain
-  process ownership, output directories and a registry; MCP `call_tool` timeouts now reach the stdio
-  and Playwright clients. These are the failure paths behind long runs, not new buttons.
-- **Observability and orchestration [UPGRADE]**: an export gate separates "collect a trace" from
-  "export it"; a sequence store shares repeated trajectory prefixes; Symphony gains expert task
-  planning and task-tier routing; the React agent records a structured termination reason on every
-  finish. The visible effect is smaller traces, clearer routing and a reason for why a turn ended.
+- **Google provider**: on top of Sheets and Slides, the cloud-document module gains Docs, comments and
+  discovery.
+- **Background music**: Design generates music through vLLM-Omni or OpenRouter Lyria.
+- **Designer continuity**: crowd presence is decided by the agent and exits by the storyboard, so a
+  crowd no longer disappears between shots.
+- **SkillPack hardening**: parallel validation no longer times out; an explicit selection does not
+  double-confirm; packs are reusable across sessions; Windows long paths work; a duplicate plugin
+  install prompts instead of replacing silently.
+- **Medical knowledge base**: a DeepSearch plugin for clinical guidelines with hybrid retrieval,
+  citations and a 2024-versus-2020 comparison.
+- **Topic recommendations**: suggestions appear before the session, not only mid-conversation.
+- **Office files**: personal context collects `.docx`; file reading handles GBK text plus `.docx` and
+  `.xlsx`; the Office pane gained a version check and no longer schedules work.
+- **Built-in tools**: `generate_chart` and `diff_files` join the tool set.
+- **App Hub**: apps published to the Hub can be installed locally with a run-consent prompt, a bound
+  project and an update that keeps `data/` and `.git`; the market panel handles install, update,
+  uninstall and local publish.
+- **Email**: the web conversation reads `.eml` and Outlook `.msg` through `read_email`.
+- **App market**: apps can declare AI roles, and the detail page shows the role cards, avatars and
+  team conversation notes.
 
 ---
 
@@ -436,12 +352,11 @@ the platform can do.
 
 - **An external leader cannot fork a team**, and it does not get team memory or the failure-reliability
   channel yet.
-- **Goal checks do not cover every kind of member.** Members that run on someone else's harness,
-  human members and bridge members are outside the scope.
-- **External-CLI members are not covered by the swarmflow end-to-end tests.** The contract they use
-  cannot support a background run and later follow-ups.
-- **WPS Presentation is not covered.** Writer and Spreadsheets panes exist; Presentation is not
-  mentioned.
+- **Goal checks do not cover every kind of member.** Members on someone else's harness, human members
+  and bridge members are outside the scope.
+- **External-CLI members are not covered by the swarmflow end-to-end tests.** Their contract cannot
+  support a background run and later follow-ups.
+- **WPS Presentation is not covered.** Writer and Spreadsheets panes exist; Presentation is not.
 - **App Hub has not met the real Hub.** Its tests use a mocked Hub; the real network, download and
   process start were not covered.
 - **AI colleagues in group chats have not run end to end.** No real model, Feishu, DingTalk or WeLink
@@ -450,8 +365,7 @@ the platform can do.
   directly to the user.
 - **TTSE is still off by default**; installing the plugin does not turn tracing on.
 - **The Memory page needs a newer Memory build.** It is off by default; the locked JiuwenMemory 0.2.1
-  supports reads and writes, but not the Portal or its model settings. The switch changes the entry,
-  not recall or extraction.
+  supports reads and writes, but not the Portal or its model settings.
 - **The REA setup has no recorded cross-platform install run.** The page, its states and the runtime
   handoff are in the repository; a full install on Windows, macOS and Linux is not recorded here.
 - **Team approval recovery is narrow.** It covers same-process native members with a known
