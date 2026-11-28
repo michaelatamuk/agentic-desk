@@ -348,7 +348,10 @@ These are the remaining changes that matter to a product reader. The list is not
 
 ---
 
-# What didn't ship
+# Still open
+
+Some of these are in progress, some are built but off by default, and some are deliberate limits. This
+is not a release schedule.
 
 - **An external leader cannot fork a team**, and it does not get team memory or the failure-reliability
   channel yet.
