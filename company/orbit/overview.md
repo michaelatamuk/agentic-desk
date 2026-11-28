@@ -91,7 +91,7 @@ ask in a room
 
 ## Screens from the product
 
-These are pictures from the repository, using its sample launch project. They show the product’s shape; they are not a live customer run.
+These are real product screens and the repository’s concept illustration. Some are QA captures with synthetic test data; they are not a live customer run.
 
 ### A room, not a chat bridge
 
@@ -99,17 +99,25 @@ These are pictures from the repository, using its sample launch project. They sh
 
 A concept illustration from the repository. The room is the unit: Claude Code and Codex take the work, Sam joins from Slack and Mei from Telegram. The chats are ways in, not the product.
 
-### Evidence, not just a reply
+### A real room, at work
 
-![A private ask with pinned Slack messages and a sourced answer](assets/ask-and-cite-sources.png)
+![A private ask: Compare the train options and ask before booking, with Orbit looking into it](assets/orbit-task-room.png)
 
-A private ask in Home. Orbit pinned the two Slack messages it used and answered with the sources and two next actions.
+A room from the test data: a private ask, Orbit working on it, and the project’s rooms and agents in the sidebar.
 
-### One send, one approval
+### The agents and the project memory
 
-![A Slack thread and a Telegram group with a draft waiting for approval](assets/approve-a-cross-app-send.png)
+![The sidebar lists rooms and agents; Claude Code’s panel shows memory, notes and routines](assets/orbit-agent-panel.png)
 
-The boundary: Orbit adapts a Slack message for the Telegram launch crew, names its source, and waits for **Approve and send**.
+The sidebar lists the project’s rooms and agents. The open agent panel shows what it is working on, its accepted memory, private notes and routines.
+
+### A choice before work starts
+
+![A task with a PDF; Orbit asks whether to bring in Claude Code or Codex](assets/orbit-agent-choice.png)
+
+A task with a PDF. Orbit does not guess: it asks whether to bring in Claude Code or Codex, and nothing runs until you choose.
+
+More captures, including the phone view, a decision card, the todo surface and the onboarding animations, are in [`assets/`](assets/).
 
 ## What works today
 
