@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="880" viewBox="0 0 1560 880" role="img" aria-labelledby="title description">
+  <title id="title">People and agents work together in a shared Orbit room</title>
+  <desc id="description">Illustrated explicit request example. You ask Orbit to check Friday's release readiness. Orbit assigns investigation to Claude Code and review to Codex. Jiuwen is also in the room as a general assistant. Sam participates through Slack. A permitted question asks Mei about device tests in Telegram, and her answer returns to the room. Findings and the QA reply are ready to review. Project instructions, conversation history and files provide shared context within permissions. Personal notes stay private. Separately, enabled participation lets agents contribute to discussion.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1 1L6 4L1 7" fill="none" stroke="#277c74" stroke-width="1.6"/></marker>
+    <marker id="question-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M1 1L6 4L1 7" fill="none" stroke="#a56d61" stroke-width="1.6"/></marker>
+    <style>text{font-family:Arial,Helvetica,sans-serif;fill:#223330}.label{font-size:24px;fill:#64736e}.heading{font-size:30px;font-weight:700}.body{font-size:30px}.card{fill:#fff;stroke:#dedfd8;stroke-width:2}.line{fill:none;stroke:#277c74;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}</style>
+  </defs>
+  <rect width="1560" height="880" rx="28" fill="#faf9f6"/>
+  <text x="40" y="47" class="label">Illustrated workflow · Example scenario</text>
+  <text x="40" y="106" font-size="43" font-weight="700">People and agents work together in one room.</text>
+  <text x="40" y="172" class="label">PEOPLE VIA CHATS</text>
+  <text x="1235" y="172" class="label">AGENTS IN THE ROOM</text>
+  <rect x="365" y="192" width="830" height="466" rx="23" fill="#eaf3ee" stroke="#b9d4ca" stroke-width="2"/>
+  <text x="391" y="237" font-size="32" font-weight="700">Launch room</text>
+  <rect x="805" y="208" width="364" height="42" rx="12" fill="#fff"/>
+  <text x="824" y="237" font-size="25" fill="#277c74">Explicit request example</text>
+  <rect x="391" y="267" width="778" height="80" rx="14" fill="#fff"/>
+  <rect x="391" y="361" width="778" height="80" rx="14" fill="#fff"/>
+  <rect x="391" y="455" width="778" height="80" rx="14" fill="#fff"/>
+  <rect x="391" y="549" width="778" height="84" rx="14" fill="#fff"/>
+  <text x="411" y="296" font-size="22" fill="#64736e">YOU</text>
+  <text x="411" y="330" class="body">Check Friday’s release readiness.</text>
+  <text x="411" y="390" font-size="22" fill="#277c74">ORBIT</text>
+  <text x="411" y="424" class="body">Claude: investigate. Codex: review.</text>
+  <text x="411" y="484" font-size="22" fill="#64736e">MEI VIA TELEGRAM</text>
+  <text x="411" y="518" class="body">Device tests passed.</text>
+  <text x="411" y="578" font-size="22" fill="#277c74">ORBIT</text>
+  <text x="411" y="613" class="body">Findings and QA reply ready to review.</text>
+  <rect x="40" y="267" width="270" height="94" rx="18" class="card"/>
+  <rect x="40" y="382" width="270" height="94" rx="18" class="card"/>
+  <rect x="40" y="564" width="270" height="94" rx="18" class="card"/>
+  <circle cx="76" cy="312" r="16" fill="#d6e9df"/>
+  <circle cx="76" cy="427" r="16" fill="#e9e4dc"/>
+  <circle cx="76" cy="609" r="16" fill="#f1ded5"/>
+  <text x="109" y="307" class="heading">You</text>
+  <text x="109" y="338" class="label">in Orbit</text>
+  <text x="109" y="422" class="heading">Sam</text>
+  <text x="109" y="453" class="label">in Slack</text>
+  <text x="109" y="604" class="heading">Mei</text>
+  <text x="109" y="635" class="label">in Telegram</text>
+  <path d="M314 314H355" class="line" marker-end="url(#arrow)"/>
+  <path d="M314 429H355" class="line" marker-end="url(#arrow)"/>
+  <path d="M365 399H330V584H316" fill="none" stroke="#a56d61" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#question-arrow)"/>
+  <text x="40" y="511" font-size="25" fill="#975c50">Ask Mei about</text>
+  <text x="40" y="542" font-size="25" fill="#975c50">device tests</text>
+  <path d="M314 634H348V499H355" class="line" marker-end="url(#arrow)"/>
+  <rect x="1235" y="267" width="285" height="85" rx="18" class="card"/>
+  <rect x="1235" y="368" width="285" height="85" rx="18" class="card"/>
+  <rect x="1235" y="470" width="285" height="85" rx="18" class="card"/>
+  <rect x="1235" y="573" width="285" height="85" rx="18" class="card"/>
+  <text x="1261" y="302" class="heading">Orbit</text>
+  <text x="1261" y="333" class="label">Coordinates</text>
+  <text x="1261" y="403" class="heading">Claude Code</text>
+  <text x="1261" y="434" class="label">Investigates</text>
+  <text x="1261" y="505" class="heading">Codex</text>
+  <text x="1261" y="536" class="label">Reviews</text>
+  <text x="1261" y="608" class="heading">Jiuwen</text>
+  <text x="1261" y="639" class="label">General assistant</text>
+  <path d="M1195 309H1225M1195 410H1225M1195 512H1225M1195 615H1225" class="line"/>
+  <circle cx="1210" cy="309" r="5" fill="#277c74"/>
+  <circle cx="1210" cy="410" r="5" fill="#277c74"/>
+  <circle cx="1210" cy="512" r="5" fill="#277c74"/>
+  <circle cx="1210" cy="615" r="5" fill="#277c74"/>
+  <rect x="365" y="680" width="830" height="99" rx="18" fill="#f0efe9"/>
+  <text x="391" y="719" font-size="27" font-weight="700">Project instructions · Conversation history · Files</text>
+  <text x="391" y="755" font-size="25" fill="#64736e">Agents use permitted sources and saved facts.</text>
+  <path d="M40 805H1520" stroke="#dedfd8" stroke-width="2"/>
+  <circle cx="51" cy="834" r="7" fill="#277c74"/>
+  <text x="72" y="843" font-size="27">With participation enabled, agents can also contribute to the discussion.</text>
+  <text x="40" y="872" font-size="22" fill="#64736e">Connected chats require permissions. Personal notes stay private.</text>
+</svg>

@@ -91,31 +91,25 @@ ask in a room
 
 ## Screens from the product
 
-These are UI captures from the repository, using its sample launch project. They show the product’s shape; they are not a live customer run.
+These are pictures from the repository, using its sample launch project. They show the product’s shape; they are not a live customer run.
 
-### One workspace, two chats, one approval
+### A room, not a chat bridge
 
-![A Slack thread and a Telegram group side by side, with an approval draft](assets/approve-a-cross-app-send.png)
+![People and agents work together in one room: you ask, Orbit assigns Claude Code and Codex, Sam joins from Slack and Mei answers from Telegram](assets/orbit-room.svg)
 
-A Slack thread and a Telegram group sit in the same workspace. Orbit has adapted Priya’s Slack message for the Telegram launch crew. The draft names its source and waits for **Approve and send**.
+A concept illustration from the repository. The room is the unit: Claude Code and Codex take the work, Sam joins from Slack and Mei from Telegram. The chats are ways in, not the product.
 
-### An ask that shows its sources
+### Evidence, not just a reply
 
-![A private ask in Home with pinned Slack messages and a sourced answer](assets/ask-and-cite-sources.png)
+![A private ask with pinned Slack messages and a sourced answer](assets/ask-and-cite-sources.png)
 
-A private ask in Home. Orbit searched the linked Slack channel, pinned the two messages it used, and answered with the sources and two next actions.
+A private ask in Home. Orbit pinned the two Slack messages it used and answered with the sources and two next actions.
 
-### Capture a corner of an app, then send it somewhere
+### One send, one approval
 
-![A captured spreadsheet region and a Give to menu](assets/capture-and-share.png)
+![A Slack thread and a Telegram group with a draft waiting for approval](assets/approve-a-cross-app-send.png)
 
-A captured region of a spreadsheet can go to Orbit, a Telegram group, a Slack channel, a running Codex task or the clipboard.
-
-### What Orbit keeps from apps without an API
-
-![App memory settings for WhatsApp, Telegram, Discord and WeChat](assets/local-app-memory.png)
-
-Some apps can be searched directly; others cannot. For those, Orbit can keep what it saw, on this computer, with a retention period and a Forget control.
+The boundary: Orbit adapts a Slack message for the Telegram launch crew, names its source, and waits for **Approve and send**.
 
 ## What works today
 
